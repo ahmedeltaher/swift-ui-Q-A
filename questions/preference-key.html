@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is the purpose of PreferenceKey in SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What is the purpose of PreferenceKey in SwiftUI?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p><strong>PreferenceKey</strong> in SwiftUI is a protocol that enables child views to pass data up the view
+            hierarchy to their parent or ancestor views. This "bottom-up" communication mechanism complements SwiftUI's
+            primary "top-down" data flow and is essential for creating flexible, reusable components that can influence
+            their container views.</p>
+
+          <h4>Purpose of PreferenceKey</h4>
+
+          <p>PreferenceKey serves several important purposes in SwiftUI:</p>
+
+          <ol>
+            <li><strong>Enabling child-to-parent communication</strong> - While SwiftUI primarily uses a top-down data
+              flow through props and bindings, PreferenceKey allows information to flow in the opposite direction.</li>
+            <li><strong>Collecting information from child views</strong> - It provides a way for parent views to gather
+              and respond to data or metrics from their descendants.</li>
+            <li><strong>Supporting dynamic layout and adaptability</strong> - Child views can communicate their size
+              requirements or other layout information to parents.</li>
+            <li><strong>Creating reusable components</strong> - Makes it possible to build flexible UI components that
+              can adapt to different contexts without tight coupling.</li>
+          </ol>
+
+          <h4>How PreferenceKey Works</h4>
+
+          <p>The PreferenceKey mechanism in SwiftUI works through a system of "preferences" that flow up the view
+            hierarchy:</p>
+
+          <ol>
+            <li>A child view sets a value for a specific preference key</li>
+            <li>The value propagates up through the view hierarchy</li>
+            <li>A parent or ancestor view can read and respond to that preference value</li>
+          </ol>
+
+          <h4>Implementing PreferenceKey</h4>
+
+          <p>To implement a PreferenceKey, you need to:</p>
+
+          <ol>
+            <li>Define a custom type that conforms to the PreferenceKey protocol</li>
+            <li>Implement the required properties and methods</li>
+            <li>Use the preference key in your views</li>
+          </ol>
+
+          <div class="code-block">
+            <pre>// 1. Define a custom PreferenceKey
+struct HeightPreferenceKey: PreferenceKey {
+    // The data type this preference will store
+    typealias Value = CGFloat
+    
+    // The default value when no preference is set
+    static var defaultValue: CGFloat = 0
+    
+    // How to combine multiple values (from different child views)
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())  // Take the maximum height
+    }
+}</pre>
+          </div>
+
+          <h4>Using PreferenceKey in Views</h4>
+
+          <p>Once defined, a preference key can be used in three main ways:</p>
+
+          <h5>1. Setting a preference value (in child views)</h5>
+
+          <div class="code-block">
+            <pre>struct ChildView: View {
+    var body: some View {
+        Text("I'm a child view")
+            .background(
+                // Use GeometryReader to get the view's size
+                GeometryReader { geometry in
+                    Color.clear
+                        // Set the preference value with the view's height
+                        .preference(key: HeightPreferenceKey.self, 
+                                    value: geometry.size.height)
+                }
+            )
+    }
+}</pre>
+          </div>
+
+          <h5>2. Reading a preference value (in parent views)</h5>
+
+          <div class="code-block">
+            <pre>struct ParentView: View {
+    @State private var childHeight: CGFloat = 0
+    
+    var body: some View {
+        VStack {
+            ChildView()
+            
+            Text("Child height: \(childHeight, specifier: "%.2f")")
+        }
+        // Read the preference value and react to changes
+        .onPreferenceChange(HeightPreferenceKey.self) { height in
+            self.childHeight = height
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>3. Transforming preference values</h5>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    var body: some View {
+        VStack {
+            Text("Hello, World!")
+                .background(GeometryReader { geometry in
+                    Color.clear
+                        .preference(key: HeightPreferenceKey.self, 
+                                    value: geometry.size.height)
+                })
+        }
+        // Transform the preference value before reacting to it
+        .transformPreference(HeightPreferenceKey.self) { value in
+            // Apply some transformation to the value
+            return value * 1.5 // Example: scale the height
+        }
+        .onPreferenceChange(HeightPreferenceKey.self) { height in
+            print("Transformed height: \(height)")
+        }
+    }
+}</pre>
+          </div>
+
+          <h4>Common Use Cases</h4>
+
+          <p>PreferenceKey is commonly used for:</p>
+
+          <ol>
+            <li><strong>Dynamic sizing and layout</strong> - Allowing child views to inform parents of their size
+              requirements</li>
+            <li><strong>Custom navigation behaviors</strong> - Passing navigation state or title information up the
+              hierarchy</li>
+            <li><strong>Coordinating animations</strong> - Syncing animations across different view hierarchies</li>
+            <li><strong>Creating flexible UI components</strong> - Building adaptable UI elements that can work in
+              various contexts</li>
+            <li><strong>Custom tab bars or navigation controls</strong> - Where selected items need to communicate with
+              containers</li>
+          </ol>
+
+          <h4>Example: Custom Tab Bar with PreferenceKey</h4>
+
+          <p>A practical example is creating a custom tab bar where tab items can communicate their sizes to ensure
+            proper alignment:</p>
+
+          <div class="code-block">
+            <pre>// Define a preference key for tab item widths
+struct TabWidthPreferenceKey: PreferenceKey {
+    static var defaultValue: [CGFloat] = []
+    
+    static func reduce(value: inout [CGFloat], nextValue: () -> [CGFloat]) {
+        value.append(contentsOf: nextValue())
+    }
+}
+
+// Tab item that reports its width
+struct TabItem: View {
+    let title: String
+    let isSelected: Bool
+    
+    var body: some View {
+        Text(title)
+            .fontWeight(isSelected ? .bold : .regular)
+            .foregroundColor(isSelected ? .blue : .gray)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(
+                GeometryReader { geometry in
+                    Color.clear.preference(
+                        key: TabWidthPreferenceKey.self,
+                        value: [geometry.size.width]
+                    )
+                }
+            )
+    }
+}
+
+// Custom tab bar that uses the reported widths
+struct CustomTabBar: View {
+    @Binding var selectedTab: Int
+    let tabs: [String]
+    @State private var tabWidths: [CGFloat] = []
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(0..<tabs.count, id: \.self) { index in
+                TabItem(
+                    title: tabs[index],
+                    isSelected: selectedTab == index
+                )
+                .onTapGesture {
+                    withAnimation {
+                        selectedTab = index
+                    }
+                }
+            }
+        }
+        .onPreferenceChange(TabWidthPreferenceKey.self) { widths in
+            self.tabWidths = widths
+        }
+    }
+}</pre>
+          </div>
+
+          <h4>Advanced: Anchored Preferences</h4>
+
+          <p>SwiftUI also offers a specialized form of preferences for working with view anchors:</p>
+
+          <div class="code-block">
+            <pre>struct AnchorPreferenceKey: PreferenceKey {
+    static var defaultValue: [String: Anchor<CGRect>] = [:]
+    
+    static func reduce(value: inout [String: Anchor<CGRect>], nextValue: () -> [String: Anchor<CGRect>]) {
+        value.merge(nextValue()) { $1 }
+    }
+}
+
+struct AnchoredView: View {
+    var body: some View {
+        HStack {
+            Text("Item 1")
+                .anchorPreference(
+                    key: AnchorPreferenceKey.self, 
+                    value: .bounds
+                ) { anchor in
+                    ["item1": anchor]
+                }
+            
+            Text("Item 2")
+                .anchorPreference(
+                    key: AnchorPreferenceKey.self, 
+                    value: .bounds
+                ) { anchor in
+                    ["item2": anchor]
+                }
+        }
+        .overlayPreferenceValue(AnchorPreferenceKey.self) { anchors in
+            GeometryReader { geometry in
+                if let anchor = anchors["item1"],
+                   let rect = geometry[anchor] {
+                    // Draw something based on the anchor's position
+                    Circle()
+                        .stroke(Color.red, lineWidth: 2)
+                        .frame(width: 10, height: 10)
+                        .position(x: rect.midX, y: rect.minY - 10)
+                }
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <h4>Best Practices</h4>
+
+          <p>When using PreferenceKey:</p>
+
+          <ol>
+            <li><strong>Choose appropriate value types</strong> - Use simple value types for preferences when possible
+            </li>
+            <li><strong>Implement reduce properly</strong> - Consider how multiple values from different children should
+              be combined</li>
+            <li><strong>Keep preference keys focused</strong> - Each key should have a single, clear purpose</li>
+            <li><strong>Be mindful of performance</strong> - Preferences that change frequently can impact performance
+            </li>
+            <li><strong>Consider alternatives</strong> - For simple cases, environment objects or coordinators might be
+              simpler options</li>
+          </ol>
+
+          <h4>Conclusion</h4>
+
+          <p>PreferenceKey is a powerful mechanism in SwiftUI that enables child-to-parent communication, making it
+            possible to create flexible, adaptable UI components. While it adds complexity compared to simple prop
+            passing, it's essential for building reusable components and solving layout challenges that require
+            bidirectional communication between views in the hierarchy.</p>
+
+          <p>By understanding and effectively using PreferenceKey, developers can build more dynamic, responsive
+            interfaces that adapt to their content and context, while maintaining SwiftUI's declarative programming
+            model.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p><span class="highlight">PreferenceKey</span> في SwiftUI هو بروتوكول يمكّن العروض الفرعية من تمرير البيانات
+        لأعلى في تسلسل العرض إلى العروض الأصلية أو الجد. تكمل آلية الاتصال "من الأسفل إلى الأعلى" هذه تدفق البيانات
+        الأساسي في SwiftUI "من الأعلى إلى الأسفل" وهي ضرورية لإنشاء مكونات مرنة وقابلة لإعادة الاستخدام يمكنها التأثير
+        على عروض الحاويات الخاصة بها.</p>
+
+      <h4>الغرض من PreferenceKey</h4>
+
+      <p>يخدم PreferenceKey عدة أغراض مهمة في SwiftUI:</p>
+
+      <ol>
+        <li><span class="highlight">تمكين الاتصال من الفرع إلى الأصل</span> - بينما يستخدم SwiftUI بشكل أساسي تدفق
+          بيانات من أعلى إلى أسفل من خلال الخصائص والروابط، يسمح PreferenceKey بتدفق المعلومات في الاتجاه المعاكس.</li>
+        <li><span class="highlight">جمع المعلومات من العروض الفرعية</span> - يوفر طريقة للعروض الأصل لجمع والاستجابة
+          للبيانات أو المقاييس من فروعها.</li>
+        <li><span class="highlight">دعم التخطيط الديناميكي والقابلية للتكيف</span> - يمكن للعروض الفرعية إبلاغ متطلبات
+          الحجم الخاصة بها أو معلومات التخطيط الأخرى إلى الأصل.</li>
+        <li><span class="highlight">إنشاء مكونات قابلة لإعادة الاستخدام</span> - يجعل من الممكن بناء مكونات واجهة مستخدم
+          مرنة يمكن أن تتكيف مع سياقات مختلفة دون اقتران وثيق.</li>
+      </ol>
+
+      <h4>كيف يعمل PreferenceKey</h4>
+
+      <p>تعمل آلية PreferenceKey في SwiftUI من خلال نظام "التفضيلات" التي تتدفق لأعلى في تسلسل العرض:</p>
+
+      <ol>
+        <li>يقوم العرض الفرعي بتعيين قيمة لمفتاح تفضيل محدد</li>
+        <li>تنتشر القيمة لأعلى من خلال تسلسل العرض</li>
+        <li>يمكن للعرض الأصل أو الجد قراءة والاستجابة لقيمة التفضيل تلك</li>
+      </ol>
+
+      <h4>تنفيذ PreferenceKey</h4>
+
+      <p>لتنفيذ PreferenceKey، تحتاج إلى:</p>
+
+      <ol>
+        <li>تعريف نوع مخصص يتوافق مع بروتوكول PreferenceKey</li>
+        <li>تنفيذ الخصائص والطرق المطلوبة</li>
+        <li>استخدام مفتاح التفضيل في العروض الخاصة بك</li>
+      </ol>
+
+      <p>في المثال المعروض، قمنا بتعريف HeightPreferenceKey الذي يتتبع ارتفاع العرض، مع تحديد القيمة الافتراضية وكيفية
+        دمج القيم المتعددة (باستخدام الحد الأقصى في هذه الحالة).</p>
+
+      <h4>استخدام PreferenceKey في العروض</h4>
+
+      <p>بمجرد تعريفه، يمكن استخدام مفتاح التفضيل بثلاث طرق رئيسية:</p>
+
+      <h5>1. تعيين قيمة تفضيل (في العروض الفرعية)</h5>
+
+      <p>في المثال الأول، نستخدم GeometryReader للحصول على حجم النص، ثم نعين هذا الارتفاع كقيمة لمفتاح التفضيل
+        HeightPreferenceKey.</p>
+
+      <h5>2. قراءة قيمة تفضيل (في العروض الأصلية)</h5>
+
+      <p>في المثال الثاني، يقوم العرض الأصلي بقراءة قيمة التفضيل من خلال onPreferenceChange وتحديث متغير الحالة
+        childHeight استجابة للتغييرات.</p>
+
+      <h5>3. تحويل قيم التفضيل</h5>
+
+      <p>في المثال الثالث، نستخدم transformPreference لتحويل قيمة التفضيل (مضاعفتها بـ 1.5) قبل الاستجابة لها.</p>
+
+      <h4>حالات الاستخدام الشائعة</h4>
+
+      <p>يُستخدم PreferenceKey بشكل شائع لـ:</p>
+
+      <ol>
+        <li><span class="highlight">التحجيم والتخطيط الديناميكي</span> - السماح للعروض الفرعية بإبلاغ الأصل بمتطلبات
+          حجمها</li>
+        <li><span class="highlight">سلوكيات التنقل المخصصة</span> - تمرير حالة التنقل أو معلومات العنوان لأعلى التسلسل
+        </li>
+        <li><span class="highlight">تنسيق الرسوم المتحركة</span> - مزامنة الرسوم المتحركة عبر تسلسلات عرض مختلفة</li>
+        <li><span class="highlight">إنشاء مكونات واجهة مستخدم مرنة</span> - بناء عناصر واجهة مستخدم قابلة للتكيف يمكن أن
+          تعمل في سياقات مختلفة</li>
+        <li><span class="highlight">أشرطة تبويب مخصصة أو عناصر تحكم في التنقل</span> - حيث تحتاج العناصر المحددة إلى
+          التواصل مع الحاويات</li>
+      </ol>
+
+      <h4>مثال: شريط تبويب مخصص باستخدام PreferenceKey</h4>
+
+      <p>مثال عملي هو إنشاء شريط تبويب مخصص حيث يمكن لعناصر التبويب إبلاغ أحجامها لضمان المحاذاة المناسبة:</p>
+
+      <p>في هذا المثال، نقوم بتعريف TabWidthPreferenceKey لتتبع عرض عناصر التبويب. ثم ننشئ مكون TabItem الذي يبلغ عن
+        عرضه من خلال تعيين قيمة التفضيل. وأخيراً، نستخدم هذه المعلومات في CustomTabBar للتأكد من أن جميع علامات التبويب
+        متوافقة.</p>
+
+      <h4>متقدم: التفضيلات المثبتة</h4>
+
+      <p>يقدم SwiftUI أيضًا شكلاً متخصصًا من التفضيلات للعمل مع مثبتات العرض:</p>
+
+      <p>في هذا المثال المتقدم، نستخدم anchorPreference لتتبع حدود عناصر النص، ثم نستخدم overlayPreferenceValue لرسم
+        دائرة فوق العنصر الأول بناءً على موقعه.</p>
+
+      <h4>أفضل الممارسات</h4>
+
+      <p>عند استخدام PreferenceKey:</p>
+
+      <ol>
+        <li><span class="highlight">اختر أنواع القيم المناسبة</span> - استخدم أنواع القيم البسيطة للتفضيلات عندما يكون
+          ذلك ممكنًا</li>
+        <li><span class="highlight">قم بتنفيذ reduce بشكل صحيح</span> - فكر في كيفية دمج القيم المتعددة من أطفال مختلفين
+        </li>
+        <li><span class="highlight">احتفظ بمفاتيح التفضيل مركزة</span> - يجب أن يكون لكل مفتاح غرض واحد واضح</li>
+        <li><span class="highlight">انتبه للأداء</span> - التفضيلات التي تتغير بشكل متكرر يمكن أن تؤثر على الأداء</li>
+        <li><span class="highlight">فكر في البدائل</span> - بالنسبة للحالات البسيطة، قد تكون كائنات البيئة أو المنسقين
+          خيارات أبسط</li>
+      </ol>
+
+      <h4>الخلاصة</h4>
+
+      <p>PreferenceKey هو آلية قوية في SwiftUI تمكّن الاتصال من الفرع إلى الأصل، مما يجعل من الممكن إنشاء مكونات واجهة
+        مستخدم مرنة وقابلة للتكيف. على الرغم من أنها تضيف تعقيدًا مقارنة بتمرير الخصائص البسيط، إلا أنها ضرورية لبناء
+        مكونات قابلة لإعادة الاستخدام وحل تحديات التخطيط التي تتطلب اتصالاً ثنائي الاتجاه بين العروض في التسلسل.</p>
+
+      <p>من خلال فهم واستخدام PreferenceKey بشكل فعال، يمكن للمطورين بناء واجهات أكثر ديناميكية واستجابة تتكيف مع
+        محتواها وسياقها، مع الحفاظ على نموذج البرمجة التصريحية في SwiftUI.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

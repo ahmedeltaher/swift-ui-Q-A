@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is view protocol in SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    .comparison-image {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .comparison-container {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .comparison-item {
+      width: 48%;
+      margin-bottom: 20px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-item {
+        width: 100%;
+      }
+    }
+
+    .comparison-item h5 {
+      margin-top: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What is View Protocol in SwiftUI?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>Understanding the View Protocol in SwiftUI</h4>
+
+          <p>The <code>View</code> protocol is the cornerstone of SwiftUI's declarative user interface framework. It
+            defines the fundamental building block that represents a piece of UI in your application. Every visual
+            element in a SwiftUI interface—from simple text labels to complex custom components—conforms to the
+            <code>View</code> protocol.</p>
+
+          <h4>Definition and Core Requirements</h4>
+
+          <p>At its most basic level, the <code>View</code> protocol has a single requirement:</p>
+
+          <div class="code-block">
+            <pre>protocol View {
+    associatedtype Body: View
+    @ViewBuilder var body: Self.Body { get }
+}</pre>
+          </div>
+
+          <p>Let's break this down:</p>
+
+          <ul>
+            <li><strong>associatedtype Body: View</strong> - This is a placeholder type that must itself conform to the
+              <code>View</code> protocol. It represents the content and appearance of the view.</li>
+            <li><strong>@ViewBuilder var body: Self.Body { get }</strong> - This property returns the content of the
+              view. The <code>@ViewBuilder</code> attribute enables the DSL (Domain-Specific Language) syntax that
+              SwiftUI uses, allowing you to compose multiple child views using a declarative syntax.</li>
+          </ul>
+
+          <h4>The Role of View Protocol in SwiftUI Architecture</h4>
+
+          <p>The <code>View</code> protocol serves several critical roles in the SwiftUI framework:</p>
+
+          <h5>1. Type Erasure and Composition</h5>
+
+          <p>SwiftUI uses the <code>View</code> protocol as a common interface for all UI elements. This enables complex
+            type erasure and composition patterns that allow views to be combined in powerful ways without having to
+            explicitly manage the resulting types.</p>
+
+          <p>For example, when you write:</p>
+
+          <div class="code-block">
+            <pre>VStack {
+    Text("Hello")
+    Image(systemName: "star")
+    Button("Tap me") { }
+}</pre>
+          </div>
+
+          <p>Each of these elements—<code>Text</code>, <code>Image</code>, and <code>Button</code>—conform to the
+            <code>View</code> protocol, allowing them to be composed together within a <code>VStack</code> (which itself
+            conforms to <code>View</code>).</p>
+
+          <h5>2. Functional Programming Approach</h5>
+
+          <p>The <code>View</code> protocol enables SwiftUI's functional programming approach. Views in SwiftUI are
+            immutable value types (structs) that describe the UI at a point in time. When state changes, SwiftUI creates
+            new view instances rather than mutating existing ones.</p>
+
+          <p>This functional approach leads to more predictable code and better performance, as SwiftUI can efficiently
+            determine what parts of the UI need to be updated.</p>
+
+          <h5>3. Declarative Syntax</h5>
+
+          <p>The <code>View</code> protocol, combined with <code>ViewBuilder</code>, enables SwiftUI's declarative
+            syntax. This allows developers to describe what the UI should look like, rather than imperatively specifying
+            how to create it.</p>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    var body: some View {
+        Text("Hello, World!")
+            .font(.largeTitle)
+            .foregroundColor(.blue)
+            .padding()
+    }
+}</pre>
+          </div>
+
+          <p>In this example, you're declaring that you want a text view with specific modifiers, and SwiftUI figures
+            out how to render it.</p>
+
+          <h4>The `some View` Return Type</h4>
+
+          <p>You'll often see <code>some View</code> as the return type of the <code>body</code> property:</p>
+
+          <div class="code-block">
+            <pre>var body: some View {
+    Text("Hello, World!")
+}</pre>
+          </div>
+
+          <p>This uses Swift's "opaque return type" feature. <code>some View</code> tells the compiler:</p>
+
+          <ol>
+            <li>The returned value conforms to the <code>View</code> protocol</li>
+            <li>There is a specific concrete type being returned (known to the compiler but not exposed in the API)</li>
+            <li>The same concrete type will always be returned from this property</li>
+          </ol>
+
+          <p>This approach allows Swift to preserve the concrete type information internally (which is important for
+            type-based optimizations) while hiding the often complex compound types that result from chaining view
+            modifiers.</p>
+
+          <h4>Creating Custom Views</h4>
+
+          <p>Creating a custom view in SwiftUI is as simple as defining a new type that conforms to the
+            <code>View</code> protocol:</p>
+
+          <div class="code-block">
+            <pre>struct CustomCardView: View {
+    var title: String
+    var description: String
+    var color: Color
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(title)
+                .font(.headline)
+            Text(description)
+                .font(.body)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(color.opacity(0.2))
+        .cornerRadius(10)
+    }
+}</pre>
+          </div>
+
+          <p>This custom view can then be used just like any built-in SwiftUI view:</p>
+
+          <div class="code-block">
+            <pre>CustomCardView(
+    title: "Important Notice", 
+    description: "This is a custom view", 
+    color: .blue
+)</pre>
+          </div>
+
+          <h4>View Protocol and View Modifiers</h4>
+
+          <p>View modifiers in SwiftUI also leverage the <code>View</code> protocol. Each modifier is a method that
+            returns a new view that wraps the original view:</p>
+
+          <div class="code-block">
+            <pre>extension View {
+    func customBackground(_ color: Color) -> some View {
+        self.padding()
+            .background(color)
+            .cornerRadius(10)
+    }
+}</pre>
+          </div>
+
+          <p>This extension can then be used on any type that conforms to <code>View</code>:</p>
+
+          <div class="code-block">
+            <pre>Text("Hello")
+    .customBackground(.blue)</pre>
+          </div>
+
+          <h4>How SwiftUI Uses the View Protocol Internally</h4>
+
+          <p>Behind the scenes, SwiftUI uses the <code>View</code> protocol and the concrete types to build an efficient
+            rendering system:</p>
+
+          <ol>
+            <li><strong>View Identity and Diffing</strong> - SwiftUI tracks the identity of views to determine which
+              parts of the UI need to be updated when state changes.</li>
+            <li><strong>Layout System</strong> - The layout system uses the <code>View</code> protocol to communicate
+              size and position information between parent and child views.</li>
+            <li><strong>Performance Optimization</strong> - SwiftUI can optimize rendering by analyzing the view
+              hierarchy and batching updates.</li>
+          </ol>
+
+          <h4>Advanced Aspects of the View Protocol</h4>
+
+          <h5>1. Never View</h5>
+
+          <p>SwiftUI has a special <code>Never</code> view type that's used in conditional scenarios where a view might
+            not be shown:</p>
+
+          <div class="code-block">
+            <pre>struct ConditionalView: View {
+    var shouldShowText: Bool
+    
+    var body: some View {
+        if shouldShowText {
+            Text("Visible")
+        } else {
+            // This branch returns "Never" which conforms to View
+            EmptyView()
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>2. _ViewModifier_Content</h5>
+
+          <p>When you apply a modifier to a view, SwiftUI creates a special internal view type called
+            <code>_ViewModifier_Content</code> that wraps the original view with the modifier's functionality.</p>
+
+          <h5>3. AnyView Type Erasure</h5>
+
+          <p>Sometimes you need to erase the concrete type information and just work with the <code>View</code> protocol
+            directly. SwiftUI provides the <code>AnyView</code> type for this purpose:</p>
+
+          <div class="code-block">
+            <pre>func getView(condition: Bool) -> AnyView {
+    if condition {
+        return AnyView(Text("True"))
+    } else {
+        return AnyView(Image(systemName: "star"))
+    }
+}</pre>
+          </div>
+
+          <p>However, using <code>AnyView</code> should generally be avoided when possible, as it removes type
+            information that SwiftUI uses for optimizations.</p>
+
+          <h4>Common Pitfalls and Best Practices</h4>
+
+          <h5>Pitfalls:</h5>
+
+          <ol>
+            <li><strong>Complex body Types</strong> - As you chain modifiers, the return type of <code>body</code> can
+              become extremely complex. The <code>some View</code> opaque return type helps manage this.</li>
+            <li><strong>Overuse of AnyView</strong> - Using <code>AnyView</code> excessively can lead to performance
+              issues as it erases type information that SwiftUI uses for optimization.</li>
+            <li><strong>Forgetting @ViewBuilder</strong> - When creating custom container views, forgetting the
+              <code>@ViewBuilder</code> attribute can lead to confusing compiler errors.</li>
+          </ol>
+
+          <h5>Best Practices:</h5>
+
+          <ol>
+            <li><strong>Keep Views Small and Focused</strong> - Break complex UIs into smaller, reusable view
+              components.</li>
+            <li><strong>Use Group for Conditional Content</strong> - Instead of <code>AnyView</code>, use
+              <code>Group</code> to wrap conditional content:</li>
+          </ol>
+
+          <div class="code-block">
+            <pre>var body: some View {
+    Group {
+        if condition {
+            Text("Condition is true")
+        } else {
+            Text("Condition is false")
+        }
+    }
+    .padding()
+    .background(Color.gray)
+}</pre>
+          </div>
+
+          <ol start="3">
+            <li><strong>Create Custom ViewModifiers</strong> - For reusable view modifications, create custom view
+              modifiers rather than copying the same modifiers in multiple places.</li>
+          </ol>
+
+          <h4>Conclusion</h4>
+
+          <p>The <code>View</code> protocol is the fundamental building block of SwiftUI's UI system. Understanding it
+            is key to mastering SwiftUI development. Its elegant design enables declarative, composable UI code that can
+            adapt to state changes efficiently.</p>
+
+          <p>By conforming to the <code>View</code> protocol, you can create custom UI components that integrate
+            seamlessly with SwiftUI's layout system and modifier pattern. While it seems simple at first glance, the
+            <code>View</code> protocol incorporates sophisticated type system features that enable SwiftUI's powerful
+            composition model and performance optimizations.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p>بروتوكول <code>View</code> هو حجر الزاوية في إطار عمل SwiftUI لواجهات المستخدم التصريحية. يحدد هذا البروتوكول
+        اللبنة الأساسية التي تمثل جزءًا من واجهة المستخدم في تطبيقك. كل عنصر مرئي في واجهة SwiftUI - من النصوص البسيطة
+        إلى المكونات المخصصة المعقدة - يتوافق مع بروتوكول <code>View</code>.</p>
+
+      <h4>التعريف والمتطلبات الأساسية</h4>
+
+      <p>في أبسط مستوياته، يحتوي بروتوكول <code>View</code> على متطلب واحد فقط:</p>
+
+      <p>دعونا نفصّل هذا:</p>
+
+      <ul>
+        <li><span class="highlight">associatedtype Body: View</span> - هذا نوع مؤقت يجب أن يتوافق هو نفسه مع بروتوكول
+          <code>View</code>. يمثل هذا النوع محتوى ومظهر العرض.</li>
+        <li><span class="highlight">@ViewBuilder var body: Self.Body { get }</span> - تعيد هذه الخاصية محتوى العرض. سمة
+          <code>@ViewBuilder</code> تمكّن بناء جملة لغة المجال المحدد (DSL) التي يستخدمها SwiftUI، مما يسمح لك بتركيب
+          عناصر عرض متعددة باستخدام بناء جملة تصريحي.</li>
+      </ul>
+
+      <h4>دور بروتوكول View في هيكلية SwiftUI</h4>
+
+      <p>يخدم بروتوكول <code>View</code> عدة أدوار حاسمة في إطار عمل SwiftUI:</p>
+
+      <h5>1. محو النوع والتركيب</h5>
+
+      <p>يستخدم SwiftUI بروتوكول <code>View</code> كواجهة مشتركة لجميع عناصر واجهة المستخدم. هذا يمكّن أنماط محو النوع
+        والتركيب المعقدة التي تسمح بدمج العروض بطرق قوية دون الحاجة إلى إدارة الأنواع الناتجة بشكل صريح.</p>
+
+      <p>على سبيل المثال، عندما تكتب:</p>
+
+      <p>كل عنصر من هذه العناصر - <code>Text</code> و<code>Image</code> و<code>Button</code> - يتوافق مع بروتوكول
+        <code>View</code>، مما يسمح بتركيبها معًا داخل <code>VStack</code> (الذي يتوافق أيضًا مع <code>View</code>).</p>
+
+      <h5>2. نهج البرمجة الوظيفية</h5>
+
+      <p>يمكّن بروتوكول <code>View</code> نهج البرمجة الوظيفية في SwiftUI. العروض في SwiftUI هي أنواع قيمة غير قابلة
+        للتغيير (structs) تصف واجهة المستخدم في نقطة زمنية معينة. عندما تتغير الحالة، ينشئ SwiftUI مثيلات عرض جديدة
+        بدلاً من تغيير المثيلات الموجودة.</p>
+
+      <p>يؤدي هذا النهج الوظيفي إلى كود أكثر قابلية للتنبؤ وأداء أفضل، حيث يمكن لـ SwiftUI تحديد الأجزاء التي تحتاج إلى
+        تحديث بكفاءة.</p>
+
+      <h5>3. بناء الجملة التصريحي</h5>
+
+      <p>يمكّن بروتوكول <code>View</code>، جنبًا إلى جنب مع <code>ViewBuilder</code>، بناء الجملة التصريحي في SwiftUI.
+        هذا يسمح للمطورين بوصف كيف يجب أن تبدو واجهة المستخدم، بدلاً من تحديد كيفية إنشائها بشكل إجرائي.</p>
+
+      <p>في هذا المثال، أنت تعلن أنك تريد عرض نص بمعدلات محددة، ويقوم SwiftUI بمعرفة كيفية عرضه.</p>
+
+      <h4>نوع الإرجاع some View</h4>
+
+      <p>غالبًا ما ترى <code>some View</code> كنوع إرجاع لخاصية <code>body</code>:</p>
+
+      <p>هذا يستخدم ميزة "نوع الإرجاع المعتم" في Swift. <code>some View</code> تخبر المترجم:</p>
+
+      <ol>
+        <li>القيمة المُرجعة تتوافق مع بروتوكول <code>View</code></li>
+        <li>هناك نوع ملموس محدد يتم إرجاعه (معروف للمترجم ولكن غير معروض في واجهة البرمجة)</li>
+        <li>سيتم دائمًا إرجاع نفس النوع الملموس من هذه الخاصية</li>
+      </ol>
+
+      <p>يسمح هذا النهج لـ Swift بالحفاظ على معلومات النوع الملموس داخليًا (وهو أمر مهم للتحسينات المعتمدة على النوع) مع
+        إخفاء الأنواع المركبة المعقدة غالبًا التي تنتج من سلسلة معدلات العرض.</p>
+
+      <h4>إنشاء عروض مخصصة</h4>
+
+      <p>إنشاء عرض مخصص في SwiftUI بسيط مثل تعريف نوع جديد يتوافق مع بروتوكول <code>View</code>:</p>
+
+      <p>يمكن بعد ذلك استخدام هذا العرض المخصص تمامًا مثل أي عرض مدمج في SwiftUI:</p>
+
+      <h4>بروتوكول View ومعدلات العرض</h4>
+
+      <p>تستفيد معدلات العرض في SwiftUI أيضًا من بروتوكول <code>View</code>. كل معدل هو طريقة تعيد عرضًا جديدًا يغلف
+        العرض الأصلي:</p>
+
+      <p>يمكن بعد ذلك استخدام هذا الامتداد على أي نوع يتوافق مع <code>View</code>:</p>
+
+      <h4>كيف يستخدم SwiftUI بروتوكول View داخليًا</h4>
+
+      <p>خلف الكواليس، يستخدم SwiftUI بروتوكول <code>View</code> والأنواع الملموسة لبناء نظام عرض فعال:</p>
+
+      <ol>
+        <li><span class="highlight">هوية العرض والاختلاف</span> - يتتبع SwiftUI هوية العروض لتحديد أجزاء واجهة المستخدم
+          التي تحتاج إلى تحديث عند تغير الحالة.</li>
+        <li><span class="highlight">نظام التخطيط</span> - يستخدم نظام التخطيط بروتوكول <code>View</code> للتواصل
+          بمعلومات الحجم والموضع بين العروض الأم والطفل.</li>
+        <li><span class="highlight">تحسين الأداء</span> - يمكن لـ SwiftUI تحسين العرض من خلال تحليل تسلسل العرض الهرمي
+          وتجميع التحديثات.</li>
+      </ol>
+
+      <h4>جوانب متقدمة من بروتوكول View</h4>
+
+      <h5>1. Never View</h5>
+
+      <p>لدى SwiftUI نوع عرض خاص <code>Never</code> يستخدم في سيناريوهات شرطية حيث قد لا يتم عرض العرض:</p>
+
+      <h5>2. _ViewModifier_Content</h5>
+
+      <p>عندما تطبق معدلًا على عرض، ينشئ SwiftUI نوع عرض داخلي خاص يسمى <code>_ViewModifier_Content</code> يغلف العرض
+        الأصلي بوظائف المعدل.</p>
+
+      <h5>3. محو النوع AnyView</h5>
+
+      <p>في بعض الأحيان، تحتاج إلى محو معلومات النوع الملموس والعمل مباشرة مع بروتوكول <code>View</code>. يوفر SwiftUI
+        نوع <code>AnyView</code> لهذا الغرض:</p>
+
+      <p>ومع ذلك، يجب تجنب استخدام <code>AnyView</code> عندما يكون ذلك ممكنًا، لأنه يزيل معلومات النوع التي يستخدمها
+        SwiftUI للتحسينات.</p>
+
+      <h4>المشاكل الشائعة وأفضل الممارسات</h4>
+
+      <h5>المشاكل:</h5>
+
+      <ol>
+        <li><span class="highlight">أنواع body المعقدة</span> - عندما تربط المعدلات، يمكن أن يصبح نوع الإرجاع
+          <code>body</code> معقدًا للغاية. يساعد نوع الإرجاع المعتم <code>some View</code> في إدارة هذا.</li>
+        <li><span class="highlight">الإفراط في استخدام AnyView</span> - يمكن أن يؤدي استخدام <code>AnyView</code> بشكل
+          مفرط إلى مشاكل في الأداء لأنه يمحو معلومات النوع التي يستخدمها SwiftUI للتحسين.</li>
+        <li><span class="highlight">نسيان @ViewBuilder</span> - عند إنشاء عروض حاوية مخصصة، يمكن أن يؤدي نسيان سمة
+          <code>@ViewBuilder</code> إلى أخطاء المترجم المربكة.</li>
+      </ol>
+
+      <h5>أفضل الممارسات:</h5>
+
+      <ol>
+        <li><span class="highlight">احتفظ بالعروض صغيرة ومركزة</span> - قسّم واجهات المستخدم المعقدة إلى مكونات عرض أصغر
+          وقابلة لإعادة الاستخدام.</li>
+        <li><span class="highlight">استخدم Group للمحتوى الشرطي</span> - بدلاً من <code>AnyView</code>، استخدم
+          <code>Group</code> لتغليف المحتوى الشرطي:</li>
+      </ol>
+
+      <ol start="3">
+        <li><span class="highlight">إنشاء ViewModifiers مخصصة</span> - للتعديلات القابلة لإعادة الاستخدام، قم بإنشاء
+          معدلات عرض مخصصة بدلاً من نسخ نفس المعدلات في أماكن متعددة.</li>
+      </ol>
+
+      <h4>الخلاصة</h4>
+
+      <p>بروتوكول <code>View</code> هو اللبنة الأساسية لنظام واجهة المستخدم في SwiftUI. فهمه هو مفتاح إتقان تطوير
+        SwiftUI. يتيح تصميمه الأنيق كتابة كود واجهة مستخدم تصريحي وقابل للتركيب يمكن أن يتكيف مع تغييرات الحالة بكفاءة.
+      </p>
+
+      <p>من خلال التوافق مع بروتوكول <code>View</code>، يمكنك إنشاء مكونات واجهة مستخدم مخصصة تتكامل بسلاسة مع نظام
+        التخطيط ونمط المعدل في SwiftUI. في حين أنه يبدو بسيطًا في البداية، يتضمن بروتوكول <code>View</code> ميزات نظام
+        نوع متطورة تمكّن نموذج التركيب القوي وتحسينات الأداء في SwiftUI.</p>
+
+      <p>في الجوهر، يمكننا القول أن بروتوكول <code>View</code> هو الأساس الذي يقوم عليه كل شيء في SwiftUI. إنه يوفر
+        التجريد والمرونة التي تجعل SwiftUI قويًا وبديهيًا في نفس الوقت. مع الممارسة، ستصبح أكثر راحة في إنشاء عروض مخصصة
+        معقدة تستفيد بالكامل من قوة هذا البروتوكول وتعقيداته.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

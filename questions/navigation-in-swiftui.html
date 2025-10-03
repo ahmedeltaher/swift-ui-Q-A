@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How do you handle navigation in SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">How do you handle navigation in SwiftUI?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p>Navigation in SwiftUI has evolved significantly across iOS versions, with multiple approaches available
+            depending on your app's requirements and target iOS version. Here's a comprehensive overview of the
+            different navigation methods in SwiftUI:</p>
+
+          <h4>1. NavigationView and NavigationLink (iOS 13+)</h4>
+
+          <p>This is the original navigation system introduced with SwiftUI:</p>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    var body: some View {
+        NavigationView {
+            List(items) { item in
+                NavigationLink(destination: DetailView(item: item)) {
+                    Text(item.name)
+                }
+            }
+            .navigationTitle("Items")
+        }
+    }
+}</pre>
+          </div>
+
+          <p><strong>Key features:</strong></p>
+          <ul>
+            <li>Push-pop navigation pattern</li>
+            <li>Simple to implement for basic navigation flows</li>
+            <li>Supports navigation bar customization</li>
+          </ul>
+
+          <p><strong>Limitations:</strong></p>
+          <ul>
+            <li>Limited programmatic navigation control</li>
+            <li>Can be difficult to handle complex navigation scenarios</li>
+            <li>Potential issues with deep linking</li>
+            <li>Navigation state not easily separable from view structure</li>
+          </ul>
+
+          <h4>2. NavigationStack (iOS 16+)</h4>
+
+          <p>Introduced in iOS 16 as a replacement for NavigationView:</p>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    var body: some View {
+        NavigationStack {
+            List(items) { item in
+                NavigationLink(value: item) {
+                    Text(item.name)
+                }
+            }
+            .navigationDestination(for: Item.self) { item in
+                DetailView(item: item)
+            }
+            .navigationTitle("Items")
+        }
+    }
+}</pre>
+          </div>
+
+          <p><strong>Key features:</strong></p>
+          <ul>
+            <li>Value-based navigation routing</li>
+            <li>Type-safe navigation destinations</li>
+            <li>Better support for programmatic navigation</li>
+            <li>Deep linking capabilities</li>
+          </ul>
+
+          <h4>3. NavigationSplitView (iOS 16+)</h4>
+
+          <p>Used for multi-column navigation layouts, especially on iPad and macOS:</p>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    @State private var selectedCategory: Category?
+    @State private var selectedItem: Item?
+    
+    var body: some View {
+        NavigationSplitView {
+            // Sidebar (first column)
+            List(categories, selection: $selectedCategory) { category in
+                Text(category.name)
+            }
+            .navigationTitle("Categories")
+        } content: {
+            // Content (second column)
+            if let selectedCategory {
+                List(selectedCategory.items, selection: $selectedItem) { item in
+                    Text(item.name)
+                }
+                .navigationTitle(selectedCategory.name)
+            } else {
+                Text("Select a category")
+            }
+        } detail: {
+            // Detail (third column)
+            if let selectedItem {
+                DetailView(item: selectedItem)
+            } else {
+                Text("Select an item")
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <p><strong>Key features:</strong></p>
+          <ul>
+            <li>Multi-column adaptive layout</li>
+            <li>Automatically adapts between device sizes and orientations</li>
+            <li>Great for master-detail flows and sidebars</li>
+            <li>Ideal for iPad and macOS apps</li>
+          </ul>
+
+          <h4>4. Programmatic Navigation with NavigationPath (iOS 16+)</h4>
+
+          <p>For more complex navigation scenarios with programmatic control:</p>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    @State private var path = NavigationPath()
+    
+    var body: some View {
+        NavigationStack(path: $path) {
+            VStack {
+                Button("Go to Profile") {
+                    path.append("profile")
+                }
+                Button("Go to Settings") {
+                    path.append("settings")
+                }
+                Button("Go to Item #42") {
+                    path.append(42)
+                }
+            }
+            .navigationDestination(for: String.self) { route in
+                switch route {
+                case "profile": ProfileView()
+                case "settings": SettingsView()
+                default: Text("Unknown route")
+                }
+            }
+            .navigationDestination(for: Int.self) { itemId in
+                ItemDetailView(id: itemId)
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <p><strong>Key features:</strong></p>
+          <ul>
+            <li>Full programmatic control of navigation stack</li>
+            <li>Type-safe routing</li>
+            <li>Can push multiple destinations at once</li>
+            <li>Can clear the entire stack or pop to any point</li>
+            <li>Support for deep linking and state restoration</li>
+          </ul>
+
+          <h4>5. TabView for Tab-based Navigation</h4>
+
+          <p>For switching between different sections of your app:</p>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    @State private var selectedTab = 0
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            HomeView()
+                .tabItem {
+                    Label("Home", systemImage: "house")
+                }
+                .tag(0)
+            
+            ProfileView()
+                .tabItem {
+                    Label("Profile", systemImage: "person")
+                }
+                .tag(1)
+            
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
+                .tag(2)
+        }
+    }
+}</pre>
+          </div>
+
+          <h4>6. Custom Navigation with @State and Conditional Views</h4>
+
+          <p>For complete custom control over navigation:</p>
+
+          <div class="code-block">
+            <pre>enum AppScreen {
+    case home, detail(Item), settings
+}
+
+struct ContentView: View {
+    @State private var currentScreen: AppScreen = .home
+    
+    var body: some View {
+        VStack {
+            // Custom navigation header if needed
+            
+            // Main content area
+            switch currentScreen {
+            case .home:
+                HomeView(onItemSelected: { item in
+                    currentScreen = .detail(item)
+                }, onSettingsTapped: {
+                    currentScreen = .settings
+                })
+            case .detail(let item):
+                DetailView(item: item, onBack: {
+                    currentScreen = .home
+                })
+            case .settings:
+                SettingsView(onBack: {
+                    currentScreen = .home
+                })
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <p><strong>Key features:</strong></p>
+          <ul>
+            <li>Complete control over transitions and animations</li>
+            <li>Not limited by system navigation patterns</li>
+            <li>Can implement custom navigation patterns</li>
+            <li>Can manage navigation state centrally</li>
+          </ul>
+
+          <h4>Best Practices for SwiftUI Navigation</h4>
+
+          <ol>
+            <li><strong>Use the newest navigation APIs</strong> when possible (NavigationStack and NavigationPath for
+              iOS 16+)</li>
+            <li><strong>Separate navigation logic</strong> from view content for better maintainability</li>
+            <li><strong>Consider using a router pattern</strong> for complex navigation scenarios</li>
+            <li><strong>Use @StateObject or environmentObject</strong> to persist data across navigation changes</li>
+            <li><strong>Be mindful of memory usage</strong>, especially with deep navigation hierarchies</li>
+            <li><strong>Test on different device sizes</strong> to ensure navigation adapts properly</li>
+            <li><strong>Use NavigationSplitView</strong> for iPad and macOS to take advantage of larger screens</li>
+          </ol>
+
+          <h4>Conclusion</h4>
+
+          <p>SwiftUI offers multiple navigation paradigms to suit different app requirements. For modern apps targeting
+            iOS 16+, NavigationStack and NavigationPath offer the most flexibility and control. For apps supporting
+            earlier iOS versions, combining NavigationView with state management can provide similar capabilities.
+            Custom navigation is always an option for unique navigation requirements that don't fit standard patterns.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p>تطورت أنظمة التنقل في SwiftUI بشكل كبير عبر إصدارات iOS المختلفة، مع توفر طرق متعددة اعتماداً على متطلبات
+        تطبيقك والإصدار المستهدف من iOS. إليك نظرة شاملة على طرق التنقل المختلفة في SwiftUI:</p>
+
+      <h4>1. NavigationView و NavigationLink (iOS 13+)</h4>
+
+      <p>هذا هو نظام التنقل الأصلي الذي تم تقديمه مع SwiftUI:</p>
+
+      <p>في المثال المعروض، نرى كيفية استخدام NavigationView كحاوية رئيسية للتنقل، وNavigationLink لإنشاء روابط للانتقال
+        إلى شاشات تفصيلية.</p>
+
+      <p><span class="highlight">المميزات الرئيسية:</span></p>
+      <ul>
+        <li>نمط تنقل بالدفع والإخراج (push-pop)</li>
+        <li>سهل التنفيذ للتدفقات التنقلية البسيطة</li>
+        <li>يدعم تخصيص شريط التنقل</li>
+      </ul>
+
+      <p><span class="highlight">القيود:</span></p>
+      <ul>
+        <li>تحكم برمجي محدود في التنقل</li>
+        <li>يمكن أن يكون من الصعب التعامل مع سيناريوهات التنقل المعقدة</li>
+        <li>مشاكل محتملة مع الروابط العميقة</li>
+        <li>حالة التنقل ليست قابلة للفصل بسهولة عن هيكل العرض</li>
+      </ul>
+
+      <h4>2. NavigationStack (iOS 16+)</h4>
+
+      <p>تم تقديمه في iOS 16 كبديل لـ NavigationView:</p>
+
+      <p>في المثال المعروض، نرى كيف يمكننا استخدام NavigationStack مع النهج القائم على القيم للتنقل، حيث يتم تحديد
+        الوجهات بناءً على أنواع البيانات.</p>
+
+      <p><span class="highlight">المميزات الرئيسية:</span></p>
+      <ul>
+        <li>توجيه تنقل قائم على القيم</li>
+        <li>وجهات تنقل آمنة الأنواع</li>
+        <li>دعم أفضل للتنقل البرمجي</li>
+        <li>قدرات الروابط العميقة</li>
+      </ul>
+
+      <h4>3. NavigationSplitView (iOS 16+)</h4>
+
+      <p>يُستخدم لتخطيطات التنقل متعددة الأعمدة، خاصة على iPad وmacOS:</p>
+
+      <p>المثال يوضح كيفية إنشاء واجهة مقسمة إلى ثلاثة أعمدة: الشريط الجانبي، المحتوى، والتفاصيل، مما يسمح بالتنقل بين
+        فئات مختلفة والعناصر داخل كل فئة.</p>
+
+      <p><span class="highlight">المميزات الرئيسية:</span></p>
+      <ul>
+        <li>تخطيط متعدد الأعمدة قابل للتكيف</li>
+        <li>يتكيف تلقائيًا بين أحجام الأجهزة واتجاهاتها</li>
+        <li>رائع لتدفقات العرض الرئيسية والتفصيلية والأشرطة الجانبية</li>
+        <li>مثالي لتطبيقات iPad وmacOS</li>
+      </ul>
+
+      <h4>4. التنقل البرمجي باستخدام NavigationPath (iOS 16+)</h4>
+
+      <p>لسيناريوهات التنقل الأكثر تعقيدًا مع التحكم البرمجي:</p>
+
+      <p>المثال يوضح كيفية التحكم برمجياً في مسار التنقل، مع إمكانية إضافة وجهات من أنواع مختلفة وتحديد طريقة عرضها.</p>
+
+      <p><span class="highlight">المميزات الرئيسية:</span></p>
+      <ul>
+        <li>تحكم برمجي كامل في مكدس التنقل</li>
+        <li>توجيه آمن الأنواع</li>
+        <li>يمكن دفع وجهات متعددة في وقت واحد</li>
+        <li>يمكن مسح المكدس بالكامل أو العودة إلى أي نقطة</li>
+        <li>دعم للروابط العميقة واستعادة الحالة</li>
+      </ul>
+
+      <h4>5. TabView للتنقل القائم على علامات التبويب</h4>
+
+      <p>للتبديل بين أقسام مختلفة من تطبيقك:</p>
+
+      <p>المثال يوضح كيفية إنشاء واجهة بعلامات تبويب تسمح للمستخدم بالتنقل بين الشاشات الرئيسية والملف الشخصي
+        والإعدادات.</p>
+
+      <h4>6. التنقل المخصص باستخدام @State والعروض الشرطية</h4>
+
+      <p>للتحكم المخصص الكامل في التنقل:</p>
+
+      <p>المثال يوضح كيفية إنشاء نظام تنقل مخصص باستخدام enum لتتبع الشاشة الحالية وعرض المحتوى المناسب بناءً على
+        الحالة.</p>
+
+      <p><span class="highlight">المميزات الرئيسية:</span></p>
+      <ul>
+        <li>تحكم كامل في الانتقالات والرسوم المتحركة</li>
+        <li>غير مقيد بأنماط التنقل في النظام</li>
+        <li>يمكن تنفيذ أنماط تنقل مخصصة</li>
+        <li>يمكن إدارة حالة التنقل مركزياً</li>
+      </ul>
+
+      <h4>أفضل الممارسات للتنقل في SwiftUI</h4>
+
+      <ol>
+        <li><span class="highlight">استخدم واجهات برمجة التنقل الأحدث</span> عندما يكون ذلك ممكنًا (NavigationStack و
+          NavigationPath لـ iOS 16+)</li>
+        <li><span class="highlight">افصل منطق التنقل</span> عن محتوى العرض لسهولة الصيانة</li>
+        <li><span class="highlight">فكر في استخدام نمط الموجه</span> لسيناريوهات التنقل المعقدة</li>
+        <li><span class="highlight">استخدم @StateObject أو environmentObject</span> للحفاظ على البيانات عبر تغييرات
+          التنقل</li>
+        <li><span class="highlight">انتبه لاستخدام الذاكرة</span>، خاصة مع تسلسلات التنقل العميقة</li>
+        <li><span class="highlight">اختبر على أحجام أجهزة مختلفة</span> للتأكد من تكيف التنقل بشكل صحيح</li>
+        <li><span class="highlight">استخدم NavigationSplitView</span> للـ iPad وmacOS للاستفادة من الشاشات الأكبر</li>
+      </ol>
+
+      <h4>الخلاصة</h4>
+
+      <p>يوفر SwiftUI نماذج تنقل متعددة لتناسب متطلبات التطبيقات المختلفة. بالنسبة للتطبيقات الحديثة التي تستهدف iOS
+        16+، توفر NavigationStack و NavigationPath أكبر قدر من المرونة والتحكم. بالنسبة للتطبيقات التي تدعم إصدارات iOS
+        السابقة، يمكن أن يوفر الجمع بين NavigationView وإدارة الحالة قدرات مماثلة. التنقل المخصص هو دائماً خيار متاح
+        لمتطلبات التنقل الفريدة التي لا تتناسب مع الأنماط القياسية.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

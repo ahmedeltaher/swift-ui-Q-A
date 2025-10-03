@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is the purpose of EquatableView?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What is the purpose of EquatableView?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p><strong>EquatableView</strong> is a performance optimization wrapper in SwiftUI that helps reduce
+            unnecessary view updates by comparing the current and new values of a view's state before rendering. It
+            allows SwiftUI to determine if a view needs to be recomputed and redrawn based on changes to its underlying
+            data.</p>
+
+          <h4>Purpose and Benefits</h4>
+
+          <p>The primary purpose of EquatableView is to improve rendering performance by:</p>
+
+          <ol>
+            <li><strong>Preventing unnecessary view rebuilds</strong> - By default, when any state that a view depends
+              on changes, SwiftUI will recompute the entire view body. EquatableView provides a way to be more selective
+              about when recomputations occur.</li>
+            <li><strong>Reducing computational overhead</strong> - For complex views or views that depend on complex
+              data models, this optimization can significantly reduce the workload on the CPU and improve overall app
+              performance.</li>
+            <li><strong>Controlling the granularity of updates</strong> - Developers can define precisely what changes
+              should trigger a view update.</li>
+          </ol>
+
+          <h4>How It Works</h4>
+
+          <p>EquatableView works by implementing the <code>Equatable</code> protocol, which provides a mechanism for
+            comparing two values for equality. In SwiftUI, this means:</p>
+
+          <ul>
+            <li>When a state change occurs, SwiftUI compares the old and new values of the view's content using the
+              <code>==</code> operator defined by the Equatable protocol.</li>
+            <li>If the values are considered equal, the view is not recomputed, saving computational resources.</li>
+            <li>If the values are considered different, the view is updated normally.</li>
+          </ul>
+
+          <h4>Implementation</h4>
+
+          <p>There are two primary ways to implement this optimization in SwiftUI:</p>
+
+          <h5>1. Explicit EquatableView Wrapper (Older Approach)</h5>
+
+          <div class="code-block">
+            <pre>struct MyView: View {
+    var model: MyViewModel
+    
+    var body: some View {
+        EquatableView(content: { 
+            Text(model.text)
+            Image(model.imageName)
+            // more view code
+        })
+    }
+}
+
+// Then implement Equatable for your view model
+extension MyViewModel: Equatable {
+    static func == (lhs: MyViewModel, rhs: MyViewModel) -> Bool {
+        return lhs.text == rhs.text && lhs.imageName == rhs.imageName
+    }
+}</pre>
+          </div>
+
+          <h5>2. Conforming to Equatable (Modern Approach)</h5>
+
+          <p>The preferred and more modern approach is to simply make your view conform to Equatable:</p>
+
+          <div class="code-block">
+            <pre>struct MyView: View, Equatable {
+    var model: MyViewModel
+    
+    var body: some View {
+        VStack {
+            Text(model.text)
+            Image(model.imageName)
+            // more view code
+        }
+    }
+    
+    // Define what makes the view equal
+    static func == (lhs: MyView, rhs: MyView) -> Bool {
+        return lhs.model.text == rhs.model.text && lhs.model.imageName == rhs.model.imageName
+    }
+}</pre>
+          </div>
+
+          <p>Or, if your model already conforms to Equatable:</p>
+
+          <div class="code-block">
+            <pre>struct MyView: View, Equatable {
+    var model: MyViewModel // MyViewModel conforms to Equatable
+    
+    var body: some View {
+        VStack {
+            Text(model.text)
+            Image(model.imageName)
+        }
+    }
+    
+    // SwiftUI can synthesize this automatically if all properties are Equatable
+    static func == (lhs: MyView, rhs: MyView) -> Bool {
+        return lhs.model == rhs.model
+    }
+}</pre>
+          </div>
+
+          <h4>Best Practices and Considerations</h4>
+
+          <p>When using EquatableView or making views Equatable:</p>
+
+          <ol>
+            <li><strong>Be selective</strong> - Don't make every view Equatable. Focus on views that:
+              <ul>
+                <li>Are computationally expensive to render</li>
+                <li>Don't change often despite parent views changing</li>
+                <li>Have complex hierarchies</li>
+              </ul>
+            </li>
+            <li><strong>Consider performance tradeoffs</strong> - The equality comparison itself has some cost. For
+              simple views, the comparison might be more expensive than just redrawing the view.</li>
+            <li><strong>Define equality carefully</strong> - Only include properties in your equality check that
+              visually impact the view. Properties that don't affect appearance don't need to trigger redraws.</li>
+            <li><strong>Test performance impacts</strong> - Use Instruments to verify that your Equatable implementation
+              actually improves performance rather than adding overhead.</li>
+            <li><strong>Keep equality checks fast</strong> - Equality comparisons should be simple and quick to execute.
+            </li>
+          </ol>
+
+          <h4>Common Pitfalls</h4>
+
+          <ul>
+            <li><strong>Missing updates</strong> - If your equality check is too permissive (returns true when views are
+              actually different), you might miss necessary updates.</li>
+            <li><strong>Excessive updates</strong> - If your equality check is too strict (returns false when views are
+              visually the same), you'll lose the benefit of the optimization.</li>
+            <li><strong>Closure captures</strong> - Be careful with views that capture values from their environment, as
+              these can make equality checking more complex.</li>
+            <li><strong>Nested content</strong> - The optimization only applies to the view itself, not its children.
+              Consider making complex child views Equatable as well.</li>
+          </ul>
+
+          <h4>When to Use EquatableView</h4>
+
+          <p>Consider using EquatableView or making views Equatable when:</p>
+
+          <ol>
+            <li>Your app has performance issues related to view updates</li>
+            <li>You have complex views that don't need to update on every state change</li>
+            <li>You're using large collections or lists where items don't change frequently</li>
+            <li>You want fine-grained control over when specific views update</li>
+          </ol>
+
+          <h4>Conclusion</h4>
+
+          <p>EquatableView and the Equatable protocol provide important performance optimization tools in SwiftUI that
+            help developers control when and how views are updated. By strategically implementing equality checks for
+            complex or expensive views, you can significantly improve the performance and responsiveness of your SwiftUI
+            applications. In modern SwiftUI development, making views conform to Equatable is generally preferred over
+            explicitly using the EquatableView wrapper.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p><span class="highlight">EquatableView</span> هو عنصر تحسين أداء في SwiftUI يساعد على تقليل تحديثات العرض غير
+        الضرورية من خلال مقارنة القيم الحالية والجديدة لحالة العرض قبل التقديم. يسمح لـ SwiftUI بتحديد ما إذا كان العرض
+        يحتاج إلى إعادة حساب وإعادة رسم بناءً على التغييرات في البيانات الأساسية.</p>
+
+      <h4>الغرض والفوائد</h4>
+
+      <p>الغرض الأساسي من EquatableView هو تحسين أداء العرض من خلال:</p>
+
+      <ol>
+        <li><span class="highlight">منع إعادة بناء العروض غير الضرورية</span> - بشكل افتراضي، عندما تتغير أي حالة يعتمد
+          عليها العرض، سيقوم SwiftUI بإعادة حساب جسم العرض بالكامل. يوفر EquatableView طريقة لتكون أكثر انتقائية حول متى
+          تحدث إعادة الحسابات.</li>
+        <li><span class="highlight">تقليل العبء الحسابي</span> - بالنسبة للعروض المعقدة أو العروض التي تعتمد على نماذج
+          بيانات معقدة، يمكن لهذا التحسين أن يقلل بشكل كبير من عبء العمل على وحدة المعالجة المركزية ويحسن أداء التطبيق
+          بشكل عام.</li>
+        <li><span class="highlight">التحكم في دقة التحديثات</span> - يمكن للمطورين تحديد بدقة التغييرات التي يجب أن تؤدي
+          إلى تحديث العرض.</li>
+      </ol>
+
+      <h4>كيف يعمل</h4>
+
+      <p>يعمل EquatableView من خلال تنفيذ بروتوكول <span class="highlight">Equatable</span>، الذي يوفر آلية لمقارنة
+        قيمتين للمساواة. في SwiftUI، هذا يعني:</p>
+
+      <ul>
+        <li>عندما يحدث تغيير في الحالة، يقارن SwiftUI القيم القديمة والجديدة لمحتوى العرض باستخدام العامل <span
+            class="highlight">==</span> المحدد بواسطة بروتوكول Equatable.</li>
+        <li>إذا اعتبرت القيم متساوية، فلن يتم إعادة حساب العرض، مما يوفر موارد الحوسبة.</li>
+        <li>إذا اعتبرت القيم مختلفة، يتم تحديث العرض بشكل طبيعي.</li>
+      </ul>
+
+      <h4>التنفيذ</h4>
+
+      <p>هناك طريقتان أساسيتان لتنفيذ هذا التحسين في SwiftUI:</p>
+
+      <h5>1. استخدام غلاف EquatableView الصريح (النهج القديم)</h5>
+      <p>في هذه الطريقة نستخدم EquatableView بشكل صريح لتغليف محتوى العرض، ثم نقوم بتنفيذ Equatable للنموذج الخاص بنا.
+      </p>
+
+      <h5>2. الامتثال لبروتوكول Equatable (النهج الحديث)</h5>
+      <p>النهج المفضل والأكثر حداثة هو ببساطة جعل العرض الخاص بك يتوافق مع Equatable:</p>
+      <p>في المثال الأول، نحدد بأنفسنا متى يكون العرض متساويًا من خلال مقارنة خصائص محددة من النموذج.</p>
+      <p>وفي المثال الثاني، إذا كان النموذج نفسه يتوافق بالفعل مع Equatable، يمكن لـ SwiftUI توليف دالة المساواة
+        تلقائيًا إذا كانت جميع الخصائص تتوافق مع Equatable.</p>
+
+      <h4>أفضل الممارسات والاعتبارات</h4>
+
+      <p>عند استخدام EquatableView أو جعل العروض متوافقة مع Equatable:</p>
+
+      <ol>
+        <li><span class="highlight">كن انتقائيًا</span> - لا تجعل كل عرض Equatable. ركز على العروض التي:
+          <ul>
+            <li>تكون مكلفة حسابيًا للعرض</li>
+            <li>لا تتغير كثيرًا على الرغم من تغير العروض الأصل</li>
+            <li>لديها تسلسلات هرمية معقدة</li>
+          </ul>
+        </li>
+        <li><span class="highlight">ضع في اعتبارك مقايضات الأداء</span> - مقارنة المساواة نفسها لها تكلفة. بالنسبة
+          للعروض البسيطة، قد تكون المقارنة أكثر تكلفة من مجرد إعادة رسم العرض.</li>
+        <li><span class="highlight">حدد المساواة بعناية</span> - قم بتضمين الخصائص في فحص المساواة التي تؤثر بصريًا على
+          العرض فقط. الخصائص التي لا تؤثر على المظهر لا تحتاج إلى تحفيز إعادة الرسم.</li>
+        <li><span class="highlight">اختبر تأثيرات الأداء</span> - استخدم أدوات للتحقق من أن تنفيذ Equatable الخاص بك
+          يحسن الأداء بالفعل بدلاً من إضافة عبء إضافي.</li>
+        <li><span class="highlight">احتفظ بفحوصات المساواة سريعة</span> - يجب أن تكون مقارنات المساواة بسيطة وسريعة
+          التنفيذ.</li>
+      </ol>
+
+      <h4>المشاكل الشائعة</h4>
+
+      <ul>
+        <li><span class="highlight">تفويت التحديثات</span> - إذا كان فحص المساواة الخاص بك متساهلاً جدًا (يرجع true
+          عندما تكون العروض مختلفة بالفعل)، فقد تفوتك التحديثات الضرورية.</li>
+        <li><span class="highlight">تحديثات مفرطة</span> - إذا كان فحص المساواة الخاص بك صارمًا جدًا (يرجع false عندما
+          تكون العروض متطابقة بصريًا)، ستفقد فائدة التحسين.</li>
+        <li><span class="highlight">التقاط الدالات المغلقة</span> - كن حذرًا مع العروض التي تلتقط قيمًا من بيئتها، حيث
+          يمكن أن تجعل فحص المساواة أكثر تعقيدًا.</li>
+        <li><span class="highlight">المحتوى المتداخل</span> - ينطبق التحسين فقط على العرض نفسه، وليس على أطفاله. فكر في
+          جعل العروض الفرعية المعقدة متوافقة مع Equatable أيضًا.</li>
+      </ul>
+
+      <h4>متى تستخدم EquatableView</h4>
+
+      <p>فكر في استخدام EquatableView أو جعل العروض متوافقة مع Equatable عندما:</p>
+
+      <ol>
+        <li>يواجه تطبيقك مشاكل في الأداء تتعلق بتحديثات العرض</li>
+        <li>لديك عروض معقدة لا تحتاج إلى التحديث مع كل تغيير في الحالة</li>
+        <li>تستخدم مجموعات أو قوائم كبيرة حيث لا تتغير العناصر بشكل متكرر</li>
+        <li>تريد تحكمًا دقيقًا في وقت تحديث عروض محددة</li>
+      </ol>
+
+      <h4>الخلاصة</h4>
+
+      <p>يوفر EquatableView وبروتوكول Equatable أدوات مهمة لتحسين الأداء في SwiftUI تساعد المطورين على التحكم في وقت
+        وكيفية تحديث العروض. من خلال التنفيذ الاستراتيجي لفحوصات المساواة للعروض المعقدة أو المكلفة، يمكنك تحسين أداء
+        واستجابة تطبيقات SwiftUI بشكل كبير. في تطوير SwiftUI الحديث، يُفضل عمومًا جعل العروض تتوافق مع Equatable بدلاً
+        من استخدام غلاف EquatableView بشكل صريح.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

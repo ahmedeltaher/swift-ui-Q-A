@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is the difference between modifier order in SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    .comparison-image {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .comparison-container {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .comparison-item {
+      width: 48%;
+      margin-bottom: 20px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-item {
+        width: 100%;
+      }
+    }
+
+    .comparison-item h5 {
+      margin-top: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What is the difference between modifier order in SwiftUI?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p>In SwiftUI, the order of modifiers matters significantly and can produce completely different visual
+            results. This is because modifiers in SwiftUI don't actually modify a view in place. Instead, each modifier
+            creates a new view that wraps the original view, creating a chain of nested views.</p>
+
+          <h4>The Fundamental Principle</h4>
+
+          <p>The key to understanding modifier order in SwiftUI is to recognize that each modifier returns a new view.
+            When you write:</p>
+
+          <div class="code-block">
+            <pre>Text("Hello, World!")
+    .padding()
+    .background(Color.red)
+    .cornerRadius(10)</pre>
+          </div>
+
+          <p>What's actually happening is:</p>
+
+          <div class="code-block">
+            <pre>CornerRadiusModifier(
+    BackgroundModifier(
+        PaddingModifier(
+            Text("Hello, World!")
+        ),
+        color: Color.red
+    ),
+    radius: 10
+)</pre>
+          </div>
+
+          <p>This chain of nested views explains why order matters so much.</p>
+
+          <h4>Classic Example: Background and Corner Radius</h4>
+
+          <p>Let's examine the classic example that clearly demonstrates the importance of modifier order:</p>
+
+          <h5>Example 1: Background First, Then Corner Radius</h5>
+
+          <div class="code-block">
+            <pre>Text("Hello, World!")
+    .background(Color.blue)
+    .cornerRadius(20)</pre>
+          </div>
+
+          <p>Result: A text with a blue background that has rounded corners. The corner radius is applied to the entire
+            view, including the background.</p>
+
+          <h5>Example 2: Corner Radius First, Then Background</h5>
+
+          <div class="code-block">
+            <pre>Text("Hello, World!")
+    .cornerRadius(20)
+    .background(Color.blue)</pre>
+          </div>
+
+          <p>Result: A text with rounded corners, but with a rectangular blue background. The corner radius is only
+            applied to the text itself, and the background is applied afterward as a separate layer.</p>
+
+          <h4>Why This Happens</h4>
+
+          <p>To understand why this happens, let's break down the view creation sequence:</p>
+
+          <p>In Example 1:</p>
+          <ol>
+            <li>Text view is created</li>
+            <li>A background modifier wraps the text view, creating a new view with a blue background</li>
+            <li>A corner radius modifier wraps the view with the background, rounding the corners of the entire view
+            </li>
+          </ol>
+
+          <p>In Example 2:</p>
+          <ol>
+            <li>Text view is created</li>
+            <li>A corner radius modifier wraps the text view, creating a new view with rounded corners</li>
+            <li>A background modifier wraps the rounded text view, applying a background that follows the original
+              rectangular bounds</li>
+          </ol>
+
+          <h4>Other Common Order-Dependent Modifiers</h4>
+
+          <h5>1. Padding and Background</h5>
+
+          <div class="comparison-container">
+            <div class="comparison-item">
+              <h5>Padding First:</h5>
+              <div class="code-block">
+                <pre>Text("Hello")
+    .padding()
+    .background(Color.blue)</pre>
+              </div>
+              <p>Result: Background extends to include the padding.</p>
+            </div>
+
+            <div class="comparison-item">
+              <h5>Background First:</h5>
+              <div class="code-block">
+                <pre>Text("Hello")
+    .background(Color.blue)
+    .padding()</pre>
+              </div>
+              <p>Result: Background only behind the text, with padding around the blue background.</p>
+            </div>
+          </div>
+
+          <h5>2. Frame and Background</h5>
+
+          <div class="comparison-container">
+            <div class="comparison-item">
+              <h5>Frame First:</h5>
+              <div class="code-block">
+                <pre>Text("Hello")
+    .frame(width: 200, height: 100)
+    .background(Color.green)</pre>
+              </div>
+              <p>Result: The text is centered in a 200x100 frame with a green background filling that frame.</p>
+            </div>
+
+            <div class="comparison-item">
+              <h5>Background First:</h5>
+              <div class="code-block">
+                <pre>Text("Hello")
+    .background(Color.green)
+    .frame(width: 200, height: 100)</pre>
+              </div>
+              <p>Result: The text has a tight green background, and this combination is centered in a 200x100 frame.</p>
+            </div>
+          </div>
+
+          <h5>3. Foreground Color and Opacity</h5>
+
+          <div class="comparison-container">
+            <div class="comparison-item">
+              <h5>Color First:</h5>
+              <div class="code-block">
+                <pre>Text("Hello")
+    .foregroundColor(.blue)
+    .opacity(0.5)</pre>
+              </div>
+              <p>Result: Blue text with 50% opacity.</p>
+            </div>
+
+            <div class="comparison-item">
+              <h5>Opacity First:</h5>
+              <div class="code-block">
+                <pre>Text("Hello")
+    .opacity(0.5)
+    .foregroundColor(.blue)</pre>
+              </div>
+              <p>Result: Can lead to unexpected behavior; the opacity applies to the default text color first, and then
+                the color changes.</p>
+            </div>
+          </div>
+
+          <h5>4. Shadow and Background</h5>
+
+          <div class="comparison-container">
+            <div class="comparison-item">
+              <h5>Shadow First:</h5>
+              <div class="code-block">
+                <pre>Text("Hello")
+    .shadow(radius: 5)
+    .background(Color.yellow)</pre>
+              </div>
+              <p>Result: Shadow applies to the text only, background is not shadowed.</p>
+            </div>
+
+            <div class="comparison-item">
+              <h5>Background First:</h5>
+              <div class="code-block">
+                <pre>Text("Hello")
+    .background(Color.yellow)
+    .shadow(radius: 5)</pre>
+              </div>
+              <p>Result: Both the text and background have a shadow.</p>
+            </div>
+          </div>
+
+          <h5>5. Overlay and Clipped</h5>
+
+          <div class="comparison-container">
+            <div class="comparison-item">
+              <h5>Clipped First:</h5>
+              <div class="code-block">
+                <pre>Circle()
+    .clipped()
+    .overlay(Text("Hello"))</pre>
+              </div>
+              <p>Result: The circle is clipped, and the text overlays it without being clipped.</p>
+            </div>
+
+            <div class="comparison-item">
+              <h5>Overlay First:</h5>
+              <div class="code-block">
+                <pre>Circle()
+    .overlay(Text("Hello"))
+    .clipped()</pre>
+              </div>
+              <p>Result: Both the circle and overlaid text are clipped.</p>
+            </div>
+          </div>
+
+          <h4>Best Practices for Modifier Ordering</h4>
+
+          <ol>
+            <li><strong>Content modifiers first</strong> - Modifiers that affect the content itself (like font,
+              foregroundColor)</li>
+            <li><strong>Sizing modifiers next</strong> - frame, fixedSize, layoutPriority</li>
+            <li><strong>Spacing modifiers next</strong> - padding, spacing</li>
+            <li><strong>Background/foreground decorations</strong> - background, overlay, border</li>
+            <li><strong>Effects and transformations last</strong> - shadow, offset, rotation, opacity</li>
+          </ol>
+
+          <div class="code-block">
+            <pre>Text("Hello, World!")
+    // Content modifiers
+    .font(.title)
+    .foregroundColor(.blue)
+    
+    // Size modifiers
+    .frame(width: 200)
+    
+    // Spacing modifiers
+    .padding()
+    
+    // Background/foreground decorations
+    .background(Color.yellow)
+    .overlay(Circle().stroke(Color.red, lineWidth: 2))
+    
+    // Effects and transformations
+    .shadow(radius: 5)
+    .opacity(0.9)
+    .rotation3DEffect(.degrees(10), axis: (x: 0, y: 1, z: 0))</pre>
+          </div>
+
+          <h4>Troubleshooting Tips</h4>
+
+          <ol>
+            <li><strong>Unexpected results?</strong> Check your modifier order.</li>
+            <li><strong>Debugging complex views:</strong> Break down into smaller components.</li>
+            <li><strong>Visual problems:</strong> Try rearranging modifiers systematically.</li>
+            <li><strong>Remember the mental model:</strong> Each modifier creates a new view.</li>
+          </ol>
+
+          <h4>Advanced Considerations</h4>
+
+          <p>Some modifiers have special behavior:</p>
+
+          <ul>
+            <li><strong>preference() and transformPreference()</strong> - Order matters for propagating preferences up
+              the view hierarchy</li>
+            <li><strong>onAppear() and onDisappear()</strong> - Order can affect when these callbacks are triggered</li>
+            <li><strong>environmentObject() and environment()</strong> - These need to be applied before any views that
+              need access to them</li>
+          </ul>
+
+          <h4>Conclusion</h4>
+
+          <p>Understanding modifier order is crucial for creating precisely the UI you want in SwiftUI. Since each
+            modifier creates a wrapper view around the previous one, the order determines which modifiers apply to which
+            layers of your view hierarchy. This "views all the way down" approach is what makes SwiftUI declarative and
+            compositional, but it also requires careful consideration of modifier sequencing.</p>
+
+          <p>When you encounter unexpected visual results in SwiftUI, the first thing to check is often the order of
+            your modifiers. With practice, choosing the right modifier order will become intuitive, allowing you to
+            create exactly the interfaces you envision.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p>في SwiftUI، يؤثر ترتيب المعدلات (modifiers) بشكل كبير ويمكن أن ينتج عنه نتائج بصرية مختلفة تمامًا. هذا لأن
+        المعدلات في SwiftUI لا تقوم في الواقع بتعديل العرض في مكانه. بدلاً من ذلك، كل معدل ينشئ عرضًا جديدًا يغلف العرض
+        الأصلي، مما ينشئ سلسلة من العروض المتداخلة.</p>
+
+      <h4>المبدأ الأساسي</h4>
+
+      <p>المفتاح لفهم ترتيب المعدلات في SwiftUI هو إدراك أن كل معدل يعيد عرضًا جديدًا. عندما تكتب:</p>
+
+      <p>في الواقع، ما يحدث هو إنشاء هيكل متداخل من العروض، حيث يكون كل معدل عبارة عن غلاف للعرض السابق. هذه السلسلة من
+        العروض المتداخلة توضح سبب أهمية الترتيب.</p>
+
+      <h4>المثال الكلاسيكي: الخلفية ونصف القطر الدائري</h4>
+
+      <p>دعونا نفحص المثال الكلاسيكي الذي يوضح بوضوح أهمية ترتيب المعدلات:</p>
+
+      <h5>المثال 1: الخلفية أولاً، ثم نصف القطر الدائري</h5>
+
+      <p>النتيجة: نص بخلفية زرقاء ذات زوايا مستديرة. يتم تطبيق نصف القطر الدائري على العرض بأكمله، بما في ذلك الخلفية.
+      </p>
+
+      <h5>المثال 2: نصف القطر الدائري أولاً، ثم الخلفية</h5>
+
+      <p>النتيجة: نص بزوايا مستديرة، ولكن بخلفية زرقاء مستطيلة. يتم تطبيق نصف القطر الدائري على النص نفسه فقط، ويتم
+        تطبيق الخلفية بعد ذلك كطبقة منفصلة.</p>
+
+      <h4>لماذا يحدث هذا</h4>
+
+      <p>لفهم سبب حدوث ذلك، دعونا نحلل تسلسل إنشاء العرض:</p>
+
+      <p>في المثال 1:</p>
+      <ol>
+        <li>يتم إنشاء عرض النص</li>
+        <li>يغلف معدل الخلفية عرض النص، مما ينشئ عرضًا جديدًا بخلفية زرقاء</li>
+        <li>يغلف معدل نصف القطر الدائري العرض ذو الخلفية، مما يؤدي إلى تدوير زوايا العرض بأكمله</li>
+      </ol>
+
+      <p>في المثال 2:</p>
+      <ol>
+        <li>يتم إنشاء عرض النص</li>
+        <li>يغلف معدل نصف القطر الدائري عرض النص، مما ينشئ عرضًا جديدًا بزوايا مستديرة</li>
+        <li>يغلف معدل الخلفية عرض النص المستدير، مما يطبق خلفية تتبع الحدود المستطيلة الأصلية</li>
+      </ol>
+
+      <h4>معدلات أخرى شائعة تعتمد على الترتيب</h4>
+
+      <h5>1. الهامش (Padding) والخلفية (Background)</h5>
+
+      <p><span class="highlight">الهامش أولاً:</span> تمتد الخلفية لتشمل الهامش.</p>
+      <p><span class="highlight">الخلفية أولاً:</span> الخلفية فقط خلف النص، مع هامش حول الخلفية الزرقاء.</p>
+
+      <h5>2. الإطار (Frame) والخلفية (Background)</h5>
+
+      <p><span class="highlight">الإطار أولاً:</span> يتم توسيط النص في إطار 200×100 مع خلفية خضراء تملأ هذا الإطار.</p>
+      <p><span class="highlight">الخلفية أولاً:</span> يكون للنص خلفية خضراء ضيقة، ويتم توسيط هذا التركيب في إطار
+        200×100.</p>
+
+      <h5>3. لون المقدمة (Foreground Color) والشفافية (Opacity)</h5>
+
+      <p><span class="highlight">اللون أولاً:</span> نص أزرق بشفافية 50%.</p>
+      <p><span class="highlight">الشفافية أولاً:</span> يمكن أن يؤدي إلى سلوك غير متوقع؛ تنطبق الشفافية على لون النص
+        الافتراضي أولاً، ثم يتغير اللون.</p>
+
+      <h5>4. الظل (Shadow) والخلفية (Background)</h5>
+
+      <p><span class="highlight">الظل أولاً:</span> ينطبق الظل على النص فقط، والخلفية ليست مظللة.</p>
+      <p><span class="highlight">الخلفية أولاً:</span> كل من النص والخلفية لهما ظل.</p>
+
+      <h5>5. التراكب (Overlay) والقص (Clipped)</h5>
+
+      <p><span class="highlight">القص أولاً:</span> يتم قص الدائرة، ويتراكب النص فوقها دون أن يتم قصه.</p>
+      <p><span class="highlight">التراكب أولاً:</span> يتم قص كل من الدائرة والنص المتراكب.</p>
+
+      <h4>أفضل الممارسات لترتيب المعدلات</h4>
+
+      <ol>
+        <li><span class="highlight">معدلات المحتوى أولاً</span> - المعدلات التي تؤثر على المحتوى نفسه (مثل الخط، لون
+          المقدمة)</li>
+        <li><span class="highlight">معدلات التحجيم بعد ذلك</span> - frame, fixedSize, layoutPriority</li>
+        <li><span class="highlight">معدلات المسافات بعد ذلك</span> - padding, spacing</li>
+        <li><span class="highlight">زخارف الخلفية/المقدمة</span> - background, overlay, border</li>
+        <li><span class="highlight">التأثيرات والتحويلات أخيرًا</span> - shadow, offset, rotation, opacity</li>
+      </ol>
+
+      <p>في المثال المعروض، نرى كيفية تطبيق هذه القواعد بترتيب منطقي، بدءًا من معدلات المحتوى، ثم الحجم، ثم المسافات، ثم
+        الديكورات، وأخيرًا التأثيرات.</p>
+
+      <h4>نصائح استكشاف الأخطاء وإصلاحها</h4>
+
+      <ol>
+        <li><span class="highlight">نتائج غير متوقعة؟</span> تحقق من ترتيب المعدلات.</li>
+        <li><span class="highlight">تصحيح أخطاء العروض المعقدة:</span> قسّمها إلى مكونات أصغر.</li>
+        <li><span class="highlight">مشاكل بصرية:</span> حاول إعادة ترتيب المعدلات بشكل منهجي.</li>
+        <li><span class="highlight">تذكر النموذج العقلي:</span> كل معدل ينشئ عرضًا جديدًا.</li>
+      </ol>
+
+      <h4>اعتبارات متقدمة</h4>
+
+      <p>بعض المعدلات لها سلوك خاص:</p>
+
+      <ul>
+        <li><span class="highlight">preference() و transformPreference()</span> - الترتيب مهم لنشر التفضيلات في تسلسل
+          العرض</li>
+        <li><span class="highlight">onAppear() و onDisappear()</span> - يمكن أن يؤثر الترتيب على وقت تشغيل هذه المكالمات
+          الخلفية</li>
+        <li><span class="highlight">environmentObject() و environment()</span> - يجب تطبيق هذه قبل أي عروض تحتاج إلى
+          الوصول إليها</li>
+      </ul>
+
+      <h4>الخلاصة</h4>
+
+      <p>فهم ترتيب المعدلات أمر بالغ الأهمية لإنشاء واجهة المستخدم التي تريدها بالضبط في SwiftUI. بما أن كل معدل ينشئ
+        عرضًا مغلفًا حول العرض السابق، فإن الترتيب يحدد المعدلات التي تنطبق على طبقات التسلسل الهرمي للعرض. هذا النهج
+        "العروض بالكامل" هو ما يجعل SwiftUI تصريحيًا وتركيبيًا، ولكنه يتطلب أيضًا اهتمامًا دقيقًا بتسلسل المعدلات.</p>
+
+      <p>عندما تواجه نتائج بصرية غير متوقعة في SwiftUI، فإن أول شيء يجب التحقق منه غالبًا هو ترتيب المعدلات. مع
+        الممارسة، سيصبح اختيار ترتيب المعدلات المناسب بديهيًا، مما يتيح لك إنشاء الواجهات التي تتصورها بالضبط.</p>
+
+      <p>باختصار، يمكن تلخيص المفهوم الأساسي لترتيب المعدلات بأن كل معدل ينشئ عرضًا جديدًا يغلف السابق. لذا، فإن الترتيب
+        الذي تضع به المعدلات يحدد التسلسل الهرمي للعروض والتأثيرات المتراكمة عليها. هذا يشبه طبقات من الطلاء على قماشة،
+        حيث يؤثر ترتيب إضافتها على النتيجة النهائية.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

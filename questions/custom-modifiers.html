@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Modifiers in SwiftUI</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 20px 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .comparison-table th {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: #e0e0e0;
+      font-weight: bold;
+    }
+
+    .comparison-table tr:nth-child(odd) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .comparison-table tr:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What are custom modifiers in SwiftUI and when would you create one?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>Custom Modifiers in SwiftUI</h4>
+
+          <p>Custom modifiers in SwiftUI are a powerful way to encapsulate, reuse, and compose view modifications
+            throughout your application. They allow you to create named, reusable transformations that you can apply to
+            any view in a consistent manner.</p>
+
+          <h5>What are Custom Modifiers?</h5>
+
+          <p>At their core, custom modifiers are simply structs that conform to the <code>ViewModifier</code> protocol.
+            This protocol requires implementing a single method, <code>body(content:)</code>, which takes the content
+            being modified and returns a new view that incorporates the modifications.</p>
+
+          <div class="code-block">
+            <pre>protocol ViewModifier {
+    func body(content: Self.Content) -> some View
+    associatedtype Content
+}</pre>
+          </div>
+
+          <p>Custom modifiers provide a higher level of abstraction than applying individual modifiers directly,
+            allowing you to encapsulate complex combinations of modifiers into a single, reusable component.</p>
+
+          <h5>Basic Example of a Custom Modifier</h5>
+
+          <div class="code-block">
+            <pre>struct PrimaryButtonStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            .shadow(radius: 3)
+    }
+}</pre>
+          </div>
+
+          <p>To use this modifier, you can extend the View protocol to create a more intuitive syntax:</p>
+
+          <div class="code-block">
+            <pre>extension View {
+    func primaryButtonStyle() -> some View {
+        self.modifier(PrimaryButtonStyle())
+    }
+}</pre>
+          </div>
+
+          <p>This allows you to apply the style to any view:</p>
+
+          <div class="code-block">
+            <pre>Button("Sign In") {
+    // action
+}
+.primaryButtonStyle()</pre>
+          </div>
+
+          <h5>When to Create Custom Modifiers</h5>
+
+          <p>You should consider creating custom modifiers in the following scenarios:</p>
+
+          <ol>
+            <li><strong>Reusable Styling</strong>: When you have a specific style that you want to apply consistently
+              across multiple views.</li>
+            <li><strong>Complex Modifications</strong>: When you need to combine multiple modifiers together to achieve
+              a specific effect.</li>
+            <li><strong>Conditional Styling</strong>: When styling depends on certain conditions or state.</li>
+            <li><strong>Code Organization</strong>: To make your view code more readable and maintainable.</li>
+            <li><strong>Team Collaboration</strong>: To establish a design system that team members can easily follow.
+            </li>
+            <li><strong>Branding Consistency</strong>: To ensure UI elements adhere to brand guidelines.</li>
+          </ol>
+
+          <h5>Advanced Uses of Custom Modifiers</h5>
+
+          <h6>1. Modifiers with Parameters</h6>
+
+          <p>Custom modifiers can accept parameters to make them more flexible:</p>
+
+          <div class="code-block">
+            <pre>struct CardStyle: ViewModifier {
+    var color: Color
+    var cornerRadius: CGFloat
+    
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background(color)
+            .cornerRadius(cornerRadius)
+            .shadow(radius: 5)
+    }
+}
+
+extension View {
+    func cardStyle(color: Color = .white, cornerRadius: CGFloat = 10) -> some View {
+        self.modifier(CardStyle(color: color, cornerRadius: cornerRadius))
+    }
+}</pre>
+          </div>
+
+          <p>Using this parameterized modifier:</p>
+
+          <div class="code-block">
+            <pre>Text("Hello, World!")
+    .cardStyle(color: .blue, cornerRadius: 15)</pre>
+          </div>
+
+          <h6>2. Conditional Modifiers</h6>
+
+          <p>You can create modifiers that apply different styles based on conditions:</p>
+
+          <div class="code-block">
+            <pre>struct ConditionalBackground: ViewModifier {
+    var condition: Bool
+    
+    func body(content: Content) -> some View {
+        if condition {
+            content
+                .background(Color.green)
+                .foregroundColor(.white)
+        } else {
+            content
+                .background(Color.red)
+                .foregroundColor(.white)
+        }
+    }
+}
+
+extension View {
+    func conditionalBackground(_ condition: Bool) -> some View {
+        self.modifier(ConditionalBackground(condition: condition))
+    }
+}</pre>
+          </div>
+
+          <p>Usage:</p>
+
+          <div class="code-block">
+            <pre>Text("Status")
+    .conditionalBackground(isSuccess)</pre>
+          </div>
+
+          <h6>3. Combining with Environment Values</h6>
+
+          <p>Modifiers can access environment values to adapt to the app's environment:</p>
+
+          <div class="code-block">
+            <pre>struct AdaptiveColorModifier: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(colorScheme == .dark ? .white : .black)
+            .background(colorScheme == .dark ? Color.black : Color.white)
+    }
+}
+
+extension View {
+    func adaptiveColor() -> some View {
+        self.modifier(AdaptiveColorModifier())
+    }
+}</pre>
+          </div>
+
+          <h6>4. Adding State to Modifiers</h6>
+
+          <p>Modifiers can also include their own state:</p>
+
+          <div class="code-block">
+            <pre>struct PulsatingModifier: ViewModifier {
+    @State private var isPulsating = false
+    
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPulsating ? 1.2 : 1.0)
+            .animation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: isPulsating)
+            .onAppear {
+                isPulsating = true
+            }
+    }
+}
+
+extension View {
+    func pulsate() -> some View {
+        self.modifier(PulsatingModifier())
+    }
+}</pre>
+          </div>
+
+          <h5>Custom Modifiers vs. View Extensions</h5>
+
+          <p>You might wonder when to use a custom modifier versus simply extending the View protocol with a method that
+            returns a modified view. Here's a comparison:</p>
+
+          <table class="comparison-table">
+            <tr>
+              <th>Custom Modifiers</th>
+              <th>View Extensions</th>
+            </tr>
+            <tr>
+              <td>More formal and structured</td>
+              <td>More lightweight and convenient for simple cases</td>
+            </tr>
+            <tr>
+              <td>Better for complex transformations</td>
+              <td>Better for simple one-line transformations</td>
+            </tr>
+            <tr>
+              <td>Can be composed with other modifiers</td>
+              <td>Less compositional</td>
+            </tr>
+            <tr>
+              <td>Can store state</td>
+              <td>Cannot store state directly</td>
+            </tr>
+            <tr>
+              <td>Can access environment values</td>
+              <td>Can access environment values, but less encapsulated</td>
+            </tr>
+          </table>
+
+          <p>Example of a View extension approach (alternative to custom modifier):</p>
+
+          <div class="code-block">
+            <pre>extension View {
+    func simpleCardStyle() -> some View {
+        self
+            .padding()
+            .background(Color.white)
+            .cornerRadius(10)
+            .shadow(radius: 5)
+    }
+}</pre>
+          </div>
+
+          <h5>Best Practices for Custom Modifiers</h5>
+
+          <ol>
+            <li><strong>Descriptive Naming</strong>: Give your modifiers clear, descriptive names that indicate their
+              purpose.</li>
+            <li><strong>Keep them Focused</strong>: Each modifier should have a single responsibility.</li>
+            <li><strong>Parameterize for Flexibility</strong>: Use parameters to make your modifiers adaptable to
+              different situations.</li>
+            <li><strong>Document Usage</strong>: Add comments explaining how the modifier should be used.</li>
+            <li><strong>Organize Logically</strong>: Group related modifiers in the same file or extension.</li>
+            <li><strong>Avoid Side Effects</strong>: Custom modifiers should not have side effects beyond modifying the
+              view.</li>
+            <li><strong>Consider Performance</strong>: Be mindful of performance implications, especially with complex
+              modifiers.</li>
+          </ol>
+
+          <h5>Real-World Example: Creating a Design System with Custom Modifiers</h5>
+
+          <p>Here's how you might use custom modifiers to implement a consistent design system:</p>
+
+          <div class="code-block">
+            <pre>// Typography
+struct TitleStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: 28, weight: .bold))
+            .foregroundColor(.primary)
+            .lineSpacing(1.2)
+    }
+}
+
+struct SubtitleStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: 22, weight: .medium))
+            .foregroundColor(.secondary)
+            .lineSpacing(1.1)
+    }
+}
+
+struct BodyStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: 16))
+            .foregroundColor(.primary)
+            .lineSpacing(1.4)
+    }
+}
+
+// Components
+struct PrimaryButtonStyle: ViewModifier {
+    var isDisabled: Bool = false
+    
+    func body(content: Content) -> some View {
+        content
+            .font(.headline)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 24)
+            .background(isDisabled ? Color.gray : Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            .opacity(isDisabled ? 0.6 : 1.0)
+            .disabled(isDisabled)
+    }
+}
+
+struct SecondaryButtonStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.headline)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 24)
+            .background(Color.clear)
+            .foregroundColor(.blue)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.blue, lineWidth: 1)
+            )
+    }
+}
+
+struct CardContainerStyle: ViewModifier {
+    var color: Color = .white
+    
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background(color)
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+    }
+}
+
+// Extend View to make these modifiers easy to use
+extension View {
+    func titleStyle() -> some View {
+        self.modifier(TitleStyle())
+    }
+    
+    func subtitleStyle() -> some View {
+        self.modifier(SubtitleStyle())
+    }
+    
+    func bodyStyle() -> some View {
+        self.modifier(BodyStyle())
+    }
+    
+    func primaryButtonStyle(isDisabled: Bool = false) -> some View {
+        self.modifier(PrimaryButtonStyle(isDisabled: isDisabled))
+    }
+    
+    func secondaryButtonStyle() -> some View {
+        self.modifier(SecondaryButtonStyle())
+    }
+    
+    func cardContainerStyle(color: Color = .white) -> some View {
+        self.modifier(CardContainerStyle(color: color))
+    }
+}</pre>
+          </div>
+
+          <p>Using these modifiers in your views:</p>
+
+          <div class="code-block">
+            <pre>struct ProductView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Premium Headphones")
+                .titleStyle()
+            
+            Text("High-quality sound with noise cancellation")
+                .subtitleStyle()
+            
+            Text("Experience crystal clear audio with our premium headphones. Features include active noise cancellation, 24-hour battery life, and premium comfort.")
+                .bodyStyle()
+            
+            HStack(spacing: 16) {
+                Button("Buy Now") {
+                    // Action
+                }
+                .primaryButtonStyle()
+                
+                Button("Add to Cart") {
+                    // Action
+                }
+                .secondaryButtonStyle()
+            }
+        }
+        .padding()
+        .cardContainerStyle()
+    }
+}</pre>
+          </div>
+
+          <h5>Conclusion</h5>
+
+          <p>Custom modifiers in SwiftUI are a powerful tool for creating clean, reusable, and consistent UI code. They
+            embody the principles of encapsulation and reusability, allowing you to define complex view transformations
+            once and apply them consistently across your app.</p>
+
+          <p>By using custom modifiers effectively, you can:</p>
+          <ul>
+            <li>Create a design system that ensures visual consistency</li>
+            <li>Reduce code duplication</li>
+            <li>Improve readability and maintainability</li>
+            <li>Make your UI more adaptable to changes</li>
+            <li>Express complex UI transformations in a declarative way</li>
+          </ul>
+
+          <p>As your SwiftUI app grows, custom modifiers become increasingly valuable, helping to keep your codebase
+            organized and your UI consistent.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <h4>المعدلات المخصصة في SwiftUI</h4>
+
+      <p>المعدلات المخصصة (Custom Modifiers) في SwiftUI هي طريقة قوية لتغليف وإعادة استخدام وتركيب تعديلات العرض عبر
+        تطبيقك. تسمح لك بإنشاء تحولات قابلة لإعادة الاستخدام ومسماة يمكنك تطبيقها على أي عرض بطريقة متسقة.</p>
+
+      <h5>ما هي المعدلات المخصصة؟</h5>
+
+      <p>في جوهرها، المعدلات المخصصة هي ببساطة هياكل (structs) تتوافق مع بروتوكول <code>ViewModifier</code>. يتطلب هذا
+        البروتوكول تنفيذ طريقة واحدة، <code>body(content:)</code>، التي تأخذ المحتوى الذي يتم تعديله وتعيد عرضًا جديدًا
+        يتضمن التعديلات.</p>
+
+      <p>توفر المعدلات المخصصة مستوى أعلى من التجريد من تطبيق المعدلات الفردية بشكل مباشر، مما يتيح لك تغليف مجموعات
+        معقدة من المعدلات في مكون واحد قابل لإعادة الاستخدام.</p>
+
+      <h5>متى تقوم بإنشاء معدلات مخصصة</h5>
+
+      <p>يجب عليك التفكير في إنشاء معدلات مخصصة في السيناريوهات التالية:</p>
+
+      <ol>
+        <li><span class="highlight">أنماط قابلة لإعادة الاستخدام</span>: عندما يكون لديك نمط معين ترغب في تطبيقه بشكل
+          متسق عبر عدة عروض.</li>
+        <li><span class="highlight">تعديلات معقدة</span>: عندما تحتاج إلى دمج معدلات متعددة معًا لتحقيق تأثير معين.</li>
+        <li><span class="highlight">أنماط شرطية</span>: عندما يعتمد التنسيق على شروط أو حالة معينة.</li>
+        <li><span class="highlight">تنظيم الكود</span>: لجعل كود العرض الخاص بك أكثر قابلية للقراءة والصيانة.</li>
+        <li><span class="highlight">تعاون الفريق</span>: لإنشاء نظام تصميم يمكن لأعضاء الفريق اتباعه بسهولة.</li>
+        <li><span class="highlight">اتساق العلامة التجارية</span>: للتأكد من أن عناصر واجهة المستخدم تلتزم بإرشادات
+          العلامة التجارية.</li>
+      </ol>
+
+      <h5>استخدامات متقدمة للمعدلات المخصصة</h5>
+
+      <h6>1. معدلات مع معلمات</h6>
+
+      <p>يمكن للمعدلات المخصصة قبول معلمات لجعلها أكثر مرونة. على سبيل المثال، يمكنك إنشاء معدل <code>CardStyle</code>
+        يقبل لونًا ونصف قطر زاوية مخصصين.</p>
+
+      <h6>2. معدلات شرطية</h6>
+
+      <p>يمكنك إنشاء معدلات تطبق أنماطًا مختلفة بناءً على شروط. على سبيل المثال، <code>ConditionalBackground</code> الذي
+        يغير لون الخلفية بناءً على شرط.</p>
+
+      <h6>3. الدمج مع قيم البيئة</h6>
+
+      <p>يمكن للمعدلات الوصول إلى قيم البيئة للتكيف مع بيئة التطبيق. على سبيل المثال، <code>AdaptiveColorModifier</code>
+        الذي يضبط الألوان بناءً على وضع الألوان (فاتح/داكن).</p>
+
+      <h6>4. إضافة الحالة إلى المعدلات</h6>
+
+      <p>يمكن أن تتضمن المعدلات أيضًا حالتها الخاصة. على سبيل المثال، <code>PulsatingModifier</code> الذي يستخدم حالة
+        داخلية لإنشاء تأثير نبض.</p>
+
+      <h5>المعدلات المخصصة مقابل امتدادات العرض</h5>
+
+      <p>قد تتساءل متى تستخدم معدلاً مخصصًا مقابل مجرد توسيع بروتوكول View بطريقة تعيد عرضًا معدلاً. إليك مقارنة:</p>
+
+      <ul>
+        <li><span class="highlight">المعدلات المخصصة:</span> أكثر رسمية وهيكلية، أفضل للتحولات المعقدة، يمكن تركيبها مع
+          معدلات أخرى، يمكن أن تخزن الحالة، يمكنها الوصول إلى قيم البيئة.</li>
+        <li><span class="highlight">امتدادات العرض:</span> أكثر خفة ومناسبة للحالات البسيطة، أفضل للتحويلات البسيطة من
+          سطر واحد، أقل قابلية للتركيب، لا يمكنها تخزين الحالة مباشرة، يمكنها الوصول إلى قيم البيئة ولكن بطريقة أقل
+          تغليفًا.</li>
+      </ul>
+
+      <h5>أفضل الممارسات للمعدلات المخصصة</h5>
+
+      <ol>
+        <li><span class="highlight">التسمية الوصفية</span>: امنح المعدلات أسماءً واضحة ووصفية تشير إلى الغرض منها.</li>
+        <li><span class="highlight">الحفاظ على التركيز</span>: يجب أن يكون لكل معدل مسؤولية واحدة.</li>
+        <li><span class="highlight">استخدام المعلمات للمرونة</span>: استخدم المعلمات لجعل المعدلات قابلة للتكيف مع مواقف
+          مختلفة.</li>
+        <li><span class="highlight">توثيق الاستخدام</span>: أضف تعليقات تشرح كيفية استخدام المعدل.</li>
+        <li><span class="highlight">التنظيم المنطقي</span>: جمّع المعدلات المرتبطة في نفس الملف أو الامتداد.</li>
+        <li><span class="highlight">تجنب الآثار الجانبية</span>: يجب ألا يكون للمعدلات المخصصة آثار جانبية بخلاف تعديل
+          العرض.</li>
+        <li><span class="highlight">النظر في الأداء</span>: كن على دراية بتأثيرات الأداء، خاصة مع المعدلات المعقدة.</li>
+      </ol>
+
+      <h5>مثال من العالم الحقيقي: إنشاء نظام تصميم باستخدام المعدلات المخصصة</h5>
+
+      <p>يمكنك إنشاء نظام تصميم كامل باستخدام المعدلات المخصصة. على سبيل المثال، يمكنك إنشاء معدلات للعناصر التيبوغرافية
+        (العناوين، العناوين الفرعية، النص الأساسي) ومعدلات لمكونات واجهة المستخدم (الأزرار، البطاقات) لضمان اتساق مظهر
+        تطبيقك.</p>
+
+      <h5>الخلاصة</h5>
+
+      <p>المعدلات المخصصة في SwiftUI هي أداة قوية لإنشاء كود واجهة مستخدم نظيف وقابل لإعادة الاستخدام ومتسق. إنها تجسد
+        مبادئ التغليف وإعادة الاستخدام، مما يتيح لك تعريف تحولات العرض المعقدة مرة واحدة وتطبيقها بشكل متسق عبر تطبيقك.
+      </p>
+
+      <p>من خلال استخدام المعدلات المخصصة بشكل فعال، يمكنك:</p>
+      <ul>
+        <li>إنشاء نظام تصميم يضمن الاتساق المرئي</li>
+        <li>تقليل تكرار الكود</li>
+        <li>تحسين القابلية للقراءة والصيانة</li>
+        <li>جعل واجهة المستخدم الخاصة بك أكثر قابلية للتكيف مع التغييرات</li>
+        <li>التعبير عن تحولات واجهة المستخدم المعقدة بطريقة تصريحية</li>
+      </ul>
+
+      <p>مع نمو تطبيق SwiftUI الخاص بك، تصبح المعدلات المخصصة أكثر قيمة، مما يساعد على الحفاظ على تنظيم قاعدة التعليمات
+        البرمجية واتساق واجهة المستخدم.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How does data flow work in SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .flow-diagram {
+      width: 100%;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .flow-diagram img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">How does data flow work in SwiftUI?</h1>
+
+    <div class="card basic-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p>Data flow in SwiftUI follows a unidirectional pattern where data flows from parent views down to child
+            views, and user interactions flow back up through bindings or actions. This creates a predictable flow of
+            data throughout the app.</p>
+
+          <h4>SwiftUI's Data Flow Architecture:</h4>
+
+          <p>SwiftUI uses several property wrappers to manage data flow efficiently:</p>
+
+          <h5>1. Source of Truth</h5>
+          <ul>
+            <li><strong>@State</strong> - For simple value types managed by a single view</li>
+            <li><strong>@StateObject</strong> - For reference types owned by the view</li>
+            <li><strong>@AppStorage</strong> - For persistent data stored in UserDefaults</li>
+            <li><strong>@SceneStorage</strong> - For UI state that persists during scene suspension</li>
+            <li><strong>@FetchRequest</strong> - For Core Data entities</li>
+          </ul>
+
+          <h5>2. Data Derived from Source of Truth</h5>
+          <ul>
+            <li><strong>@Binding</strong> - Two-way connection to a state property defined elsewhere</li>
+            <li><strong>@ObservedObject</strong> - Reference to observable objects passed from parent views</li>
+            <li><strong>@EnvironmentObject</strong> - Observable objects passed implicitly through the environment</li>
+          </ul>
+
+          <div class="code-block">
+            <pre>// Parent view with source of truth
+struct ParentView: View {
+    // Source of truth
+    @State private var username = ""
+    
+    var body: some View {
+        VStack {
+            Text("Current name: \(username)")
+            // Pass binding down to child view
+            ChildView(username: $username)
+        }
+    }
+}
+
+// Child view receives binding
+struct ChildView: View {
+    // Derived data - changes will propagate back to source
+    @Binding var username: String
+    
+    var body: some View {
+        TextField("Enter username", text: $username)
+            .padding()
+    }
+}</pre>
+          </div>
+
+          <h4>Data Flow Principles in SwiftUI:</h4>
+
+          <ol>
+            <li><strong>Unidirectional Data Flow</strong> - Data passes down the view hierarchy, while changes flow back
+              up</li>
+            <li><strong>Single Source of Truth</strong> - Each piece of data should have one authoritative source</li>
+            <li><strong>Declarative UI Updates</strong> - When state changes, SwiftUI automatically updates the relevant
+              UI</li>
+            <li><strong>Dependency Injection</strong> - Data is explicitly passed to views that need it</li>
+            <li><strong>Environmental Values</strong> - Some data can be implicitly available throughout the view
+              hierarchy</li>
+          </ol>
+
+          <h4>Common Data Flow Patterns:</h4>
+
+          <ol>
+            <li><strong>Parent-Child Communication</strong>:
+              <ul>
+                <li>Parent → Child: Pass data as parameters</li>
+                <li>Child → Parent: Use @Binding or callbacks</li>
+              </ul>
+            </li>
+
+            <li><strong>Sibling Communication</strong>:
+              <ul>
+                <li>Through shared parent state</li>
+                <li>Via environment objects</li>
+              </ul>
+            </li>
+
+            <li><strong>Distant View Communication</strong>:
+              <ul>
+                <li>@EnvironmentObject for sharing across the view tree</li>
+                <li>Publishers and Combine for reactive updates</li>
+                <li>NotificationCenter for global events</li>
+              </ul>
+            </li>
+          </ol>
+
+          <p>This architecture ensures predictable data flow and UI updates, making SwiftUI apps easier to reason about
+            and debug compared to traditional imperative frameworks.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p>يتبع تدفق البيانات في SwiftUI نمطاً أحادي الاتجاه حيث تتدفق البيانات من العناصر الأم إلى العناصر الفرعية،
+        وتتدفق تفاعلات المستخدم مرة أخرى من خلال الروابط (bindings) أو الإجراءات. هذا يخلق تدفقاً متوقعاً للبيانات في
+        جميع أنحاء التطبيق.</p>
+
+      <h4>بنية تدفق البيانات في SwiftUI:</h4>
+
+      <p>يستخدم SwiftUI العديد من property wrappers لإدارة تدفق البيانات بكفاءة:</p>
+
+      <h5>1. مصدر الحقيقة (Source of Truth)</h5>
+      <ul>
+        <li><span class="highlight">@State</span> - للأنواع البسيطة التي تديرها شاشة واحدة</li>
+        <li><span class="highlight">@StateObject</span> - للأنواع المرجعية التي تملكها الشاشة</li>
+        <li><span class="highlight">@AppStorage</span> - للبيانات المستمرة المخزنة في UserDefaults</li>
+        <li><span class="highlight">@SceneStorage</span> - لحالة واجهة المستخدم التي تستمر خلال تعليق المشهد</li>
+        <li><span class="highlight">@FetchRequest</span> - لكيانات Core Data</li>
+      </ul>
+
+      <h5>2. بيانات مشتقة من مصدر الحقيقة</h5>
+      <ul>
+        <li><span class="highlight">@Binding</span> - اتصال ثنائي الاتجاه إلى خاصية حالة معرفة في مكان آخر</li>
+        <li><span class="highlight">@ObservedObject</span> - إشارة إلى كائنات قابلة للمراقبة تم تمريرها من شاشات أم</li>
+        <li><span class="highlight">@EnvironmentObject</span> - كائنات قابلة للمراقبة تم تمريرها ضمنياً من خلال البيئة
+        </li>
+      </ul>
+
+      <p>في المثال المعروض، نرى كيف أن الشاشة الأم (ParentView) تمتلك مصدر الحقيقة (@State private var username)، وتمرر
+        رابط ثنائي الاتجاه إلى الشاشة الفرعية (ChildView) من خلال @Binding. عندما يقوم المستخدم بتعديل النص في الشاشة
+        الفرعية، يتم تحديث البيانات تلقائياً في الشاشة الأم.</p>
+
+      <h4>مبادئ تدفق البيانات في SwiftUI:</h4>
+
+      <ol>
+        <li><span class="highlight">تدفق بيانات أحادي الاتجاه</span> - تمر البيانات لأسفل تسلسل العرض، بينما تتدفق
+          التغييرات للأعلى</li>
+        <li><span class="highlight">مصدر واحد للحقيقة</span> - يجب أن يكون لكل قطعة بيانات مصدر موثوق واحد</li>
+        <li><span class="highlight">تحديثات واجهة المستخدم التصريحية</span> - عندما تتغير الحالة، يقوم SwiftUI تلقائياً
+          بتحديث واجهة المستخدم ذات الصلة</li>
+        <li><span class="highlight">حقن التبعية</span> - يتم تمرير البيانات بشكل صريح إلى العروض التي تحتاجها</li>
+        <li><span class="highlight">القيم البيئية</span> - يمكن أن تكون بعض البيانات متاحة ضمنياً في جميع أنحاء تسلسل
+          العرض</li>
+      </ol>
+
+      <h4>أنماط تدفق البيانات الشائعة:</h4>
+
+      <ol>
+        <li><span class="highlight">اتصال الأب بالابن</span>:
+          <ul>
+            <li>من الأب إلى الابن: تمرير البيانات كمعلمات</li>
+            <li>من الابن إلى الأب: استخدام @Binding أو callbacks</li>
+          </ul>
+        </li>
+
+        <li><span class="highlight">اتصال الأشقاء</span>:
+          <ul>
+            <li>من خلال حالة الأب المشتركة</li>
+            <li>عبر كائنات البيئة (environment objects)</li>
+          </ul>
+        </li>
+
+        <li><span class="highlight">اتصال العروض البعيدة</span>:
+          <ul>
+            <li>@EnvironmentObject للمشاركة عبر شجرة العرض</li>
+            <li>Publishers و Combine للتحديثات التفاعلية</li>
+            <li>NotificationCenter للأحداث العالمية</li>
+          </ul>
+        </li>
+      </ol>
+
+      <p>تضمن هذه البنية تدفق بيانات وتحديثات واجهة مستخدم يمكن التنبؤ بها، مما يجعل تطبيقات SwiftUI أسهل للفهم وتصحيح
+        الأخطاء مقارنة بأطر العمل التقليدية.</p>
+
+      <p>الفكرة الأساسية هي أن البيانات تتدفق في اتجاه واحد، مما يخلق تجربة تطوير أكثر قابلية للتنبؤ وأقل عرضة للأخطاء.
+        عندما تتغير الحالة (State)، يقوم SwiftUI بإعادة تقييم هيكل الشاشة وتحديث الواجهة وفقاً لذلك، مما يقلل بشكل كبير
+        من التعقيد المرتبط بإدارة حالة واجهة المستخدم.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

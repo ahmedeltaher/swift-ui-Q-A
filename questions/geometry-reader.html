@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is the role of GeometryReader?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    figure {
+      margin: 25px 0;
+      text-align: center;
+    }
+
+    figure img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    figcaption {
+      font-style: italic;
+      color: #a0a0a0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What is the role of GeometryReader?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p><strong>GeometryReader</strong> is a container view in SwiftUI that provides access to its own size and
+            coordinate space, allowing you to create layouts that adapt dynamically to the available space. It serves as
+            a powerful tool for building responsive and flexible UI components that can adjust based on their containing
+            view's dimensions.</p>
+
+          <h4>Core Functionality</h4>
+
+          <p>At its most basic level, GeometryReader:</p>
+
+          <ol>
+            <li><strong>Reads the available space</strong> - It determines how much space is offered to it by its parent
+              view</li>
+            <li><strong>Provides that information to its child views</strong> - Through a geometry proxy that contains
+              size and coordinate space details</li>
+            <li><strong>Allows child views to adapt</strong> - Children can use this information to position and size
+              themselves dynamically</li>
+          </ol>
+
+          <p>GeometryReader takes the space offered by its parent and then passes a GeometryProxy to its content
+            closure. This proxy contains essential information about the space, including its size and methods for
+            converting coordinates between different reference frames.</p>
+
+          <h4>Basic Usage</h4>
+
+          <div class="code-block">
+            <pre>GeometryReader { geometry in
+    // 'geometry' is a GeometryProxy providing size and coordinate information
+    Text("Width: \(geometry.size.width), Height: \(geometry.size.height)")
+        .frame(width: geometry.size.width / 2, height: geometry.size.height / 3)
+}</pre>
+          </div>
+
+          <p>In this example, GeometryReader provides the available width and height to the Text view, which then uses
+            that information to size itself as half the width and one-third the height of the available space.</p>
+
+          <h4>Key Properties and Methods</h4>
+
+          <p>The GeometryProxy provided by GeometryReader offers several important properties and methods:</p>
+
+          <ul>
+            <li><strong>size</strong> - A CGSize containing the width and height of the available space</li>
+            <li><strong>safeAreaInsets</strong> - The safe area insets of the container</li>
+            <li><strong>frame(in:)</strong> - A method that returns a frame rectangle for a given coordinate space</li>
+          </ul>
+
+          <div class="code-block">
+            <pre>GeometryReader { geometry in
+    VStack {
+        // Use the size property
+        Text("Size: \(geometry.size.width) x \(geometry.size.height)")
+        
+        // Use frame(in:) to get coordinates in different spaces
+        let globalFrame = geometry.frame(in: .global)
+        Text("Global origin: \(globalFrame.origin.x), \(globalFrame.origin.y)")
+        
+        // Use safeAreaInsets
+        Text("Safe area top: \(geometry.safeAreaInsets.top)")
+    }
+}</pre>
+          </div>
+
+          <h4>Common Use Cases</h4>
+
+          <h5>1. Responsive Layouts</h5>
+
+          <p>One of the most common uses of GeometryReader is creating responsive layouts that adapt to different screen
+            sizes:</p>
+
+          <div class="code-block">
+            <pre>GeometryReader { geometry in
+    if geometry.size.width > 700 {
+        // Wide layout (iPad, landscape)
+        HStack {
+            Image("profile")
+                .frame(width: geometry.size.width * 0.3)
+            VStack(alignment: .leading) {
+                Text("User Profile").font(.title)
+                Text("Details go here...")
+            }
+        }
+    } else {
+        // Narrow layout (iPhone, portrait)
+        VStack {
+            Image("profile")
+                .frame(width: geometry.size.width * 0.6)
+            Text("User Profile").font(.title)
+            Text("Details go here...")
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>2. Custom Positioning</h5>
+
+          <p>GeometryReader allows you to position elements precisely within their container:</p>
+
+          <div class="code-block">
+            <pre>GeometryReader { geometry in
+    // Position in the center of the view
+    Circle()
+        .fill(Color.blue)
+        .frame(width: 100, height: 100)
+        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+        
+    // Position in the bottom right corner
+    Text("Bottom Right")
+        .padding()
+        .background(Color.red)
+        .position(x: geometry.size.width - 50, y: geometry.size.height - 25)
+}</pre>
+          </div>
+
+          <h5>3. Custom Scroll Effects</h5>
+
+          <p>GeometryReader is commonly used to create custom scroll effects:</p>
+
+          <div class="code-block">
+            <pre>ScrollView(.horizontal, showsIndicators: false) {
+    HStack(spacing: 20) {
+        ForEach(0..<10) { index in
+            GeometryReader { geometry in
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.blue)
+                    .rotation3DEffect(
+                        .degrees(-Double(geometry.frame(in: .global).midX - UIScreen.main.bounds.width / 2) / 10),
+                        axis: (x: 0, y: 1, z: 0)
+                    )
+            }
+            .frame(width: 300, height: 200)
+        }
+    }
+    .padding(40)
+}</pre>
+          </div>
+
+          <h5>4. Dynamic Text Sizing</h5>
+
+          <p>Adjust text size based on available space:</p>
+
+          <div class="code-block">
+            <pre>GeometryReader { geometry in
+    Text("Responsive Text")
+        .font(.system(size: min(geometry.size.width, geometry.size.height) / 10))
+        .frame(width: geometry.size.width, height: geometry.size.height)
+}</pre>
+          </div>
+
+          <h5>5. Coordinate Space Conversion</h5>
+
+          <p>Convert coordinates between different reference frames:</p>
+
+          <div class="code-block">
+            <pre>GeometryReader { outerGeometry in
+    VStack {
+        GeometryReader { innerGeometry in
+            let outerFrame = innerGeometry.frame(in: .global)
+            let innerFrame = innerGeometry.frame(in: .local)
+            
+            Text("Global: \(outerFrame.origin.x), \(outerFrame.origin.y)")
+            Text("Local: \(innerFrame.origin.x), \(innerFrame.origin.y)")
+        }
+        .frame(width: 200, height: 100)
+        .border(Color.red)
+    }
+}</pre>
+          </div>
+
+          <h4>Important Considerations</h4>
+
+          <ol>
+            <li><strong>Takes all available space</strong> - By default, GeometryReader takes up all the space its
+              parent offers</li>
+            <li><strong>Performance impact</strong> - Can be computationally expensive, especially when nested deeply
+            </li>
+            <li><strong>Greediness for space</strong> - Can disrupt layouts if not used carefully</li>
+            <li><strong>Effect on parent layouts</strong> - Sometimes affects how its parent lays out other siblings
+            </li>
+          </ol>
+
+          <h4>Best Practices</h4>
+
+          <ol>
+            <li><strong>Limit usage</strong> - Use GeometryReader only when necessary, not for every layout</li>
+            <li><strong>Constrain size</strong> - When you don't need it to take all available space, constrain its size
+              with .frame()</li>
+            <li><strong>Avoid nesting</strong> - Deeply nested GeometryReaders can affect performance</li>
+            <li><strong>Prefer built-in layouts</strong> - When possible, use VStack, HStack, or other layout containers
+            </li>
+            <li><strong>Use with background or overlay</strong> - For measuring without affecting layout, use as a
+              background or overlay</li>
+          </ol>
+
+          <div class="code-block">
+            <pre>// Using GeometryReader as a background to avoid layout disruption
+Text("Hello, World!")
+    .background(
+        GeometryReader { geometry in
+            // Use geometry here but it won't affect layout
+            Color.clear
+                .preference(key: SizePreferenceKey.self, value: geometry.size)
+        }
+    )</pre>
+          </div>
+
+          <h4>Advanced Techniques</h4>
+
+          <h5>1. Combining with PreferenceKey</h5>
+
+          <p>GeometryReader is often used with preference keys to pass size information up the view hierarchy:</p>
+
+          <div class="code-block">
+            <pre>struct SizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+    
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+struct MeasurableView: View {
+    var body: some View {
+        Text("Measure me")
+            .background(
+                GeometryReader { geometry in
+                    Color.clear
+                        .preference(key: SizePreferenceKey.self, 
+                                    value: geometry.size)
+                }
+            )
+    }
+}
+
+struct ParentView: View {
+    @State private var childSize: CGSize = .zero
+    
+    var body: some View {
+        VStack {
+            MeasurableView()
+            Text("Child size: \(Int(childSize.width)) x \(Int(childSize.height))")
+        }
+        .onPreferenceChange(SizePreferenceKey.self) { size in
+            self.childSize = size
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>2. Creating Custom Layout Effects</h5>
+
+          <div class="code-block">
+            <pre>struct ParallaxEffect: ViewModifier {
+    let magnitude: CGFloat
+    
+    func body(content: Content) -> some View {
+        content
+            .background(
+                GeometryReader { geometry in
+                    Color.clear
+                        .preference(
+                            key: OffsetPreferenceKey.self,
+                            value: geometry.frame(in: .global).minY
+                        )
+                }
+            )
+            .modifier(ParallaxModifier(offset: offset, magnitude: magnitude))
+    }
+    
+    @State private var offset: CGFloat = 0
+    
+    private struct OffsetPreferenceKey: PreferenceKey {
+        static var defaultValue: CGFloat = 0
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+            value = nextValue()
+        }
+    }
+    
+    private struct ParallaxModifier: ViewModifier {
+        let offset: CGFloat
+        let magnitude: CGFloat
+        
+        func body(content: Content) -> some View {
+            content
+                .offset(y: -offset * magnitude)
+                .onPreferenceChange(OffsetPreferenceKey.self) { value in
+                    offset = value
+                }
+        }
+    }
+}</pre>
+          </div>
+
+          <h4>Conclusion</h4>
+
+          <p>GeometryReader is a powerful tool in SwiftUI for creating responsive, adaptive layouts that respond to
+            their container's dimensions. While it should be used judiciously due to its performance impact and layout
+            behavior, it's indispensable for complex UI requirements that need precise sizing and positioning
+            information.</p>
+
+          <p>By mastering GeometryReader, you can create interfaces that adapt beautifully to different device sizes and
+            orientations, implement custom scroll effects and animations, and build sophisticated custom layouts that
+            would otherwise be impossible with SwiftUI's standard layout containers.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p><span class="highlight">GeometryReader</span> هو عنصر حاوية في SwiftUI يوفر إمكانية الوصول إلى حجمه ومساحة
+        تنسيقه الخاصة، مما يتيح لك إنشاء تخطيطات تتكيف ديناميكيًا مع المساحة المتاحة. يعمل كأداة قوية لبناء مكونات واجهة
+        مستخدم متجاوبة ومرنة يمكنها التعديل بناءً على أبعاد العنصر الحاوي لها.</p>
+
+      <h4>الوظائف الأساسية</h4>
+
+      <p>على أبسط مستوى، يقوم GeometryReader بما يلي:</p>
+
+      <ol>
+        <li><span class="highlight">قراءة المساحة المتاحة</span> - يحدد مقدار المساحة التي يقدمها له العنصر الأصل</li>
+        <li><span class="highlight">توفير هذه المعلومات للعناصر الفرعية</span> - من خلال وكيل هندسي (geometry proxy)
+          يحتوي على تفاصيل الحجم ومساحة التنسيق</li>
+        <li><span class="highlight">السماح للعناصر الفرعية بالتكيف</span> - يمكن للعناصر الفرعية استخدام هذه المعلومات
+          لتحديد موضعها وحجمها بشكل ديناميكي</li>
+      </ol>
+
+      <p>يأخذ GeometryReader المساحة المقدمة من العنصر الأصل ثم يمرر GeometryProxy إلى دالة المحتوى الخاصة به. يحتوي هذا
+        الوكيل على معلومات أساسية حول المساحة، بما في ذلك حجمها وطرق لتحويل الإحداثيات بين أطر مرجعية مختلفة.</p>
+
+      <h4>الاستخدام الأساسي</h4>
+
+      <p>في المثال المعروض، يوفر GeometryReader العرض والارتفاع المتاحين لعنصر Text، الذي يستخدم بعد ذلك هذه المعلومات
+        لتحديد حجمه بنصف العرض وثلث الارتفاع المتاح.</p>
+
+      <h4>الخصائص والطرق الرئيسية</h4>
+
+      <p>يقدم GeometryProxy الذي يوفره GeometryReader عدة خصائص وطرق مهمة:</p>
+
+      <ul>
+        <li><span class="highlight">size</span> - كائن CGSize يحتوي على عرض وارتفاع المساحة المتاحة</li>
+        <li><span class="highlight">safeAreaInsets</span> - هوامش المنطقة الآمنة للحاوية</li>
+        <li><span class="highlight">frame(in:)</span> - طريقة ترجع مستطيل الإطار لمساحة تنسيق معينة</li>
+      </ul>
+
+      <p>في المثال الثاني، نرى كيفية استخدام هذه الخصائص والطرق للحصول على معلومات مفصلة عن الحجم والإحداثيات والمناطق
+        الآمنة.</p>
+
+      <h4>حالات الاستخدام الشائعة</h4>
+
+      <h5>1. التخطيطات المتجاوبة</h5>
+
+      <p>أحد الاستخدامات الأكثر شيوعًا لـ GeometryReader هو إنشاء تخطيطات متجاوبة تتكيف مع أحجام الشاشات المختلفة:</p>
+
+      <p>في المثال المعروض، نقوم بتغيير تخطيط الواجهة بناءً على عرض الشاشة، مع تخطيط أفقي للشاشات العريضة (iPad، الوضع
+        الأفقي) وتخطيط رأسي للشاشات الضيقة (iPhone، الوضع العمودي).</p>
+
+      <h5>2. التموضع المخصص</h5>
+
+      <p>يتيح لك GeometryReader تحديد موضع العناصر بدقة داخل الحاوية الخاصة بهم:</p>
+
+      <p>في المثال، نقوم بتموضع دائرة في منتصف العرض ونص في الزاوية السفلية اليمنى، باستخدام حجم الحاوية لحساب
+        الإحداثيات بدقة.</p>
+
+      <h5>3. تأثيرات التمرير المخصصة</h5>
+
+      <p>يُستخدم GeometryReader بشكل شائع لإنشاء تأثيرات تمرير مخصصة:</p>
+
+      <p>في هذا المثال، نقوم بإنشاء تأثير دوران ثلاثي الأبعاد للعناصر أثناء التمرير الأفقي، باستخدام موضع العنصر بالنسبة
+        لمنتصف الشاشة لحساب زاوية الدوران.</p>
+
+      <h5>4. تحجيم النصوص الديناميكي</h5>
+
+      <p>ضبط حجم النص بناءً على المساحة المتاحة:</p>
+
+      <p>نستخدم هنا الحجم المتاح لتحديد حجم الخط بشكل ديناميكي، مما يضمن أن النص سيكون مناسبًا دائمًا للحاوية الخاصة به.
+      </p>
+
+      <h5>5. تحويل مساحة الإحداثيات</h5>
+
+      <p>تحويل الإحداثيات بين أطر مرجعية مختلفة:</p>
+
+      <p>في هذا المثال، نعرض كيفية الحصول على إحداثيات نفس العنصر في مساحات تنسيق مختلفة (عالمية ومحلية).</p>
+
+      <h4>اعتبارات مهمة</h4>
+
+      <ol>
+        <li><span class="highlight">يأخذ كل المساحة المتاحة</span> - بشكل افتراضي، يأخذ GeometryReader كل المساحة التي
+          يقدمها له العنصر الأصل</li>
+        <li><span class="highlight">تأثير على الأداء</span> - يمكن أن يكون مكلفًا من الناحية الحسابية، خاصة عندما يتم
+          تداخله بعمق</li>
+        <li><span class="highlight">الجشع للمساحة</span> - يمكن أن يعطل التخطيطات إذا لم يتم استخدامه بعناية</li>
+        <li><span class="highlight">تأثير على تخطيطات الأصل</span> - يؤثر أحيانًا على كيفية تنظيم العنصر الأصل للأشقاء
+          الآخرين</li>
+      </ol>
+
+      <h4>أفضل الممارسات</h4>
+
+      <ol>
+        <li><span class="highlight">الحد من الاستخدام</span> - استخدم GeometryReader فقط عند الضرورة، وليس لكل تخطيط
+        </li>
+        <li><span class="highlight">تقييد الحجم</span> - عندما لا تحتاج إلى أخذ كل المساحة المتاحة، قم بتقييد حجمه
+          باستخدام .frame()</li>
+        <li><span class="highlight">تجنب التداخل</span> - يمكن أن يؤثر تداخل GeometryReader بشكل عميق على الأداء</li>
+        <li><span class="highlight">تفضيل التخطيطات المدمجة</span> - عندما يكون ذلك ممكنًا، استخدم VStack أو HStack أو
+          حاويات تخطيط أخرى</li>
+        <li><span class="highlight">الاستخدام مع خلفية أو تراكب</span> - للقياس دون التأثير على التخطيط، استخدمه كخلفية
+          أو تراكب</li>
+      </ol>
+
+      <p>في المثال المعروض، نستخدم GeometryReader كخلفية لتجنب تعطيل التخطيط، حيث نقيس الحجم ولكن لا نؤثر على كيفية عرض
+        العناصر الأخرى.</p>
+
+      <h4>تقنيات متقدمة</h4>
+
+      <h5>1. الدمج مع PreferenceKey</h5>
+
+      <p>غالبًا ما يستخدم GeometryReader مع مفاتيح التفضيل لتمرير معلومات الحجم إلى أعلى تسلسل العرض:</p>
+
+      <p>في هذا المثال، نقوم بإنشاء مفتاح تفضيل لتتبع الحجم، ثم نستخدم GeometryReader لقياس العرض وإرسال هذه المعلومات
+        إلى العنصر الأصل.</p>
+
+      <h5>2. إنشاء تأثيرات تخطيط مخصصة</h5>
+
+      <p>يمكن استخدام GeometryReader لإنشاء تأثيرات متقدمة مثل تأثير التوازي (parallax effect)، حيث تتحرك العناصر بسرعات
+        مختلفة أثناء التمرير لإعطاء إحساس بالعمق.</p>
+
+      <h4>الخلاصة</h4>
+
+      <p>GeometryReader هو أداة قوية في SwiftUI لإنشاء تخطيطات متجاوبة ومتكيفة تستجيب لأبعاد الحاوية الخاصة بها. في حين
+        يجب استخدامه بحكمة بسبب تأثيره على الأداء وسلوك التخطيط، إلا أنه لا غنى عنه لمتطلبات واجهة المستخدم المعقدة التي
+        تحتاج إلى معلومات دقيقة عن الحجم والموضع.</p>
+
+      <p>من خلال إتقان GeometryReader، يمكنك إنشاء واجهات تتكيف بشكل جميل مع أحجام الأجهزة واتجاهاتها المختلفة، وتنفيذ
+        تأثيرات تمرير ورسوم متحركة مخصصة، وبناء تخطيطات مخصصة متطورة ستكون مستحيلة بخلاف ذلك مع حاويات التخطيط القياسية
+        لـ SwiftUI.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

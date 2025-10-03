@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How do you handle environment objects and environment values in SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">How do you handle environment objects and environment values in SwiftUI?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p>Environment objects and environment values are powerful mechanisms in SwiftUI for dependency injection and
+            sharing data throughout your view hierarchy. They allow you to pass data to descendant views without
+            explicit prop drilling, making your code cleaner and more maintainable.</p>
+
+          <h4>Environment Objects (@EnvironmentObject)</h4>
+
+          <p>Environment objects are observable objects that can be accessed by any view in the environment hierarchy.
+            They're especially useful for sharing model objects that need to be accessed by many views in your app.</p>
+
+          <h5>Key Characteristics:</h5>
+          <ul>
+            <li>Must be an ObservableObject (conforms to the ObservableObject protocol)</li>
+            <li>Views automatically update when @Published properties change</li>
+            <li>Acts as a reference type (shared instance)</li>
+            <li>Ideal for complex data models and shared services</li>
+          </ul>
+
+          <h5>How to use Environment Objects:</h5>
+
+          <p>1. Create an ObservableObject:</p>
+
+          <div class="code-block">
+            <pre>class UserSettings: ObservableObject {
+    @Published var username: String = "Guest"
+    @Published var isLoggedIn: Bool = false
+    
+    func login(username: String) {
+        self.username = username
+        self.isLoggedIn = true
+    }
+    
+    func logout() {
+        self.username = "Guest"
+        self.isLoggedIn = false
+    }
+}</pre>
+          </div>
+
+          <p>2. Inject it into the environment:</p>
+
+          <div class="code-block">
+            <pre>@main
+struct MyApp: App {
+    // Create a single instance to be shared throughout the app
+    let userSettings = UserSettings()
+    
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environmentObject(userSettings) // Inject into environment
+        }
+    }
+}</pre>
+          </div>
+
+          <p>3. Access it in any descendant view:</p>
+
+          <div class="code-block">
+            <pre>struct ProfileView: View {
+    // Declare that this view expects a UserSettings object in the environment
+    @EnvironmentObject var userSettings: UserSettings
+    
+    var body: some View {
+        VStack {
+            Text("Welcome, \(userSettings.username)")
+            
+            if userSettings.isLoggedIn {
+                Button("Logout") {
+                    userSettings.logout()
+                }
+            } else {
+                Button("Login as Demo User") {
+                    userSettings.login(username: "Demo User")
+                }
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <p>Note that if a view uses @EnvironmentObject but the object wasn't injected into its environment, the app
+            will crash at runtime with a helpful error message.</p>
+
+          <h4>Environment Values (@Environment)</h4>
+
+          <p>Environment values are a more general mechanism for accessing values from the environment. SwiftUI provides
+            many built-in environment values (like colorScheme, locale, horizontalSizeClass), but you can also create
+            custom environment values.</p>
+
+          <h5>Built-in Environment Values:</h5>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    // Access built-in environment values
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.locale) var locale
+    @Environment(\.horizontalSizeClass) var sizeClass
+    
+    var body: some View {
+        VStack {
+            Text("Current theme: \(colorScheme == .dark ? "Dark" : "Light")")
+            Text("Current locale: \(locale.identifier)")
+            Text("Size class: \(sizeClass == .compact ? "Compact" : "Regular")")
+        }
+        // You can also modify environment values for child views
+        .environment(\.font, .title)
+    }
+}</pre>
+          </div>
+
+          <h5>Creating Custom Environment Values:</h5>
+
+          <p>1. Define a custom environment key:</p>
+
+          <div class="code-block">
+            <pre>// 1. Define a key for your environment value
+struct AppThemeKey: EnvironmentKey {
+    static let defaultValue: AppTheme = .standard
+}
+
+// 2. Extend EnvironmentValues to add your custom value
+extension EnvironmentValues {
+    var appTheme: AppTheme {
+        get { self[AppThemeKey.self] }
+        set { self[AppThemeKey.self] = newValue }
+    }
+}</pre>
+          </div>
+
+          <p>2. Use your custom environment value:</p>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    var body: some View {
+        NavigationView {
+            ThemeAwareView()
+        }
+        .environment(\.appTheme, .premium) // Set the custom environment value
+    }
+}
+
+struct ThemeAwareView: View {
+    // Access the custom environment value
+    @Environment(\.appTheme) var currentTheme
+    
+    var body: some View {
+        VStack {
+            Text("Current theme: \(currentTheme.name)")
+            // Use theme properties for styling
+            Text("Welcome!")
+                .font(currentTheme.titleFont)
+                .foregroundColor(currentTheme.accentColor)
+        }
+    }
+}</pre>
+          </div>
+
+          <h4>Choosing Between Environment Objects and Environment Values</h4>
+
+          <table>
+            <tr>
+              <th>Use @EnvironmentObject when:</th>
+              <th>Use @Environment when:</th>
+            </tr>
+            <tr>
+              <td>
+                <ul>
+                  <li>You need to share complex data models</li>
+                  <li>You want to observe changes to the object</li>
+                  <li>You need reference semantics (shared instance)</li>
+                  <li>Your data has multiple related properties</li>
+                </ul>
+              </td>
+              <td>
+                <ul>
+                  <li>You need to access system settings</li>
+                  <li>You want to customize simple values for view subtrees</li>
+                  <li>Value semantics are sufficient</li>
+                  <li>You're dealing with standalone values</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+
+          <h4>Best Practices</h4>
+
+          <ol>
+            <li><strong>Avoid Over-reliance:</strong> While convenient, too many environment objects can make code
+              harder to understand.</li>
+            <li><strong>Document Dependencies:</strong> Clearly document when views require specific environment objects
+              or values.</li>
+            <li><strong>Consider Testability:</strong> Environment injection makes unit testing easier by allowing
+              test-specific objects.</li>
+            <li><strong>Be Careful with Scope:</strong> Only inject environment objects at the appropriate level in your
+              view hierarchy.</li>
+            <li><strong>Performance Awareness:</strong> Changes to environment objects trigger updates in all views
+              observing them.</li>
+            <li><strong>Type Safety:</strong> Always use the correct types when defining and accessing environment
+              objects and values.</li>
+            <li><strong>Prefer PreferenceKey for Child-to-Parent Communication:</strong> Environment is for
+              parent-to-child communication; use preferences for the opposite direction.</li>
+          </ol>
+
+          <h4>Common Pitfalls</h4>
+
+          <ol>
+            <li><strong>Missing Injection:</strong> Forgetting to inject an environment object will cause runtime
+              crashes.</li>
+            <li><strong>Circular References:</strong> Be careful not to create circular references between environment
+              objects.</li>
+            <li><strong>Over-updating:</strong> Too many @Published properties in an environment object can cause
+              unnecessary view updates.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p>تُعد الكائنات البيئية (Environment Objects) والقيم البيئية (Environment Values) آليات قوية في SwiftUI لحقن
+        التبعيات ومشاركة البيانات عبر تسلسل العرض. تسمح لك بتمرير البيانات إلى العروض الفرعية دون الحاجة إلى تمرير
+        الخصائص بشكل صريح عبر كل مستوى، مما يجعل الكود أكثر نظافة وقابلية للصيانة.</p>
+
+      <h4>الكائنات البيئية (@EnvironmentObject)</h4>
+
+      <p>الكائنات البيئية هي كائنات قابلة للملاحظة يمكن الوصول إليها من قبل أي عرض في تسلسل البيئة. وهي مفيدة بشكل خاص
+        لمشاركة كائنات النموذج التي تحتاج إلى الوصول إليها من قبل العديد من العروض في تطبيقك.</p>
+
+      <h5>الخصائص الرئيسية:</h5>
+      <ul>
+        <li>يجب أن تكون ObservableObject (تتوافق مع بروتوكول ObservableObject)</li>
+        <li>تتحدث العروض تلقائيًا عند تغيير خصائص @Published</li>
+        <li>تعمل كنوع مرجعي (نسخة مشتركة)</li>
+        <li>مثالية لنماذج البيانات المعقدة والخدمات المشتركة</li>
+      </ul>
+
+      <h5>كيفية استخدام الكائنات البيئية:</h5>
+
+      <p>1. إنشاء ObservableObject:</p>
+      <p>في المثال، قمنا بإنشاء فئة UserSettings التي تتبع معلومات المستخدم وحالة تسجيل الدخول.</p>
+
+      <p>2. حقنه في البيئة:</p>
+      <p>في المثال، قمنا بإنشاء نسخة واحدة من UserSettings في نقطة دخول التطبيق وحقنها في البيئة باستخدام دالة
+        environmentObject().</p>
+
+      <p>3. الوصول إليه في أي عرض فرعي:</p>
+      <p>في ProfileView، استخدمنا @EnvironmentObject للإعلان عن حاجتنا للوصول إلى كائن UserSettings من البيئة المحيطة.
+      </p>
+
+      <p>من المهم ملاحظة أنه إذا استخدم عرض @EnvironmentObject ولكن لم يتم حقن الكائن في بيئته، فسيتعطل التطبيق في وقت
+        التشغيل مع رسالة خطأ مفيدة.</p>
+
+      <h4>القيم البيئية (@Environment)</h4>
+
+      <p>القيم البيئية هي آلية أكثر عمومية للوصول إلى القيم من البيئة. يوفر SwiftUI العديد من القيم البيئية المدمجة (مثل
+        colorScheme وlocale وhorizontalSizeClass)، ولكن يمكنك أيضًا إنشاء قيم بيئية مخصصة.</p>
+
+      <h5>القيم البيئية المدمجة:</h5>
+      <p>في المثال، نرى كيفية الوصول إلى قيم بيئية مدمجة مثل نظام الألوان واللغة وفئة الحجم. يمكنك أيضًا تعديل القيم
+        البيئية للعروض الفرعية.</p>
+
+      <h5>إنشاء قيم بيئية مخصصة:</h5>
+
+      <p>1. تحديد مفتاح بيئي مخصص:</p>
+      <p>في المثال، قمنا بإنشاء مفتاح AppThemeKey وتمديد EnvironmentValues لإضافة قيمة مخصصة.</p>
+
+      <p>2. استخدام القيمة البيئية المخصصة:</p>
+      <p>في ContentView، قمنا بتعيين القيمة البيئية المخصصة باستخدام environment(\.appTheme, .premium)، وفي
+        ThemeAwareView، استخدمنا @Environment(\.appTheme) للوصول إلى تلك القيمة.</p>
+
+      <h4>الاختيار بين الكائنات البيئية والقيم البيئية</h4>
+
+      <p><span class="highlight">استخدم @EnvironmentObject عندما:</span></p>
+      <ul>
+        <li>تحتاج إلى مشاركة نماذج بيانات معقدة</li>
+        <li>ترغب في مراقبة التغييرات على الكائن</li>
+        <li>تحتاج إلى دلالات مرجعية (نسخة مشتركة)</li>
+        <li>البيانات الخاصة بك لها خصائص مرتبطة متعددة</li>
+      </ul>
+
+      <p><span class="highlight">استخدم @Environment عندما:</span></p>
+      <ul>
+        <li>تحتاج إلى الوصول إلى إعدادات النظام</li>
+        <li>ترغب في تخصيص قيم بسيطة لأشجار العرض الفرعية</li>
+        <li>تكون دلالات القيمة كافية</li>
+        <li>تتعامل مع قيم مستقلة</li>
+      </ul>
+
+      <h4>أفضل الممارسات</h4>
+
+      <ol>
+        <li><span class="highlight">تجنب الاعتماد المفرط:</span> على الرغم من كونها مريحة، إلا أن الكثير من الكائنات
+          البيئية يمكن أن تجعل الكود أكثر صعوبة في الفهم.</li>
+        <li><span class="highlight">توثيق التبعيات:</span> قم بتوثيق بوضوح متى تتطلب العروض كائنات أو قيم بيئية محددة.
+        </li>
+        <li><span class="highlight">النظر في قابلية الاختبار:</span> يجعل حقن البيئة اختبار الوحدة أسهل من خلال السماح
+          بكائنات خاصة بالاختبار.</li>
+        <li><span class="highlight">كن حذرًا مع النطاق:</span> احقن الكائنات البيئية فقط على المستوى المناسب في تسلسل
+          العرض الخاص بك.</li>
+        <li><span class="highlight">الوعي بالأداء:</span> تؤدي التغييرات على الكائنات البيئية إلى تحفيز تحديثات في جميع
+          العروض التي تراقبها.</li>
+        <li><span class="highlight">أمان النوع:</span> استخدم دائمًا الأنواع الصحيحة عند تعريف والوصول إلى الكائنات
+          والقيم البيئية.</li>
+        <li><span class="highlight">تفضيل PreferenceKey للاتصال من الفرع إلى الأصل:</span> البيئة مخصصة للاتصال من الأصل
+          إلى الفرع؛ استخدم التفضيلات للاتجاه المعاكس.</li>
+      </ol>
+
+      <h4>المشاكل الشائعة</h4>
+
+      <ol>
+        <li><span class="highlight">فقدان الحقن:</span> نسيان حقن كائن بيئي سيؤدي إلى أعطال في وقت التشغيل.</li>
+        <li><span class="highlight">المراجع الدائرية:</span> كن حذرًا من إنشاء مراجع دائرية بين الكائنات البيئية.</li>
+        <li><span class="highlight">الإفراط في التحديث:</span> الكثير من خصائص @Published في كائن بيئي يمكن أن يسبب
+          تحديثات غير ضرورية للعرض.</li>
+      </ol>
+
+      <p>في الختام، توفر الكائنات البيئية والقيم البيئية في SwiftUI آليات قوية لإدارة حالة التطبيق ومشاركة البيانات بين
+        مكونات العرض المختلفة. عند استخدامها بشكل صحيح، يمكن أن تساعد في تبسيط هيكل التطبيق وتقليل التعقيد، مما يؤدي إلى
+        كود أكثر قابلية للصيانة والفهم.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

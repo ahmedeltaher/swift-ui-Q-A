@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ways to persist data in SwiftUI</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 20px 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .comparison-table th {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: #e0e0e0;
+      font-weight: bold;
+    }
+
+    .comparison-table tr:nth-child(odd) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .comparison-table tr:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-list {
+      padding-left: 20px;
+    }
+
+    .feature-list li {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What are some ways to persist data in SwiftUI?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>Data Persistence Options in SwiftUI</h4>
+
+          <p>SwiftUI offers several ways to persist data across app launches and state changes. Each approach has its
+            own use cases, advantages, and limitations. Here's a comprehensive overview of the main persistence
+            mechanisms available in SwiftUI applications:</p>
+
+          <h5>1. @AppStorage</h5>
+
+          <p>@AppStorage is a property wrapper that provides a convenient way to read and write values from
+            UserDefaults.</p>
+
+          <div class="code-block">
+            <pre>@AppStorage("username") private var username: String = "Guest"
+@AppStorage("isDarkMode") private var isDarkMode: Bool = false
+@AppStorage("launchCount") private var launchCount: Int = 0</pre>
+          </div>
+
+          <p><strong>Ideal for:</strong> Simple user preferences, settings, and small pieces of data that need to
+            persist across app launches.</p>
+
+          <p><strong>Limitations:</strong></p>
+          <ul>
+            <li>Limited to types that UserDefaults can store natively (String, Int, Double, Bool, URL, Data, and
+              arrays/dictionaries of these types)</li>
+            <li>For custom types, you need to encode/decode to/from Data</li>
+            <li>Not suitable for large amounts of data or complex data structures</li>
+            <li>Values are stored unencrypted</li>
+          </ul>
+
+          <p><strong>Advanced usage:</strong> For custom types, you can use encoding/decoding:</p>
+
+          <div class="code-block">
+            <pre>struct User: Codable {
+    var name: String
+    var age: Int
+}
+
+extension User {
+    // For @AppStorage compatibility
+    static func getData(_ user: User) -> Data? {
+        try? JSONEncoder().encode(user)
+    }
+    
+    static func getUser(from data: Data) -> User? {
+        try? JSONDecoder().decode(User.self, from: data)
+    }
+}
+
+// In your SwiftUI view
+@AppStorage("currentUser") private var currentUserData: Data = User.getData(User(name: "Guest", age: 0)) ?? Data()
+
+var currentUser: User {
+    User.getUser(from: currentUserData) ?? User(name: "Guest", age: 0)
+}</pre>
+          </div>
+
+          <h5>2. @SceneStorage</h5>
+
+          <p>@SceneStorage is similar to @AppStorage but is specifically designed for storing UI state related to a
+            particular scene in your app. The data is preserved when the app goes into the background but may be
+            discarded when the app is terminated.</p>
+
+          <div class="code-block">
+            <pre>@SceneStorage("selectedTab") private var selectedTab: String = "home"
+@SceneStorage("scrollPosition") private var scrollPosition: Double = 0</pre>
+          </div>
+
+          <p><strong>Ideal for:</strong> Preserving UI state across app suspensions (not terminations), such as selected
+            tabs, scroll positions, or text field content.</p>
+
+          <p><strong>Limitations:</strong></p>
+          <ul>
+            <li>Only available on iOS 14+ and macOS 11+</li>
+            <li>Not guaranteed to persist after app termination</li>
+            <li>Same type limitations as @AppStorage</li>
+            <li>Scene-specific, not shared across scenes</li>
+          </ul>
+
+          <h5>3. Core Data</h5>
+
+          <p>Core Data is Apple's framework for managing object graphs and persistence. It's the most powerful and
+            flexible option for complex data models in SwiftUI apps.</p>
+
+          <p>Basic Core Data setup in SwiftUI:</p>
+
+          <div class="code-block">
+            <pre>// In your App struct
+@main
+struct MyApp: App {
+    let persistenceController = PersistenceController.shared
+    
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+        }
+    }
+}</pre>
+          </div>
+
+          <p>Using Core Data in a SwiftUI view:</p>
+
+          <div class="code-block">
+            <pre>struct ContentView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest(sortDescriptors: [SortDescriptor(\.timestamp, order: .reverse)])
+    private var items: FetchedResults&lt;Item&gt;
+    
+    var body: some View {
+        List {
+            ForEach(items) { item in
+                Text(item.title ?? "Untitled")
+            }
+            .onDelete(perform: deleteItems)
+        }
+        .toolbar {
+            Button("Add Item", action: addItem)
+        }
+    }
+    
+    private func addItem() {
+        withAnimation {
+            let newItem = Item(context: viewContext)
+            newItem.timestamp = Date()
+            newItem.title = "New Item"
+            
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                print("Error saving context: \(nsError)")
+            }
+        }
+    }
+    
+    private func deleteItems(offsets: IndexSet) {
+        withAnimation {
+            offsets.map { items[$0] }.forEach(viewContext.delete)
+            
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                print("Error deleting: \(nsError)")
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <p><strong>Ideal for:</strong> Complex data models, relational data, large datasets, and when you need
+            advanced querying capabilities.</p>
+
+          <p><strong>Advantages:</strong></p>
+          <ul>
+            <li>Object graph management</li>
+            <li>Relationships between entities</li>
+            <li>Advanced querying and sorting</li>
+            <li>Change tracking</li>
+            <li>Migration support for schema changes</li>
+            <li>Integrates well with SwiftUI via @FetchRequest</li>
+          </ul>
+
+          <p><strong>Limitations:</strong></p>
+          <ul>
+            <li>Higher learning curve</li>
+            <li>More setup required</li>
+            <li>Performance considerations for large datasets</li>
+          </ul>
+
+          <h5>4. FileManager</h5>
+
+          <p>For more manual control over data persistence, you can use FileManager to directly read and write files to
+            the device's storage.</p>
+
+          <div class="code-block">
+            <pre>struct FileManagerService {
+    static let shared = FileManagerService()
+    
+    func saveData&lt;T: Encodable&gt;(_ data: T, fileName: String) {
+        do {
+            // Get the documents directory URL
+            let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            // Create the file URL
+            let fileURL = documentsDirectory.appendingPathComponent(fileName)
+            // Encode the data
+            let encodedData = try JSONEncoder().encode(data)
+            // Write to file
+            try encodedData.write(to: fileURL)
+        } catch {
+            print("Error saving data: \(error)")
+        }
+    }
+    
+    func loadData&lt;T: Decodable&gt;(fileName: String, as type: T.Type) -> T? {
+        do {
+            // Get the documents directory URL
+            let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            // Create the file URL
+            let fileURL = documentsDirectory.appendingPathComponent(fileName)
+            // Read the data from the file
+            let data = try Data(contentsOf: fileURL)
+            // Decode and return the data
+            return try JSONDecoder().decode(type, from: data)
+        } catch {
+            print("Error loading data: \(error)")
+            return nil
+        }
+    }
+}</pre>
+          </div>
+
+          <p>Using the service in a SwiftUI view:</p>
+
+          <div class="code-block">
+            <pre>struct UserProfile: Codable {
+    var name: String
+    var bio: String
+    var profilePicture: Data?
+}
+
+class UserProfileViewModel: ObservableObject {
+    @Published var profile: UserProfile
+    
+    init() {
+        // Try to load saved profile, or use default
+        self.profile = FileManagerService.shared.loadData(fileName: "userProfile.json", as: UserProfile.self) ?? 
+            UserProfile(name: "Guest", bio: "", profilePicture: nil)
+    }
+    
+    func saveProfile() {
+        FileManagerService.shared.saveData(profile, fileName: "userProfile.json")
+    }
+}
+
+struct ProfileView: View {
+    @StateObject private var viewModel = UserProfileViewModel()
+    
+    var body: some View {
+        VStack {
+            TextField("Name", text: $viewModel.profile.name)
+            TextField("Bio", text: $viewModel.profile.bio)
+            Button("Save") {
+                viewModel.saveProfile()
+            }
+        }
+        .padding()
+    }
+}</pre>
+          </div>
+
+          <p><strong>Ideal for:</strong> Larger binary data like images, documents, or custom file formats; complete
+            control over the persistence mechanism.</p>
+
+          <p><strong>Advantages:</strong></p>
+          <ul>
+            <li>Full control over file formats and locations</li>
+            <li>Can handle any type of data</li>
+            <li>Suitable for large files</li>
+            <li>Better performance for large binary data compared to Core Data</li>
+          </ul>
+
+          <p><strong>Limitations:</strong></p>
+          <ul>
+            <li>Manual management of file operations</li>
+            <li>No built-in support for queries or filtering</li>
+            <li>More error-prone</li>
+          </ul>
+
+          <h5>5. Keychain</h5>
+
+          <p>The Keychain is Apple's secure storage system for sensitive data like passwords, tokens, and certificates.
+            It requires additional wrappers as there's no direct SwiftUI integration.</p>
+
+          <div class="code-block">
+            <pre>class KeychainService {
+    static let shared = KeychainService()
+    
+    func saveToKeychain(key: String, data: String) -> Bool {
+        if let data = data.data(using: .utf8) {
+            let query: [String: Any] = [
+                kSecClass as String: kSecClassGenericPassword,
+                kSecAttrAccount as String: key,
+                kSecValueData as String: data,
+                kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
+            ]
+            
+            // Delete any existing item
+            SecItemDelete(query as CFDictionary)
+            
+            // Add the new item
+            let status = SecItemAdd(query as CFDictionary, nil)
+            return status == errSecSuccess
+        }
+        return false
+    }
+    
+    func loadFromKeychain(key: String) -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        
+        if status == errSecSuccess {
+            if let data = result as? Data {
+                return String(data: data, encoding: .utf8)
+            }
+        }
+        return nil
+    }
+    
+    func deleteFromKeychain(key: String) -> Bool {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key
+        ]
+        
+        let status = SecItemDelete(query as CFDictionary)
+        return status == errSecSuccess
+    }
+}</pre>
+          </div>
+
+          <p>Creating a SwiftUI property wrapper for Keychain access:</p>
+
+          <div class="code-block">
+            <pre>@propertyWrapper
+struct KeychainStorage&lt;T: Codable&gt; {
+    private let key: String
+    private let defaultValue: T
+    
+    init(key: String, defaultValue: T) {
+        self.key = key
+        self.defaultValue = defaultValue
+    }
+    
+    var wrappedValue: T {
+        get {
+            guard let data = KeychainService.shared.loadFromKeychain(key: key),
+                  let decoded = try? JSONDecoder().decode(T.self, from: data.data(using: .utf8)!) else {
+                return defaultValue
+            }
+            return decoded
+        }
+        set {
+            if let encoded = try? JSONEncoder().encode(newValue),
+               let string = String(data: encoded, encoding: .utf8) {
+                KeychainService.shared.saveToKeychain(key: key, data: string)
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <p>Using KeychainStorage in a SwiftUI view:</p>
+
+          <div class="code-block">
+            <pre>struct AuthCredentials: Codable {
+    var accessToken: String
+    var refreshToken: String
+    var expiryDate: Date
+}
+
+class AuthViewModel: ObservableObject {
+    @KeychainStorage(key: "authCredentials", defaultValue: nil)
+    private var storedCredentials: AuthCredentials?
+    
+    @Published var isAuthenticated: Bool = false
+    
+    init() {
+        isAuthenticated = storedCredentials != nil
+    }
+    
+    func login(username: String, password: String) {
+        // Authenticate against API and get tokens
+        // For demonstration purposes:
+        let newCredentials = AuthCredentials(
+            accessToken: "sample_access_token",
+            refreshToken: "sample_refresh_token",
+            expiryDate: Date().addingTimeInterval(3600)
+        )
+        
+        storedCredentials = newCredentials
+        isAuthenticated = true
+    }
+    
+    func logout() {
+        storedCredentials = nil
+        isAuthenticated = false
+    }
+}</pre>
+          </div>
+
+          <p><strong>Ideal for:</strong> Sensitive information like authentication tokens, passwords, and other secure
+            data.</p>
+
+          <p><strong>Advantages:</strong></p>
+          <ul>
+            <li>Encrypted storage</li>
+            <li>Protected by device security (e.g., Face ID, Touch ID)</li>
+            <li>Data persists even after app reinstallation</li>
+            <li>Can be shared across apps with the same team ID</li>
+          </ul>
+
+          <p><strong>Limitations:</strong></p>
+          <ul>
+            <li>More complex implementation</li>
+            <li>Limited storage capacity</li>
+            <li>No direct SwiftUI integration</li>
+          </ul>
+
+          <h5>6. Swift's Codable Protocol with Custom Storage</h5>
+
+          <p>For more custom persistence needs, you can combine Swift's Codable protocol with any storage mechanism.</p>
+
+          <div class="code-block">
+            <pre>struct Settings: Codable {
+    var username: String
+    var theme: String
+    var notificationsEnabled: Bool
+    var lastOpenedTab: String
+    
+    static func save(_ settings: Settings) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(settings) {
+            UserDefaults.standard.set(encoded, forKey: "settings")
+        }
+    }
+    
+    static func load() -> Settings {
+        if let savedSettings = UserDefaults.standard.object(forKey: "settings") as? Data {
+            let decoder = JSONDecoder()
+            if let loadedSettings = try? decoder.decode(Settings.self, from: savedSettings) {
+                return loadedSettings
+            }
+        }
+        // Return default settings if none are found
+        return Settings(username: "Guest", theme: "light", notificationsEnabled: true, lastOpenedTab: "home")
+    }
+}</pre>
+          </div>
+
+          <p>Using it in a SwiftUI view:</p>
+
+          <div class="code-block">
+            <pre>class SettingsViewModel: ObservableObject {
+    @Published var settings: Settings
+    
+    init() {
+        self.settings = Settings.load()
+    }
+    
+    func saveSettings() {
+        Settings.save(settings)
+    }
+}
+
+struct SettingsView: View {
+    @StateObject private var viewModel = SettingsViewModel()
+    
+    var body: some View {
+        Form {
+            Section(header: Text("Profile")) {
+                TextField("Username", text: $viewModel.settings.username)
+            }
+            
+            Section(header: Text("Appearance")) {
+                Picker("Theme", selection: $viewModel.settings.theme) {
+                    Text("Light").tag("light")
+                    Text("Dark").tag("dark")
+                    Text("System").tag("system")
+                }
+            }
+            
+            Section(header: Text("Notifications")) {
+                Toggle("Enable Notifications", isOn: $viewModel.settings.notificationsEnabled)
+            }
+        }
+        .navigationTitle("Settings")
+        .onChange(of: viewModel.settings) { _ in
+            viewModel.saveSettings()
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>Comparison of Persistence Options</h5>
+
+          <table class="comparison-table">
+            <tr>
+              <th>Storage Type</th>
+              <th>Security</th>
+              <th>Complexity</th>
+              <th>Use Case</th>
+              <th>Data Size</th>
+            </tr>
+            <tr>
+              <td>@AppStorage (UserDefaults)</td>
+              <td>Low (unencrypted)</td>
+              <td>Very simple</td>
+              <td>User preferences, simple settings</td>
+              <td>Small (&lt;1MB total)</td>
+            </tr>
+            <tr>
+              <td>@SceneStorage</td>
+              <td>Low (unencrypted)</td>
+              <td>Very simple</td>
+              <td>UI state (temporary)</td>
+              <td>Very small</td>
+            </tr>
+            <tr>
+              <td>Core Data</td>
+              <td>Medium (can be encrypted)</td>
+              <td>Complex</td>
+              <td>Structured, relational data</td>
+              <td>Small to large</td>
+            </tr>
+            <tr>
+              <td>FileManager</td>
+              <td>Low (unless manually encrypted)</td>
+              <td>Moderate</td>
+              <td>Binary data, custom formats</td>
+              <td>Any size</td>
+            </tr>
+            <tr>
+              <td>Keychain</td>
+              <td>High (encrypted)</td>
+              <td>Moderate to complex</td>
+              <td>Sensitive information</td>
+              <td>Small (&lt;10MB)</td>
+            </tr>
+          </table>
+
+          <h5>Best Practices for Data Persistence in SwiftUI</h5>
+
+          <ol>
+            <li><strong>Choose the right tool for the job:</strong>
+              <ul>
+                <li>@AppStorage for simple preferences and settings</li>
+                <li>@SceneStorage for temporary UI state</li>
+                <li>Core Data for complex, relational data</li>
+                <li>FileManager for large files or custom formats</li>
+                <li>Keychain for sensitive information</li>
+              </ul>
+            </li>
+            <li><strong>Layer your persistence:</strong> Combine different approaches for different types of data.</li>
+            <li><strong>Use MVVM pattern:</strong> Keep persistence logic in your ViewModel layer, not in SwiftUI Views.
+            </li>
+            <li><strong>Handle errors gracefully:</strong> Always provide fallbacks when data can't be loaded.</li>
+            <li><strong>Consider performance:</strong> Load data asynchronously for large datasets to avoid UI freezes.
+            </li>
+            <li><strong>Plan for migrations:</strong> As your app evolves, you'll need to handle data model changes.
+            </li>
+          </ol>
+
+          <h5>Conclusion</h5>
+
+          <p>SwiftUI offers multiple options for persisting data, each with its own strengths and weaknesses. By
+            understanding these options and their appropriate use cases, you can choose the right persistence strategy
+            for your app's specific needs. Often, the best approach is to combine multiple strategies: @AppStorage for
+            simple preferences, Core Data for complex data models, and Keychain for sensitive information.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <h4>طرق حفظ البيانات في SwiftUI</h4>
+
+      <p>توفر SwiftUI العديد من الطرق لحفظ البيانات واستمراريتها بين إطلاقات التطبيق وتغييرات الحالة. كل طريقة لها
+        استخداماتها ومزاياها وقيودها الخاصة. إليك نظرة شاملة على آليات الحفظ الرئيسية المتاحة في تطبيقات SwiftUI:</p>
+
+      <h5>1. مخزن التطبيق @AppStorage</h5>
+
+      <p>@AppStorage هو غلاف خاصية (property wrapper) يوفر طريقة مريحة لقراءة وكتابة القيم من UserDefaults.</p>
+
+      <p><span class="highlight">مثالي لـ:</span> تفضيلات المستخدم البسيطة، والإعدادات، وقطع البيانات الصغيرة التي تحتاج
+        إلى الاستمرار عبر إطلاقات التطبيق.</p>
+
+      <p><span class="highlight">القيود:</span></p>
+      <ul>
+        <li>محدود بالأنواع التي يمكن لـ UserDefaults تخزينها بشكل أصلي (String, Int, Double, Bool, URL, Data،
+          والمصفوفات/القواميس من هذه الأنواع)</li>
+        <li>بالنسبة للأنواع المخصصة، تحتاج إلى ترميز/فك ترميز من/إلى Data</li>
+        <li>غير مناسب لكميات كبيرة من البيانات أو هياكل البيانات المعقدة</li>
+        <li>يتم تخزين القيم بدون تشفير</li>
+      </ul>
+
+      <h5>2. مخزن المشهد @SceneStorage</h5>
+
+      <p>@SceneStorage مشابه لـ @AppStorage ولكنه مصمم خصيصًا لتخزين حالة واجهة المستخدم المتعلقة بمشهد معين في تطبيقك.
+        يتم الحفاظ على البيانات عندما يذهب التطبيق إلى الخلفية ولكن قد يتم التخلص منها عند إنهاء التطبيق.</p>
+
+      <p><span class="highlight">مثالي لـ:</span> الحفاظ على حالة واجهة المستخدم عبر تعليقات التطبيق (وليس الإنهاءات)،
+        مثل علامات التبويب المحددة، أو مواضع التمرير، أو محتوى حقل النص.</p>
+
+      <p><span class="highlight">القيود:</span></p>
+      <ul>
+        <li>متاح فقط على iOS 14+ و macOS 11+</li>
+        <li>لا يضمن البقاء بعد إنهاء التطبيق</li>
+        <li>نفس قيود النوع مثل @AppStorage</li>
+        <li>خاص بالمشهد، لا يُشارك عبر المشاهد</li>
+      </ul>
+
+      <h5>3. كور داتا Core Data</h5>
+
+      <p>Core Data هو إطار عمل Apple لإدارة رسوم بيانية للكائنات والاستمرارية. إنه الخيار الأكثر قوة ومرونة لنماذج
+        البيانات المعقدة في تطبيقات SwiftUI.</p>
+
+      <p><span class="highlight">مثالي لـ:</span> نماذج البيانات المعقدة، والبيانات العلائقية، ومجموعات البيانات
+        الكبيرة، وعندما تحتاج إلى قدرات استعلام متقدمة.</p>
+
+      <p><span class="highlight">المزايا:</span></p>
+      <ul>
+        <li>إدارة الرسم البياني للكائنات</li>
+        <li>العلاقات بين الكيانات</li>
+        <li>استعلام وفرز متقدم</li>
+        <li>تتبع التغييرات</li>
+        <li>دعم الترحيل للتغييرات في المخطط</li>
+        <li>يتكامل جيدًا مع SwiftUI عبر @FetchRequest</li>
+      </ul>
+
+      <p><span class="highlight">القيود:</span></p>
+      <ul>
+        <li>منحنى تعلم أعلى</li>
+        <li>يتطلب مزيدًا من الإعداد</li>
+        <li>اعتبارات الأداء لمجموعات البيانات الكبيرة</li>
+      </ul>
+
+      <h5>4. مدير الملفات FileManager</h5>
+
+      <p>للحصول على مزيد من التحكم اليدوي في استمرارية البيانات، يمكنك استخدام FileManager للقراءة والكتابة المباشرة
+        للملفات في تخزين الجهاز.</p>
+
+      <p><span class="highlight">مثالي لـ:</span> البيانات الثنائية الأكبر مثل الصور أو المستندات أو تنسيقات الملفات
+        المخصصة؛ تحكم كامل في آلية الاستمرارية.</p>
+
+      <p><span class="highlight">المزايا:</span></p>
+      <ul>
+        <li>تحكم كامل في تنسيقات الملفات ومواقعها</li>
+        <li>يمكن التعامل مع أي نوع من البيانات</li>
+        <li>مناسب للملفات الكبيرة</li>
+        <li>أداء أفضل للبيانات الثنائية الكبيرة مقارنة بـ Core Data</li>
+      </ul>
+
+      <p><span class="highlight">القيود:</span></p>
+      <ul>
+        <li>إدارة يدوية لعمليات الملفات</li>
+        <li>لا يوجد دعم مدمج للاستعلامات أو التصفية</li>
+        <li>أكثر عرضة للأخطاء</li>
+      </ul>
+
+      <h5>5. سلسلة المفاتيح Keychain</h5>
+
+      <p>Keychain هو نظام التخزين الآمن من Apple للبيانات الحساسة مثل كلمات المرور والرموز والشهادات. يتطلب أغلفة إضافية
+        حيث لا يوجد تكامل مباشر مع SwiftUI.</p>
+
+      <p><span class="highlight">مثالي لـ:</span> المعلومات الحساسة مثل رموز المصادقة وكلمات المرور والبيانات الآمنة
+        الأخرى.</p>
+
+      <p><span class="highlight">المزايا:</span></p>
+      <ul>
+        <li>تخزين مشفر</li>
+        <li>محمي بأمان الجهاز (مثل Face ID أو Touch ID)</li>
+        <li>تستمر البيانات حتى بعد إعادة تثبيت التطبيق</li>
+        <li>يمكن مشاركتها عبر التطبيقات التي لها نفس معرف الفريق</li>
+      </ul>
+
+      <p><span class="highlight">القيود:</span></p>
+      <ul>
+        <li>تنفيذ أكثر تعقيدًا</li>
+        <li>سعة تخزين محدودة</li>
+        <li>لا يوجد تكامل مباشر مع SwiftUI</li>
+      </ul>
+
+      <h5>6. بروتوكول Codable في Swift مع تخزين مخصص</h5>
+
+      <p>لاحتياجات الاستمرارية المخصصة، يمكنك الجمع بين بروتوكول Codable في Swift وأي آلية تخزين.</p>
+
+      <h5>مقارنة بين خيارات الاستمرارية</h5>
+
+      <p>فيما يلي مقارنة بين خيارات التخزين المختلفة:</p>
+
+      <ul>
+        <li><span class="highlight">@AppStorage (UserDefaults):</span> أمان منخفض، بسيط جدًا، مثالي لتفضيلات المستخدم
+          والإعدادات البسيطة، حجم بيانات صغير.</li>
+        <li><span class="highlight">@SceneStorage:</span> أمان منخفض، بسيط جدًا، مثالي لحالة واجهة المستخدم المؤقتة، حجم
+          بيانات صغير جدًا.</li>
+        <li><span class="highlight">Core Data:</span> أمان متوسط، معقد، مثالي للبيانات المهيكلة والعلائقية، حجم بيانات
+          صغير إلى كبير.</li>
+        <li><span class="highlight">FileManager:</span> أمان منخفض (ما لم يتم تشفيره يدويًا)، معتدل، مثالي للبيانات
+          الثنائية والتنسيقات المخصصة، أي حجم بيانات.</li>
+        <li><span class="highlight">Keychain:</span> أمان عالي، معتدل إلى معقد، مثالي للمعلومات الحساسة، حجم بيانات
+          صغير.</li>
+      </ul>
+
+      <h5>أفضل الممارسات لاستمرارية البيانات في SwiftUI</h5>
+
+      <ol>
+        <li><span class="highlight">اختر الأداة المناسبة للمهمة:</span>
+          <ul>
+            <li>@AppStorage للتفضيلات والإعدادات البسيطة</li>
+            <li>@SceneStorage لحالة واجهة المستخدم المؤقتة</li>
+            <li>Core Data للبيانات المعقدة والعلائقية</li>
+            <li>FileManager للملفات الكبيرة أو التنسيقات المخصصة</li>
+            <li>Keychain للمعلومات الحساسة</li>
+          </ul>
+        </li>
+        <li><span class="highlight">طبقات الاستمرارية:</span> الجمع بين نهج مختلفة لأنواع مختلفة من البيانات.</li>
+        <li><span class="highlight">استخدم نمط MVVM:</span> احتفظ بمنطق الاستمرارية في طبقة ViewModel، وليس في عروض
+          SwiftUI.</li>
+        <li><span class="highlight">التعامل مع الأخطاء بأناقة:</span> قدم دائمًا بدائل عندما لا يمكن تحميل البيانات.
+        </li>
+        <li><span class="highlight">ضع في اعتبارك الأداء:</span> قم بتحميل البيانات بشكل غير متزامن لمجموعات البيانات
+          الكبيرة لتجنب تجميد واجهة المستخدم.</li>
+        <li><span class="highlight">خطط للترحيلات:</span> مع تطور تطبيقك، ستحتاج إلى التعامل مع تغييرات نموذج البيانات.
+        </li>
+      </ol>
+
+      <h5>الخلاصة</h5>
+
+      <p>توفر SwiftUI خيارات متعددة لاستمرارية البيانات، كل منها له نقاط قوة وضعف خاصة به. من خلال فهم هذه الخيارات
+        وحالات استخدامها المناسبة، يمكنك اختيار استراتيجية الاستمرارية المناسبة لاحتياجات تطبيقك المحددة. غالبًا ما يكون
+        أفضل نهج هو الجمع بين استراتيجيات متعددة: @AppStorage للتفضيلات البسيطة، وCore Data لنماذج البيانات المعقدة،
+        وKeychain للمعلومات الحساسة.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

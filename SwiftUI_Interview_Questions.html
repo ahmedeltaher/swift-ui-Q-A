@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>أسئلة SwiftUI - بدون إجابات</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      direction: ltr;
+      text-align: left;
+      overflow: hidden;
+      border: none;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(255, 255, 255, 0.1);
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: center;
+    }
+
+    .section-title {
+      color: white;
+      padding: 15px 20px;
+      margin-bottom: 40px;
+      font-size: 1.4rem;
+      text-align: center;
+      border-radius: 12px;
+      font-weight: bold;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      width: 100%;
+    }
+
+    .basic-section {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-section {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-section {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-section {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-section {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 50px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-title-with-margin {
+      margin-top: 60px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="main-title">أسئلة مقابلات SwiftUI</h1>
+
+  <div class="cards-container">
+    <!-- =============== الأسئلة الأساسية =============== -->
+    <div class="section-title basic-section">🔥 الأسئلة الأساسية (دايمًا بتتسأل)</div>
+
+    <a href="questions/what-is-swiftui.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is SwiftUI and how is it different from UIKit?</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="questions/state-binding-observedobject.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the difference between @State, @Binding, @ObservedObject, @EnvironmentObject,
+            @StateObject?</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="questions/stateobject-vs-observedobject.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the difference between @StateObject and @ObservedObject?</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="questions/environment-environmentobject.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is Environment and EnvironmentObject in SwiftUI?</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="questions/scene-app-delegate.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the role of SceneDelegate and AppDelegate in SwiftUI apps?</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="questions/view-protocol-struct.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the View protocol in SwiftUI? ولماذا كل View هو struct؟</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="questions/vstack-hstack-zstack.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the difference between VStack, HStack, and ZStack?</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="questions/list-foreach.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the difference between List and ForEach?</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="questions/navigation-components.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the difference between NavigationStack, NavigationView, NavigationLink? (خاصة بعد iOS
+            16)</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+    </a>
+
+    <a href="questions/swiftui-data-flow.html" class="card-link">
+      <div class="card basic-level">
+        <div class="card-header">
+          <h3 class="mb-0">How does data flow work in SwiftUI?</h3>
+        </div>
+        <div class="card-body">
+          <p>انقر للاطلاع على الإجابة والشرح</p>
+        </div>
+      </div>
+
+      <!-- =============== أسئلة متوسطة العمق =============== -->
+      <div class="section-title intermediate-section section-title-with-margin">⚡️ أسئلة متوسطة العمق (بتتسأل كتير)
+      </div>
+
+      <a href="questions/mainactor-vs-dispatchqueue.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">What is the difference between @MainActor and DispatchQueue.main.async in SwiftUI?</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/equatable-view.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">What is the purpose of EquatableView?</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/preference-key.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">What is the purpose of PreferenceKey in SwiftUI?</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/geometry-reader.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">What is the role of GeometryReader?</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/modifier-order.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">What is the difference between modifier order in SwiftUI? (ليه .background().cornerRadius()
+              يختلف عن .cornerRadius().background()؟)</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/persist-data.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">What are some ways to persist data in SwiftUI? (@AppStorage, @SceneStorage, Core Data,
+              FileManager, Keychain).</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/swiftui-animations.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">How does SwiftUI handle animations? (withAnimation, Animation modifiers, implicit vs
+              explicit
+              animations).</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/swiftui-transitions.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">What are transitions in SwiftUI and how do they differ from animations?</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/view-protocol.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">What is View Protocol in SwiftUI?</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/custom-modifiers.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">What are custom modifiers in SwiftUI and when would you create one?</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/navigation-in-swiftui.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">How do you handle navigation in SwiftUI?</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="questions/environment-objects-and-values.html" class="card-link">
+        <div class="card intermediate-level">
+          <div class="card-header">
+            <h3 class="mb-0">How do you handle environment objects and environment values in SwiftUI?</h3>
+          </div>
+          <div class="card-body">
+            <p>انقر للاطلاع على الإجابة والشرح</p>
+          </div>
+        </div>
+      </a>
+
+      <!-- =============== أسئلة متقدمة =============== -->
+      <div class="section-title advanced-section section-title-with-margin">🚀 أسئلة متقدمة (بتبان في إنترفيوهات
+        Senior/Architect)</div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">How does SwiftUI's diffing algorithm work under the hood? (reconciliation, body
+            re-computation).</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the role of @ViewBuilder attribute?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">How does SwiftUI achieve declarative UI compared to UIKit's imperative UI?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">What are the performance pitfalls in SwiftUI? (too many body recomputations, using
+            EquatableView, avoiding large ForEach without IDs).</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the difference between @StateObject and @EnvironmentObject in terms of lifecycle?
+          </h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">When should you use AnyView and what are the performance drawbacks?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is LazyVGrid and LazyHGrid, and how are they different from List?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">Explain matchedGeometryEffect and when to use it.</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">How to bridge UIKit views inside SwiftUI? (UIViewRepresentable,
+            UIViewControllerRepresentable).
+          </h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">How to embed SwiftUI inside UIKit? (UIHostingController).</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">What's the difference between Combine and Swift Concurrency in SwiftUI data flow?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">How does SwiftUI handle memory management for Views (since Views are structs)?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">What are @dynamicProperty and property wrappers in SwiftUI?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is task modifier and how does it differ from onAppear?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card advanced-level">
+        <div class="card-header">
+          <h3 class="mb-0">Explain the difference between @FocusState and @Environment(.focusedValue).</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <!-- =============== أسئلة سيناريو =============== -->
+      <div class="section-title case-section section-title-with-margin">🎯 أسئلة سيناريو (Case-based)</div>
+
+      <div class="card case-level">
+        <div class="card-header">
+          <h3 class="mb-0">How do you manage navigation programmatically in SwiftUI?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card case-level">
+        <div class="card-header">
+          <h3 class="mb-0">How do you refresh a List in SwiftUI? (pull-to-refresh, task modifier).</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card case-level">
+        <div class="card-header">
+          <h3 class="mb-0">How to implement infinite scrolling in SwiftUI?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card case-level">
+        <div class="card-header">
+          <h3 class="mb-0">How do you handle errors in SwiftUI with async/await?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card case-level">
+        <div class="card-header">
+          <h3 class="mb-0">How to create reusable UI components in SwiftUI?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card case-level">
+        <div class="card-header">
+          <h3 class="mb-0">How do you handle themes (light/dark mode, custom themes) in SwiftUI?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card case-level">
+        <div class="card-header">
+          <h3 class="mb-0">How do you debug SwiftUI rendering issues? (using print in body, Instruments, View hierarchy
+            debugging).</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card case-level">
+        <div class="card-header">
+          <h3 class="mb-0">How do you test SwiftUI Views? (Snapshot testing, XCTest with ViewInspector).</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <!-- =============== أسئلة متقدمة جدًا =============== -->
+      <div class="section-title expert-section section-title-with-margin">🧠 أسئلة متقدمة جدًا (Rare but ممكن تيجي)
+      </div>
+
+      <div class="card expert-level">
+        <div class="card-header">
+          <h3 class="mb-0">Explain how SwiftUI uses diffing and identity to determine view updates.</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card expert-level">
+        <div class="card-header">
+          <h3 class="mb-0">How does SwiftUI integrate with Core Data natively? (@FetchRequest,
+            @Environment(.managedObjectContext)).</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card expert-level">
+        <div class="card-header">
+          <h3 class="mb-0">Explain the role of @SceneStorage vs @AppStorage.</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card expert-level">
+        <div class="card-header">
+          <h3 class="mb-0">What is the difference between onAppear vs task modifier?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card expert-level">
+        <div class="card-header">
+          <h3 class="mb-0">How do you optimize a SwiftUI List with thousands of rows?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card expert-level">
+        <div class="card-header">
+          <h3 class="mb-0">What are Transaction and TransactionModifiers in SwiftUI animations?</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+
+      <div class="card expert-level">
+        <div class="card-header">
+          <h3 class="mb-0">Explain how property wrappers like @State actually work under the hood.</h3>
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+  </div>
+
+  <footer>
+    صفحة تحتوي على أسئلة SwiftUI منظمة حسب المستوى — جاهزة للإجابة لاحقًا بنفس ستايل الكروت الاحترافي.
+  </footer>
+
+</body>
+
+</html>

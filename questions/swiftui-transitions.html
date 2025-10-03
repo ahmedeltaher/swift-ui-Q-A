@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwiftUI Transitions</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 20px 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .comparison-table th {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: #e0e0e0;
+      font-weight: bold;
+    }
+
+    .comparison-table tr:nth-child(odd) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .comparison-table tr:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .transition-demo {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .transition-comparison {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .transition-example {
+      flex: 1;
+      min-width: 300px;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What are transitions in SwiftUI and how do they differ from animations?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>Transitions in SwiftUI</h4>
+
+          <p>In SwiftUI, transitions are specialized animations that define how views appear and disappear from the user
+            interface. While regular animations handle changes to existing views (like size, position, or color),
+            transitions specifically manage the insertion and removal of views from the view hierarchy.</p>
+
+          <h5>Understanding Transitions</h5>
+
+          <p>Transitions in SwiftUI specify <strong>how a view enters or exits</strong> the view hierarchy. When a view
+            is conditionally added or removed from the UI, transitions determine the visual effect that accompanies this
+            change.</p>
+
+          <div class="code-block">
+            <pre>@State private var isShowingDetail = false
+
+var body: some View {
+    VStack {
+        Button("Toggle Detail") {
+            withAnimation {
+                isShowingDetail.toggle()
+            }
+        }
+        
+        if isShowingDetail {
+            DetailView()
+                .transition(.slide) // This defines HOW the view appears/disappears
+        }
+    }
+}</pre>
+          </div>
+
+          <p>In this example, when <code>isShowingDetail</code> becomes <code>true</code>, the <code>DetailView</code>
+            slides in from the side. When it becomes <code>false</code>, the view slides out. The transition defines the
+            visual effect of this appearance and disappearance.</p>
+
+          <h5>Key Differences Between Transitions and Animations</h5>
+
+          <table class="comparison-table">
+            <tr>
+              <th>Aspect</th>
+              <th>Transitions</th>
+              <th>Animations</th>
+            </tr>
+            <tr>
+              <td><strong>Purpose</strong></td>
+              <td>Define how views appear and disappear</td>
+              <td>Define how property changes are animated</td>
+            </tr>
+            <tr>
+              <td><strong>Trigger</strong></td>
+              <td>View insertion/removal from hierarchy</td>
+              <td>Changes to animatable properties</td>
+            </tr>
+            <tr>
+              <td><strong>Applicable To</strong></td>
+              <td>Views being added/removed via conditional logic</td>
+              <td>Properties of views that remain in the hierarchy</td>
+            </tr>
+            <tr>
+              <td><strong>Implementation</strong></td>
+              <td><code>.transition()</code> modifier</td>
+              <td><code>.animation()</code> modifier or <code>withAnimation { }</code></td>
+            </tr>
+            <tr>
+              <td><strong>Default Behavior</strong></td>
+              <td>No visual effect (immediate appear/disappear)</td>
+              <td>No animation (immediate property change)</td>
+            </tr>
+          </table>
+
+          <p>The key distinction: <strong>transitions manage the appearance and disappearance of views</strong>, while
+            <strong>animations manage how properties of existing views change</strong>.</p>
+
+          <h5>Built-in Transition Types</h5>
+
+          <p>SwiftUI provides several built-in transitions:</p>
+
+          <h6>1. Basic Transitions</h6>
+
+          <div class="code-block">
+            <pre>// Fade transition
+.transition(.opacity)
+
+// Slide transition
+.transition(.slide)
+
+// Scale transition
+.transition(.scale)
+
+// Move transition from a specific edge
+.transition(.move(edge: .leading))
+.transition(.move(edge: .trailing))
+.transition(.move(edge: .top))
+.transition(.move(edge: .bottom))
+
+// Asymmetric transition (different for insertion and removal)
+.transition(.asymmetric(
+    insertion: .scale,
+    removal: .opacity
+))</pre>
+          </div>
+
+          <h6>2. Identity Transition</h6>
+
+          <div class="code-block">
+            <pre>// No visible transition effect
+.transition(.identity)</pre>
+          </div>
+
+          <h5>Customizing Transitions</h5>
+
+          <h6>1. Modifying Built-in Transitions</h6>
+
+          <div class="code-block">
+            <pre>// Combined transitions
+.transition(.scale.combined(with: .opacity))
+
+// Transition with animation timing
+.transition(.slide.animation(.easeInOut(duration: 1.5)))
+
+// Transition with delay
+.transition(.scale.animation(.easeInOut.delay(0.3)))</pre>
+          </div>
+
+          <h6>2. Creating Custom Transitions</h6>
+
+          <p>You can create custom transitions by conforming to the <code>ViewModifier</code> protocol and implementing
+            the <code>AnyTransition.modifier</code> static method:</p>
+
+          <div class="code-block">
+            <pre>struct RotationModifier: ViewModifier {
+    let angle: Angle
+    
+    func body(content: Content) -> some View {
+        content
+            .rotationEffect(angle)
+    }
+}
+
+extension AnyTransition {
+    static var rotation: AnyTransition {
+        .modifier(
+            active: RotationModifier(angle: .degrees(90)),
+            identity: RotationModifier(angle: .degrees(0))
+        )
+    }
+}
+
+// Usage
+Text("Hello World")
+    .transition(.rotation)</pre>
+          </div>
+
+          <h5>Working with Transitions</h5>
+
+          <h6>1. Applying Transitions</h6>
+
+          <p>To apply a transition, use the <code>.transition()</code> modifier on the view that will be inserted or
+            removed:</p>
+
+          <div class="code-block">
+            <pre>if showDetails {
+    DetailView()
+        .transition(.slide)
+}</pre>
+          </div>
+
+          <p>Important: For transitions to animate, you must wrap the state change that triggers the view's
+            appearance/disappearance in <code>withAnimation</code>:</p>
+
+          <div class="code-block">
+            <pre>Button("Show Details") {
+    withAnimation(.easeInOut) {
+        showDetails = true
+    }
+}</pre>
+          </div>
+
+          <h6>2. Animating Multiple Views with Transitions</h6>
+
+          <div class="code-block">
+            <pre>@State private var showFirstView = true
+
+var body: some View {
+    VStack {
+        Button("Toggle Views") {
+            withAnimation(.spring()) {
+                showFirstView.toggle()
+            }
+        }
+        
+        if showFirstView {
+            Text("First View")
+                .padding()
+                .background(Color.blue)
+                .transition(.slide)
+        } else {
+            Text("Second View")
+                .padding()
+                .background(Color.green)
+                .transition(.scale.combined(with: .opacity))
+        }
+    }
+}</pre>
+          </div>
+
+          <h6>3. Matching Geometry Effect with Transitions</h6>
+
+          <p>For more sophisticated view transitions where elements should maintain continuity, you can combine
+            transitions with the <code>matchedGeometryEffect</code> modifier:</p>
+
+          <div class="code-block">
+            <pre>struct MatchedGeometryTransitionExample: View {
+    @Namespace private var namespace
+    @State private var isExpanded = false
+    
+    var body: some View {
+        VStack {
+            if !isExpanded {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.blue)
+                    .frame(width: 100, height: 100)
+                    .matchedGeometryEffect(id: "shape", in: namespace)
+                    .onTapGesture {
+                        withAnimation(.spring()) {
+                            isExpanded = true
+                        }
+                    }
+            } else {
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(Color.blue)
+                    .frame(maxWidth: .infinity, height: 200)
+                    .matchedGeometryEffect(id: "shape", in: namespace)
+                    .onTapGesture {
+                        withAnimation(.spring()) {
+                            isExpanded = false
+                        }
+                    }
+            }
+        }
+        .padding()
+    }
+}</pre>
+          </div>
+
+          <h5>Advanced Transition Patterns</h5>
+
+          <h6>1. Transitions with Delays and Sequencing</h6>
+
+          <div class="code-block">
+            <pre>@State private var showViews = false
+
+var body: some View {
+    VStack {
+        Button("Toggle Views") {
+            withAnimation {
+                showViews.toggle()
+            }
+        }
+        
+        if showViews {
+            Text("First Item")
+                .transition(.slide.animation(.easeInOut.delay(0)))
+            
+            Text("Second Item")
+                .transition(.slide.animation(.easeInOut.delay(0.2)))
+            
+            Text("Third Item")
+                .transition(.slide.animation(.easeInOut.delay(0.4)))
+        }
+    }
+}</pre>
+          </div>
+
+          <h6>2. Using ViewBuilder to Create Reusable Transitioning Components</h6>
+
+          <div class="code-block">
+            <pre>struct TransitioningContent&lt;Content: View&gt;: View {
+    @Binding var isShowing: Bool
+    let transition: AnyTransition
+    let content: () -> Content
+    
+    var body: some View {
+        if isShowing {
+            content()
+                .transition(transition)
+        }
+    }
+}
+
+// Usage
+@State private var showDetail = false
+
+var body: some View {
+    VStack {
+        Button("Toggle") {
+            withAnimation(.easeInOut) {
+                showDetail.toggle()
+            }
+        }
+        
+        TransitioningContent(
+            isShowing: $showDetail,
+            transition: .move(edge: .bottom).combined(with: .opacity)
+        ) {
+            Text("Detailed information")
+                .padding()
+                .background(Color.blue)
+                .cornerRadius(10)
+        }
+    }
+}</pre>
+          </div>
+
+          <h6>3. Multi-Stage Transitions</h6>
+
+          <p>Sometimes you might want complex, multi-stage transitions. This can be achieved by combining transitions
+            with state management:</p>
+
+          <div class="code-block">
+            <pre>struct MultiStageTransition: View {
+    @State private var stage = 0
+    
+    var body: some View {
+        VStack {
+            Button("Next Stage") {
+                withAnimation(.easeInOut) {
+                    stage = (stage + 1) % 4
+                }
+            }
+            .padding()
+            
+            switch stage {
+            case 0:
+                Text("Stage 1")
+                    .padding()
+                    .background(Color.blue)
+                    .transition(.opacity)
+            case 1:
+                Text("Stage 2")
+                    .padding()
+                    .background(Color.green)
+                    .transition(.scale)
+            case 2:
+                Text("Stage 3")
+                    .padding()
+                    .background(Color.orange)
+                    .transition(.slide)
+            case 3:
+                Text("Stage 4")
+                    .padding()
+                    .background(Color.red)
+                    .transition(.move(edge: .bottom))
+            default:
+                EmptyView()
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>Practical Examples of Transitions</h5>
+
+          <h6>1. Modal Presentation</h6>
+
+          <div class="code-block">
+            <pre>struct ModalExample: View {
+    @State private var showModal = false
+    
+    var body: some View {
+        ZStack {
+            VStack {
+                Button("Show Modal") {
+                    withAnimation(.spring()) {
+                        showModal = true
+                    }
+                }
+                Spacer()
+            }
+            
+            if showModal {
+                // Semi-transparent overlay
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+                    .onTapGesture {
+                        withAnimation(.spring()) {
+                            showModal = false
+                        }
+                    }
+                
+                // Modal content
+                VStack {
+                    Text("Modal Content")
+                        .font(.headline)
+                    
+                    Text("This is a modal dialog presented with a transition.")
+                        .padding()
+                    
+                    Button("Dismiss") {
+                        withAnimation(.spring()) {
+                            showModal = false
+                        }
+                    }
+                    .padding()
+                }
+                .padding()
+                .background(Color.white)
+                .cornerRadius(15)
+                .shadow(radius: 10)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <h6>2. Tab Switching with Custom Transitions</h6>
+
+          <div class="code-block">
+            <pre>struct CustomTabView: View {
+    @State private var selectedTab = 0
+    
+    var body: some View {
+        VStack {
+            // Content
+            ZStack {
+                if selectedTab == 0 {
+                    Text("Home Tab")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.blue.opacity(0.2))
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .leading),
+                            removal: .move(edge: .trailing)
+                        ))
+                } else if selectedTab == 1 {
+                    Text("Settings Tab")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.green.opacity(0.2))
+                        .transition(.asymmetric(
+                            insertion: selectedTab > 0 ? .move(edge: .trailing) : .move(edge: .leading),
+                            removal: selectedTab > 0 ? .move(edge: .leading) : .move(edge: .trailing)
+                        ))
+                } else {
+                    Text("Profile Tab")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.purple.opacity(0.2))
+                        .transition(.move(edge: .trailing))
+                }
+            }
+            .frame(height: 300)
+            .clipped()
+            
+            // Tab Bar
+            HStack {
+                Button("Home") {
+                    withAnimation(.spring()) {
+                        selectedTab = 0
+                    }
+                }
+                .padding()
+                .background(selectedTab == 0 ? Color.blue : Color.gray.opacity(0.3))
+                .cornerRadius(10)
+                
+                Button("Settings") {
+                    withAnimation(.spring()) {
+                        selectedTab = 1
+                    }
+                }
+                .padding()
+                .background(selectedTab == 1 ? Color.green : Color.gray.opacity(0.3))
+                .cornerRadius(10)
+                
+                Button("Profile") {
+                    withAnimation(.spring()) {
+                        selectedTab = 2
+                    }
+                }
+                .padding()
+                .background(selectedTab == 2 ? Color.purple : Color.gray.opacity(0.3))
+                .cornerRadius(10)
+            }
+            .padding()
+        }
+    }
+}</pre>
+          </div>
+
+          <h6>3. List Item Removal with Transition</h6>
+
+          <div class="code-block">
+            <pre>struct ListWithTransitions: View {
+    @State private var items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"]
+    
+    var body: some View {
+        List {
+            ForEach(items, id: \.self) { item in
+                Text(item)
+                    .padding()
+                    .transition(.slide)
+                    .animation(.default, value: items)
+            }
+            .onDelete { indexSet in
+                withAnimation {
+                    items.remove(atOffsets: indexSet)
+                }
+            }
+        }
+        .toolbar {
+            Button("Add Item") {
+                withAnimation {
+                    items.append("Item \(items.count + 1)")
+                }
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>Common Transition Challenges and Solutions</h5>
+
+          <h6>1. Transitions Not Animating</h6>
+
+          <p><strong>Problem:</strong> You've applied a transition, but it doesn't animate.</p>
+          <p><strong>Solution:</strong> Ensure you're wrapping the state change in <code>withAnimation</code>.</p>
+
+          <div class="code-block">
+            <pre>// Wrong - transition won't animate
+Button("Show") {
+    showDetail = true  // No animation wrapper
+}
+
+// Correct - transition will animate
+Button("Show") {
+    withAnimation {
+        showDetail = true
+    }
+}</pre>
+          </div>
+
+          <h6>2. Unexpected Transition Behavior</h6>
+
+          <p><strong>Problem:</strong> Transitions behave differently than expected.</p>
+          <p><strong>Solution:</strong> Remember that transitions only apply to views being inserted or removed, not to
+            existing views changing properties.</p>
+
+          <h6>3. Transitions Applied to Container Views</h6>
+
+          <p><strong>Problem:</strong> Transitions not working when applied to container views.</p>
+          <p><strong>Solution:</strong> Apply transitions to the content views rather than containers.</p>
+
+          <div class="code-block">
+            <pre>// Less reliable
+if showDetail {
+    VStack {
+        Text("Detail 1")
+        Text("Detail 2")
+    }
+    .transition(.slide) // May not work as expected
+}
+
+// More reliable
+if showDetail {
+    VStack {
+        Text("Detail 1")
+            .transition(.slide) // Apply to individual views
+        Text("Detail 2")
+            .transition(.slide)
+    }
+}</pre>
+          </div>
+
+          <h5>Conclusion</h5>
+
+          <p>Transitions in SwiftUI are a powerful tool for creating polished, professional-looking user interfaces.
+            They specifically handle how views appear and disappear from the view hierarchy, complementing the regular
+            animation system which handles property changes to existing views.</p>
+
+          <p>Key points to remember about transitions:</p>
+
+          <ul>
+            <li><strong>Purpose</strong>: Transitions define the visual effects that occur when views are added to or
+              removed from the view hierarchy.</li>
+            <li><strong>Relation to Animations</strong>: Transitions work with animations but serve a different purpose.
+              Transitions define <em>how</em> views appear/disappear, while animations define <em>how</em> properties
+              change.</li>
+            <li><strong>Implementation</strong>: Apply transitions using the <code>.transition()</code> modifier and
+              ensure state changes are wrapped in <code>withAnimation</code>.</li>
+            <li><strong>Built-in Options</strong>: SwiftUI provides several built-in transitions (opacity, slide, scale,
+              move), which can be combined and customized.</li>
+            <li><strong>Custom Transitions</strong>: You can create custom transitions for unique visual effects
+              specific to your app.</li>
+            <li><strong>Advanced Techniques</strong>: Combine transitions with <code>matchedGeometryEffect</code> for
+              more sophisticated view transitions that maintain continuity.</li>
+          </ul>
+
+          <p>When used effectively, transitions enhance the user experience by providing visual cues about view
+            hierarchy changes, making your app feel more responsive, intuitive, and professionally designed.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <h4>الانتقالات في SwiftUI</h4>
+
+      <p>في SwiftUI، الانتقالات (Transitions) هي رسوم متحركة متخصصة تحدد كيفية ظهور واختفاء العناصر المرئية من واجهة
+        المستخدم. بينما تتعامل الرسوم المتحركة العادية مع التغييرات التي تطرأ على العناصر المرئية الموجودة (مثل الحجم أو
+        الموضع أو اللون)، تتعامل الانتقالات تحديدًا مع إدراج وإزالة العناصر من التسلسل الهرمي للعرض.</p>
+
+      <h5>فهم الانتقالات</h5>
+
+      <p>تحدد الانتقالات في SwiftUI <span class="highlight">كيفية دخول أو خروج العنصر المرئي</span> من التسلسل الهرمي
+        للعرض. عندما تتم إضافة أو إزالة عنصر مرئي بشكل مشروط من واجهة المستخدم، تحدد الانتقالات التأثير المرئي المصاحب
+        لهذا التغيير.</p>
+
+      <p>في هذا المثال، عندما تصبح <code>isShowingDetail</code> <code>true</code>، ينزلق <code>DetailView</code> من
+        الجانب. وعندما تصبح <code>false</code>، ينزلق العنصر للخارج. يحدد الانتقال التأثير المرئي لهذا الظهور والاختفاء.
+      </p>
+
+      <h5>الاختلافات الرئيسية بين الانتقالات والرسوم المتحركة</h5>
+
+      <ul>
+        <li><span class="highlight">الغرض:</span> تحدد الانتقالات كيفية ظهور واختفاء العناصر المرئية، بينما تحدد الرسوم
+          المتحركة كيفية تحريك التغييرات في الخصائص.</li>
+        <li><span class="highlight">المحفز:</span> إدراج/إزالة العنصر المرئي من التسلسل الهرمي للانتقالات، وتغييرات في
+          الخصائص القابلة للتحريك للرسوم المتحركة.</li>
+        <li><span class="highlight">قابلية التطبيق:</span> تنطبق الانتقالات على العناصر المرئية التي تتم إضافتها/إزالتها
+          عبر المنطق الشرطي، بينما تنطبق الرسوم المتحركة على خصائص العناصر المرئية التي تظل في التسلسل الهرمي.</li>
+        <li><span class="highlight">التنفيذ:</span> معدل <code>.transition()</code> للانتقالات، ومعدل
+          <code>.animation()</code> أو <code>withAnimation { }</code> للرسوم المتحركة.</li>
+        <li><span class="highlight">السلوك الافتراضي:</span> لا يوجد تأثير مرئي للانتقالات (ظهور/اختفاء فوري)، ولا توجد
+          رسوم متحركة للرسوم المتحركة (تغيير فوري في الخاصية).</li>
+      </ul>
+
+      <p>الفرق الأساسي: <span class="highlight">تدير الانتقالات ظهور واختفاء العناصر المرئية</span>، بينما <span
+          class="highlight">تدير الرسوم المتحركة كيفية تغير خصائص العناصر المرئية الموجودة</span>.</p>
+
+      <h5>أنواع الانتقالات المدمجة</h5>
+
+      <p>توفر SwiftUI العديد من الانتقالات المدمجة:</p>
+
+      <h6>1. الانتقالات الأساسية</h6>
+
+      <ul>
+        <li><span class="highlight">opacity</span>: انتقال بالتلاشي</li>
+        <li><span class="highlight">slide</span>: انتقال بالانزلاق</li>
+        <li><span class="highlight">scale</span>: انتقال بتغيير الحجم</li>
+        <li><span class="highlight">move</span>: انتقال من حافة معينة</li>
+        <li><span class="highlight">asymmetric</span>: انتقال غير متماثل (مختلف للإدراج والإزالة)</li>
+      </ul>
+
+      <h6>2. انتقال الهوية</h6>
+
+      <p><span class="highlight">identity</span>: لا يوجد تأثير انتقالي مرئي</p>
+
+      <h5>تخصيص الانتقالات</h5>
+
+      <h6>1. تعديل الانتقالات المدمجة</h6>
+
+      <p>يمكنك تخصيص الانتقالات المدمجة من خلال دمجها أو إضافة توقيت رسوم متحركة أو تأخير.</p>
+
+      <h6>2. إنشاء انتقالات مخصصة</h6>
+
+      <p>يمكنك إنشاء انتقالات مخصصة عن طريق الامتثال لبروتوكول <code>ViewModifier</code> وتنفيذ الطريقة الثابتة
+        <code>AnyTransition.modifier</code>.</p>
+
+      <h5>العمل مع الانتقالات</h5>
+
+      <h6>1. تطبيق الانتقالات</h6>
+
+      <p>لتطبيق انتقال، استخدم المعدل <code>.transition()</code> على العنصر المرئي الذي سيتم إدراجه أو إزالته.</p>
+
+      <p>هام: لكي تتحرك الانتقالات، يجب تغليف تغيير الحالة الذي يؤدي إلى ظهور/اختفاء العنصر المرئي في
+        <code>withAnimation</code>.</p>
+
+      <h6>2. تحريك عدة عناصر مرئية باستخدام الانتقالات</h6>
+
+      <p>يمكنك استخدام الانتقالات لإنشاء تحولات سلسة بين عناصر مرئية متعددة، مع تحديد انتقالات مختلفة لكل عنصر.</p>
+
+      <h6>3. تأثير تطابق الهندسة مع الانتقالات</h6>
+
+      <p>للحصول على انتقالات عرض أكثر تطورًا حيث يجب أن تحافظ العناصر على الاستمرارية، يمكنك الجمع بين الانتقالات ومعدل
+        <code>matchedGeometryEffect</code>.</p>
+
+      <h5>أنماط الانتقال المتقدمة</h5>
+
+      <h6>1. الانتقالات مع التأخير والتسلسل</h6>
+
+      <p>يمكنك إنشاء انتقالات متسلسلة من خلال إضافة تأخيرات مختلفة لكل عنصر.</p>
+
+      <h6>2. استخدام ViewBuilder لإنشاء مكونات انتقال قابلة لإعادة الاستخدام</h6>
+
+      <p>يمكنك إنشاء عناصر قابلة لإعادة الاستخدام لتبسيط استخدام الانتقالات في تطبيقك.</p>
+
+      <h6>3. انتقالات متعددة المراحل</h6>
+
+      <p>أحيانًا قد تريد انتقالات معقدة متعددة المراحل. يمكن تحقيق ذلك من خلال الجمع بين الانتقالات وإدارة الحالة.</p>
+
+      <h5>أمثلة عملية للانتقالات</h5>
+
+      <h6>1. عرض نافذة منبثقة</h6>
+
+      <p>استخدم الانتقالات لإنشاء عرض نافذة منبثقة سلس، مع طبقة شفافة جزئيًا تظهر بتلاشي والمحتوى يتحرك من الأسفل.</p>
+
+      <h6>2. تبديل التبويبات باستخدام انتقالات مخصصة</h6>
+
+      <p>استخدم الانتقالات لإنشاء تجربة تبديل تبويبات سلسة، مع انتقالات مختلفة حسب اتجاه التنقل.</p>
+
+      <h6>3. إزالة عنصر قائمة مع انتقال</h6>
+
+      <p>استخدم الانتقالات لجعل إضافة وإزالة عناصر القائمة أكثر سلاسة وجاذبية.</p>
+
+      <h5>تحديات وحلول الانتقال الشائعة</h5>
+
+      <h6>1. الانتقالات لا تتحرك</h6>
+
+      <p><span class="highlight">المشكلة:</span> لقد طبقت انتقالاً، لكنه لا يتحرك.</p>
+      <p><span class="highlight">الحل:</span> تأكد من تغليف تغيير الحالة في <code>withAnimation</code>.</p>
+
+      <h6>2. سلوك انتقال غير متوقع</h6>
+
+      <p><span class="highlight">المشكلة:</span> تتصرف الانتقالات بشكل مختلف عما هو متوقع.</p>
+      <p><span class="highlight">الحل:</span> تذكر أن الانتقالات تنطبق فقط على العناصر المرئية التي يتم إدراجها أو
+        إزالتها، وليس على العناصر المرئية الموجودة التي تتغير خصائصها.</p>
+
+      <h6>3. الانتقالات المطبقة على عناصر الحاوية</h6>
+
+      <p><span class="highlight">المشكلة:</span> الانتقالات لا تعمل عند تطبيقها على عناصر الحاوية.</p>
+      <p><span class="highlight">الحل:</span> قم بتطبيق الانتقالات على عناصر المحتوى بدلاً من الحاويات.</p>
+
+      <h5>الخلاصة</h5>
+
+      <p>الانتقالات في SwiftUI هي أداة قوية لإنشاء واجهات مستخدم مصقولة واحترافية المظهر. فهي تتعامل تحديدًا مع كيفية
+        ظهور واختفاء العناصر المرئية من التسلسل الهرمي للعرض، مما يكمل نظام الرسوم المتحركة العادي الذي يتعامل مع
+        تغييرات الخصائص للعناصر المرئية الموجودة.</p>
+
+      <p>نقاط أساسية يجب تذكرها حول الانتقالات:</p>
+
+      <ul>
+        <li><span class="highlight">الغرض</span>: تحدد الانتقالات التأثيرات المرئية التي تحدث عندما تتم إضافة العناصر
+          المرئية إلى التسلسل الهرمي للعرض أو إزالتها منه.</li>
+        <li><span class="highlight">العلاقة بالرسوم المتحركة</span>: تعمل الانتقالات مع الرسوم المتحركة ولكنها تخدم
+          غرضًا مختلفًا. تحدد الانتقالات <em>كيف</em> تظهر/تختفي العناصر المرئية، بينما تحدد الرسوم المتحركة
+          <em>كيف</em> تتغير الخصائص.</li>
+        <li><span class="highlight">التنفيذ</span>: قم بتطبيق الانتقالات باستخدام المعدل <code>.transition()</code>
+          وتأكد من تغليف تغييرات الحالة في <code>withAnimation</code>.</li>
+        <li><span class="highlight">الخيارات المدمجة</span>: توفر SwiftUI العديد من الانتقالات المدمجة (opacity، slide،
+          scale، move)، والتي يمكن دمجها وتخصيصها.</li>
+        <li><span class="highlight">الانتقالات المخصصة</span>: يمكنك إنشاء انتقالات مخصصة لتأثيرات مرئية فريدة خاصة
+          بتطبيقك.</li>
+        <li><span class="highlight">تقنيات متقدمة</span>: الجمع بين الانتقالات و<code>matchedGeometryEffect</code>
+          للحصول على انتقالات عرض أكثر تطورًا تحافظ على الاستمرارية.</li>
+      </ul>
+
+      <p>عند استخدامها بشكل فعال، تعزز الانتقالات تجربة المستخدم من خلال توفير إشارات مرئية حول تغييرات التسلسل الهرمي
+        للعرض، مما يجعل تطبيقك يبدو أكثر استجابة وبديهية وتصميمًا احترافيًا.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

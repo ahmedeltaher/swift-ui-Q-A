@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is the difference between @MainActor and DispatchQueue.main.async in SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What is the difference between @MainActor and DispatchQueue.main.async in SwiftUI?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p>Both <strong>@MainActor</strong> and <strong>DispatchQueue.main.async</strong> are mechanisms for executing
+            code on the main thread in Swift applications, but they differ significantly in their design, functionality,
+            and integration with Swift's concurrency model.</p>
+
+          <h4>@MainActor</h4>
+
+          <p><strong>@MainActor</strong> is part of Swift's structured concurrency model introduced in Swift 5.5. It's
+            an actor that represents the main thread and ensures that marked functions, properties, or classes are
+            executed on the main thread.</p>
+
+          <ul>
+            <li><strong>Declaration-based</strong>: Applied at declaration time as an attribute</li>
+            <li><strong>Compile-time checked</strong>: The compiler enforces actor isolation</li>
+            <li><strong>Works with async/await</strong>: Integrates seamlessly with Swift's modern concurrency</li>
+            <li><strong>Structured concurrency</strong>: Part of Swift's actor system</li>
+          </ul>
+
+          <div class="code-block">
+            <pre>// Class level - all methods run on main thread
+@MainActor
+class ViewModel: ObservableObject {
+    @Published var data: [String] = []
+    
+    func fetchData() async {
+        // This automatically runs on the main thread
+        let result = await networkCall() // This runs on a background thread
+        data = result // Safely updates UI property on main thread
+    }
+}
+
+// Or method level
+class ViewModel: ObservableObject {
+    @Published var data: [String] = []
+    
+    // Only this method is guaranteed to run on main thread
+    @MainActor
+    func updateUI(with newData: [String]) {
+        data = newData // Safely updates UI property on main thread
+    }
+}</pre>
+          </div>
+
+          <h4>DispatchQueue.main.async</h4>
+
+          <p><strong>DispatchQueue.main.async</strong> is part of Grand Central Dispatch (GCD), Apple's older
+            concurrency framework. It explicitly schedules a closure to be executed asynchronously on the main queue.
+          </p>
+
+          <ul>
+            <li><strong>Imperative</strong>: Explicitly used at call sites</li>
+            <li><strong>Runtime checked</strong>: No compile-time guarantees</li>
+            <li><strong>Callback-based</strong>: Uses completion handler closures</li>
+            <li><strong>Less structured</strong>: More prone to callback hell and race conditions</li>
+          </ul>
+
+          <div class="code-block">
+            <pre>class ViewModel: ObservableObject {
+    @Published var data: [String] = []
+    
+    func fetchData() {
+        // This runs on the current thread (could be any thread)
+        networkCall { [weak self] result in
+            // Explicitly dispatch to main thread
+            DispatchQueue.main.async {
+                self?.data = result // Updates UI property on main thread
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <h4>Key Differences</h4>
+
+          <table>
+            <tr>
+              <th>Feature</th>
+              <th>@MainActor</th>
+              <th>DispatchQueue.main.async</th>
+            </tr>
+            <tr>
+              <td>Concurrency Model</td>
+              <td>Modern structured concurrency</td>
+              <td>Traditional GCD</td>
+            </tr>
+            <tr>
+              <td>Syntax</td>
+              <td>Declarative (attribute)</td>
+              <td>Imperative (function call)</td>
+            </tr>
+            <tr>
+              <td>Safety</td>
+              <td>Compile-time checked</td>
+              <td>Runtime only</td>
+            </tr>
+            <tr>
+              <td>Integration</td>
+              <td>Works with async/await</td>
+              <td>Closure-based callbacks</td>
+            </tr>
+            <tr>
+              <td>Readability</td>
+              <td>Linear code flow</td>
+              <td>Nested closures</td>
+            </tr>
+            <tr>
+              <td>Usage scope</td>
+              <td>Classes, methods, properties</td>
+              <td>Code blocks only</td>
+            </tr>
+          </table>
+
+          <h4>When to use which?</h4>
+
+          <p><strong>Use @MainActor when:</strong></p>
+          <ul>
+            <li>Working with SwiftUI and modern Swift code (iOS 15+)</li>
+            <li>Using async/await</li>
+            <li>Need compile-time guarantees for main thread execution</li>
+            <li>Want cleaner, more maintainable code</li>
+          </ul>
+
+          <p><strong>Use DispatchQueue.main.async when:</strong></p>
+          <ul>
+            <li>Supporting older iOS versions (pre-iOS 15)</li>
+            <li>Working with completion handler-based APIs</li>
+            <li>Need to explicitly dispatch specific code blocks to the main thread</li>
+            <li>Integrating with legacy code</li>
+          </ul>
+
+          <p>In modern SwiftUI development, @MainActor is generally preferred for its safety guarantees and better
+            integration with Swift's concurrency model, but both approaches may be necessary depending on the specific
+            requirements and compatibility needs of your application.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p>كل من <span class="highlight">@MainActor</span> و <span class="highlight">DispatchQueue.main.async</span> هما
+        آليتان لتنفيذ الكود على الخيط الرئيسي (main thread) في تطبيقات Swift، ولكنهما يختلفان بشكل كبير في تصميمهما
+        ووظيفتهما وتكاملهما مع نموذج التزامن في Swift.</p>
+
+      <h4>@MainActor</h4>
+
+      <p><span class="highlight">@MainActor</span> هو جزء من نموذج التزامن المنظم في Swift الذي تم تقديمه في Swift 5.5.
+        إنه ممثل (actor) يمثل الخيط الرئيسي ويضمن أن الدوال أو الخصائص أو الفئات المحددة يتم تنفيذها على الخيط الرئيسي.
+      </p>
+
+      <ul>
+        <li><span class="highlight">يعتمد على الإعلان</span>: يتم تطبيقه في وقت الإعلان كسمة (attribute)</li>
+        <li><span class="highlight">يتم التحقق منه في وقت التجميع</span>: يفرض المترجم عزل الممثل (actor isolation)</li>
+        <li><span class="highlight">يعمل مع async/await</span>: يتكامل بسلاسة مع التزامن الحديث في Swift</li>
+        <li><span class="highlight">تزامن منظم</span>: جزء من نظام الممثلين (actors) في Swift</li>
+      </ul>
+
+      <p>في المثال المعروض، نرى كيف يمكننا استخدام @MainActor على مستوى الفئة بأكملها مما يجعل جميع الدوال تعمل تلقائياً
+        على الخيط الرئيسي، أو على مستوى دالة محددة فقط. هذا يضمن أن تحديثات واجهة المستخدم تحدث دائماً على الخيط الرئيسي
+        بطريقة آمنة ومتسقة.</p>
+
+      <h4>DispatchQueue.main.async</h4>
+
+      <p><span class="highlight">DispatchQueue.main.async</span> هو جزء من Grand Central Dispatch (GCD)، وهو إطار عمل
+        التزامن القديم في Apple. يقوم بجدولة closure للتنفيذ بشكل غير متزامن على الطابور الرئيسي.</p>
+
+      <ul>
+        <li><span class="highlight">إلزامي</span>: يُستخدم بشكل صريح عند مواقع الاستدعاء</li>
+        <li><span class="highlight">يتم التحقق منه في وقت التشغيل</span>: لا توجد ضمانات في وقت التجميع</li>
+        <li><span class="highlight">يعتمد على الاستدعاءات الخلفية</span>: يستخدم closures كمعالجات الإكمال</li>
+        <li><span class="highlight">أقل تنظيماً</span>: أكثر عرضة لمشاكل تداخل الاستدعاءات وحالات التسابق</li>
+      </ul>
+
+      <p>في المثال الثاني، نرى كيف يجب علينا صراحةً استدعاء DispatchQueue.main.async داخل استدعاء خلفي لنقل التنفيذ إلى
+        الخيط الرئيسي قبل تحديث البيانات.</p>
+
+      <h4>الاختلافات الرئيسية</h4>
+
+      <p>يمكن تلخيص الاختلافات الرئيسية في الجدول الذي تم عرضه في الإجابة بالإنجليزية، والذي يقارن بين الآليتين من حيث
+        نموذج التزامن، والصيغة، والأمان، والتكامل، وسهولة القراءة، ونطاق الاستخدام.</p>
+
+      <h4>متى نستخدم أياً منهما؟</h4>
+
+      <p><span class="highlight">استخدم @MainActor عندما:</span></p>
+      <ul>
+        <li>تعمل مع SwiftUI وكود Swift حديث (iOS 15+)</li>
+        <li>تستخدم async/await</li>
+        <li>تحتاج إلى ضمانات وقت التجميع لتنفيذ الخيط الرئيسي</li>
+        <li>ترغب في كود أنظف وأكثر قابلية للصيانة</li>
+      </ul>
+
+      <p><span class="highlight">استخدم DispatchQueue.main.async عندما:</span></p>
+      <ul>
+        <li>تدعم إصدارات iOS القديمة (قبل iOS 15)</li>
+        <li>تعمل مع واجهات برمجة التطبيقات المعتمدة على معالجات الإكمال</li>
+        <li>تحتاج إلى توجيه كتل كود محددة بشكل صريح إلى الخيط الرئيسي</li>
+        <li>تتكامل مع الكود القديم</li>
+      </ul>
+
+      <p>في تطوير SwiftUI الحديث، يُفضل عموماً استخدام @MainActor لضماناته الأمنية وتكامله الأفضل مع نموذج التزامن في
+        Swift، ولكن قد تكون كلتا الطريقتين ضروريتين اعتماداً على المتطلبات المحددة واحتياجات التوافق لتطبيقك.</p>
+
+      <p>باختصار، @MainActor هو الخيار الأحدث والأكثر أماناً لضمان تشغيل الكود على الخيط الرئيسي، خاصة عند العمل مع
+        التزامن المنظم الجديد في Swift، بينما يبقى DispatchQueue.main.async حلاً مهماً للتوافق مع الكود القديم والأنظمة
+        التي تعتمد على GCD.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

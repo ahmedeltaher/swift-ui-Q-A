@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is SwiftUI and how is it different from UIKit?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #f6d365;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What is SwiftUI and how is it different from UIKit?</h1>
+
+    <div class="card basic-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p><strong>SwiftUI</strong> is Apple's modern declarative UI framework introduced in 2019 that allows
+            developers to build user interfaces across all Apple platforms using Swift. It represents a significant
+            shift from the imperative programming model used in UIKit.</p>
+
+          <p>Key differences between SwiftUI and UIKit:</p>
+
+          <ol>
+            <li><strong>Declarative vs. Imperative:</strong> SwiftUI uses a declarative approach where you describe what
+              your UI should look like and how it should behave, and the framework takes care of how to render it. UIKit
+              uses an imperative approach where you manually construct and manipulate views.</li>
+
+            <li><strong>State Management:</strong> SwiftUI has built-in state management through property wrappers like
+              @State, @Binding, @ObservedObject, and @EnvironmentObject. UIKit requires manual state tracking and UI
+              updates.</li>
+
+            <li><strong>Cross-Platform:</strong> SwiftUI provides a unified framework for building UIs across all Apple
+              platforms (iOS, macOS, watchOS, tvOS) with minimal platform-specific code. UIKit is primarily for iOS and
+              tvOS.</li>
+
+            <li><strong>Live Preview:</strong> SwiftUI offers real-time previews in Xcode with Canvas, allowing faster
+              iteration without building and running the app each time.</li>
+
+            <li><strong>Automatic UI Updates:</strong> When state changes in SwiftUI, the framework automatically
+              updates the UI. In UIKit, you must manually update views in response to data changes.</li>
+
+            <li><strong>Layout System:</strong> SwiftUI uses a modern layout system with stacks (VStack, HStack, ZStack)
+              and alignments. UIKit uses Auto Layout with constraints.</li>
+
+            <li><strong>Composition:</strong> SwiftUI has excellent support for creating reusable, composable UI
+              components.</li>
+          </ol>
+
+          <div class="code-block">
+            <pre>// SwiftUI example
+struct ContentView: View {
+    @State private var isToggled = false
+    
+    var body: some View {
+        VStack {
+            Text("Hello, SwiftUI!")
+                .font(.largeTitle)
+                .foregroundColor(isToggled ? .green : .blue)
+            
+            Toggle("Toggle me", isOn: $isToggled)
+                .padding()
+        }
+        .padding()
+    }
+}</pre>
+          </div>
+
+          <div class="code-block">
+            <pre>// UIKit equivalent would be much longer with manual setup
+class ViewController: UIViewController {
+    let titleLabel = UILabel()
+    let toggle = UISwitch()
+    let toggleLabel = UILabel()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupViews()
+    }
+    
+    private func setupViews() {
+        // Configure label
+        titleLabel.text = "Hello, UIKit!"
+        titleLabel.font = .systemFont(ofSize: 34, weight: .bold)
+        titleLabel.textColor = .blue
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Configure toggle and label
+        toggleLabel.text = "Toggle me"
+        toggleLabel.translatesAutoresizingMaskIntoConstraints = false
+        toggle.addTarget(self, action: #selector(toggleChanged), for: .valueChanged)
+        toggle.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Add to view hierarchy
+        view.addSubview(titleLabel)
+        view.addSubview(toggleLabel)
+        view.addSubview(toggle)
+        
+        // Set up constraints
+        // ...
+    }
+    
+    @objc private func toggleChanged() {
+        titleLabel.textColor = toggle.isOn ? .green : .blue
+    }
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p>
+        <strong>SwiftUI</strong> هي إطار عمل حديث من آبل تم تقديمه في عام 2019 لبناء واجهات المستخدم على جميع منصات آبل
+        باستخدام لغة Swift. وهو يمثل تحولًا كبيرًا عن نموذج البرمجة الإجرائية المستخدم في UIKit.
+      </p>
+
+      <p>الاختلافات الرئيسية بين SwiftUI و UIKit:</p>
+
+      <ol>
+        <li><span class="highlight">التصريحية مقابل الإجرائية:</span> يستخدم SwiftUI نهجًا تصريحيًا حيث تصف ما يجب أن
+          تبدو عليه واجهة المستخدم وكيف يجب أن تتصرف، ويتولى الإطار مسؤولية كيفية عرضها. بينما يستخدم UIKit نهجًا
+          إجرائيًا حيث تقوم يدويًا ببناء ومعالجة العناصر المرئية.</li>
+
+        <li><span class="highlight">إدارة الحالة:</span> يحتوي SwiftUI على إدارة حالة مدمجة من خلال property wrappers
+          مثل State@ و Binding@ و ObservedObject@ و EnvironmentObject@. بينما يتطلب UIKit تتبع الحالة يدويًا وتحديثات
+          واجهة المستخدم.</li>
+
+        <li><span class="highlight">عبر المنصات:</span> يوفر SwiftUI إطارًا موحدًا لبناء واجهات المستخدم عبر جميع منصات
+          آبل (iOS وmacOS وwatchOS وtvOS) مع الحد الأدنى من الكود الخاص بكل منصة. بينما UIKit هو في المقام الأول لـ iOS
+          و tvOS.</li>
+
+        <li><span class="highlight">المعاينة المباشرة:</span> يوفر SwiftUI معاينات في الوقت الفعلي في Xcode من خلال
+          Canvas، مما يتيح تكرار أسرع دون الحاجة إلى بناء وتشغيل التطبيق في كل مرة.</li>
+
+        <li><span class="highlight">تحديثات واجهة المستخدم التلقائية:</span> عندما تتغير الحالة في SwiftUI، يقوم الإطار
+          تلقائيًا بتحديث واجهة المستخدم. في UIKit، يجب عليك تحديث العناصر المرئية يدويًا استجابة لتغييرات البيانات.
+        </li>
+
+        <li><span class="highlight">نظام التخطيط:</span> يستخدم SwiftUI نظام تخطيط حديث مع المكدسات (VStack و HStack و
+          ZStack) والمحاذاة. بينما يستخدم UIKit نظام Auto Layout مع القيود.</li>
+
+        <li><span class="highlight">التكوين:</span> يحتوي SwiftUI على دعم ممتاز لإنشاء مكونات واجهة مستخدم قابلة لإعادة
+          الاستخدام وقابلة للتركيب.</li>
+      </ol>
+
+      <p>لاحظ في المثال المقدم كيف أن كتابة نفس الوظيفة (نص مع زر تبديل يغير لون النص) تتطلب كودًا أقل بكثير في SwiftUI
+        مقارنة بـ UIKit. في SwiftUI، يتم تحديث واجهة المستخدم تلقائيًا عندما تتغير الحالة (isToggled)، بينما في UIKit
+        يجب عليك كتابة كود خاص لإدارة التغييرات والتحديثات.</p>
+
+      <p>بشكل عام، يمثل SwiftUI تطورًا كبيرًا في تطوير تطبيقات آبل، حيث يسمح بكتابة كود أقل وأكثر وضوحًا، مع تقليل
+        الأخطاء المحتملة وتحسين تجربة المطور.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

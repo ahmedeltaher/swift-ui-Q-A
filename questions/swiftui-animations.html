@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwiftUI Animations</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 20px 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .comparison-table th {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: #e0e0e0;
+      font-weight: bold;
+    }
+
+    .comparison-table tr:nth-child(odd) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .comparison-table tr:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .animation-demo {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .animation-comparison {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .animation-example {
+      flex: 1;
+      min-width: 300px;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">How does SwiftUI handle animations?</h1>
+
+    <div class="card intermediate-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>SwiftUI Animation System</h4>
+
+          <p>SwiftUI provides a powerful, declarative animation system that makes it easy to add smooth transitions to
+            your app's user interface. Unlike UIKit, where animations often require complex code, SwiftUI's approach to
+            animation is simple and integrated into the framework's core design principles.</p>
+
+          <h5>Core Animation Concepts</h5>
+
+          <p>SwiftUI's animation system is built around these fundamental concepts:</p>
+          <ul>
+            <li><strong>Animatable Properties</strong>: SwiftUI can animate changes to certain view properties, like
+              position, size, opacity, rotation, and color.</li>
+            <li><strong>State-Driven Animations</strong>: Animations in SwiftUI are triggered by state changes.</li>
+            <li><strong>Implicit vs. Explicit Animations</strong>: SwiftUI provides two primary ways to define
+              animations.</li>
+            <li><strong>Animation Modifiers</strong>: Applied to views to define how properties should animate.</li>
+          </ul>
+
+          <h5>1. Implicit Animations</h5>
+
+          <p>Implicit animations are the simplest form of animation in SwiftUI. They automatically animate any changes
+            to animatable properties of a view when those properties change.</p>
+
+          <div class="code-block">
+            <pre>struct ImplicitAnimationExample: View {
+    @State private var scale: CGFloat = 1.0
+    
+    var body: some View {
+        Button("Tap Me") {
+            scale = scale == 1.0 ? 2.0 : 1.0
+        }
+        .scaleEffect(scale)
+        .animation(.spring(), value: scale) // This makes the scale change animate
+    }
+}</pre>
+          </div>
+
+          <p>In this example, the <code>.animation(.spring(), value: scale)</code> modifier tells SwiftUI to animate any
+            changes to the view that occur when the <code>scale</code> value changes. The animation will use a spring
+            effect.</p>
+
+          <p>Key points about implicit animations:</p>
+          <ul>
+            <li>They're attached directly to views using the <code>.animation()</code> modifier</li>
+            <li>The <code>value:</code> parameter specifies which state changes should trigger the animation</li>
+            <li>They affect all animatable properties of the view that change when the tracked value changes</li>
+            <li>They're easy to implement but offer less control than explicit animations</li>
+          </ul>
+
+          <h5>2. Explicit Animations</h5>
+
+          <p>Explicit animations give you more control by explicitly defining when animations should occur. They use the
+            <code>withAnimation</code> function to wrap state changes that should trigger animations.</p>
+
+          <div class="code-block">
+            <pre>struct ExplicitAnimationExample: View {
+    @State private var offset: CGFloat = 0
+    
+    var body: some View {
+        Button("Animate") {
+            // Explicitly animate the state change
+            withAnimation(.easeInOut(duration: 1)) {
+                offset = offset == 0 ? 100 : 0
+            }
+        }
+        .offset(x: offset)
+    }
+}</pre>
+          </div>
+
+          <p>Key points about explicit animations:</p>
+          <ul>
+            <li>They're triggered by wrapping state changes in <code>withAnimation</code></li>
+            <li>They give you more precise control over when animations occur</li>
+            <li>They can animate multiple property changes together</li>
+            <li>They're useful for complex animations or when animations need to be conditional</li>
+          </ul>
+
+          <h5>3. Animation Types and Customization</h5>
+
+          <p>SwiftUI offers several built-in animation types that you can use to control how properties animate:</p>
+
+          <div class="code-block">
+            <pre>// Basic animations with customizable duration
+.animation(.linear(duration: 1), value: someValue)
+.animation(.easeIn(duration: 2), value: someValue)
+.animation(.easeOut(duration: 0.5), value: someValue)
+.animation(.easeInOut(duration: 1.5), value: someValue)
+
+// Spring animations
+.animation(.spring(response: 0.5, dampingFraction: 0.5), value: someValue)
+.animation(.interactiveSpring(), value: someValue)
+
+// Delayed animations
+.animation(.easeInOut(duration: 1).delay(0.5), value: someValue)
+
+// Repeating animations
+.animation(.easeInOut(duration: 1).repeatCount(3), value: someValue)
+.animation(.easeInOut(duration: 1).repeatForever(), value: someValue)
+
+// Combined animations
+.animation(
+    .easeInOut(duration: 1)
+        .delay(0.2)
+        .repeatCount(2, autoreverses: true),
+    value: someValue
+)</pre>
+          </div>
+
+          <p>Animation types in detail:</p>
+          <ul>
+            <li><strong>linear</strong>: Constant speed throughout the animation</li>
+            <li><strong>easeIn</strong>: Starts slow and accelerates</li>
+            <li><strong>easeOut</strong>: Starts fast and decelerates</li>
+            <li><strong>easeInOut</strong>: Starts slow, accelerates in the middle, then slows down again</li>
+            <li><strong>spring</strong>: Physics-based animation that simulates spring-like motion</li>
+          </ul>
+
+          <h5>4. Animating Specific Properties</h5>
+
+          <p>You can target specific properties for animation, allowing for fine-grained control:</p>
+
+          <div class="code-block">
+            <pre>Circle()
+    .fill(isActive ? Color.red : Color.blue) // This color change will animate
+    .frame(width: 100, height: 100)
+    .scaleEffect(isActive ? 1.5 : 1.0) // This scale change will animate
+    .opacity(isActive ? 1.0 : 0.5) // This opacity change will animate
+    .animation(.easeInOut, value: isActive) // Animates all the above changes</pre>
+          </div>
+
+          <p>If you want different animations for different properties, you can use multiple animation modifiers:</p>
+
+          <div class="code-block">
+            <pre>Circle()
+    .fill(isActive ? Color.red : Color.blue)
+    .animation(.easeIn(duration: 1), value: isActive) // Color will animate with easeIn
+    .scaleEffect(isActive ? 1.5 : 1.0)
+    .animation(.spring(), value: isActive) // Scale will animate with spring</pre>
+          </div>
+
+          <p>However, this syntax can be confusing because of how modifiers work in SwiftUI. A clearer approach is to
+            use <code>animatableData</code> or to create custom animatable views.</p>
+
+          <h5>5. Animation Timing Control</h5>
+
+          <p>SwiftUI offers several ways to control animation timing:</p>
+
+          <div class="code-block">
+            <pre>// Adding delays
+.animation(.easeInOut.delay(0.5), value: someValue)
+
+// Setting speed
+Button("Animate") {
+    withAnimation(.easeInOut(duration: 2)) {
+        // State changes here
+    }
+}
+
+// Using animation phases
+@State private var animationPhase = 0
+
+var body: some View {
+    Button("Animate") {
+        withAnimation(.easeInOut) {
+            animationPhase = 1
+        }
+        
+        // Schedule the next animation phase
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation(.spring()) {
+                animationPhase = 2
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>6. Animation Modifiers</h5>
+
+          <p>SwiftUI provides several animation-specific modifiers:</p>
+
+          <h6>a. Animation Speed Control</h6>
+          <div class="code-block">
+            <pre>.animation(.easeInOut.speed(2), value: isActive) // Twice as fast
+.animation(.easeInOut.speed(0.5), value: isActive) // Half speed</pre>
+          </div>
+
+          <h6>b. Animation Repetition</h6>
+          <div class="code-block">
+            <pre>.animation(.easeInOut.repeatCount(3, autoreverses: true), value: isActive)
+.animation(.easeInOut.repeatForever(autoreverses: true), value: isActive)</pre>
+          </div>
+
+          <h6>c. Animation Pausing/Resuming</h6>
+          <div class="code-block">
+            <pre>@State private var isAnimating = false
+
+var body: some View {
+    Circle()
+        .scaleEffect(isAnimating ? 2 : 1)
+        .animation(isAnimating ? .easeInOut(duration: 2) : .none, value: isAnimating)
+        .onTapGesture {
+            isAnimating.toggle()
+        }
+}</pre>
+          </div>
+
+          <h5>7. Gesture-Based Animations</h5>
+
+          <p>SwiftUI makes it easy to create animations driven by user gestures:</p>
+
+          <div class="code-block">
+            <pre>struct DragAnimationExample: View {
+    @State private var position = CGSize.zero
+    @State private var isDragging = false
+    
+    var body: some View {
+        Circle()
+            .fill(Color.blue)
+            .frame(width: 100, height: 100)
+            .offset(position)
+            .gesture(
+                DragGesture()
+                    .onChanged { gesture in
+                        withAnimation(.spring()) {
+                            position = gesture.translation
+                        }
+                    }
+                    .onEnded { _ in
+                        withAnimation(.spring()) {
+                            position = .zero
+                        }
+                    }
+            )
+    }
+}</pre>
+          </div>
+
+          <h5>8. Combining Animations with Transitions</h5>
+
+          <p>Animations and transitions often work together to create fluid UI experiences:</p>
+
+          <div class="code-block">
+            <pre>struct AnimationWithTransitionExample: View {
+    @State private var isShowingDetails = false
+    
+    var body: some View {
+        VStack {
+            Button("Toggle Details") {
+                withAnimation(.spring()) {
+                    isShowingDetails.toggle()
+                }
+            }
+            
+            if isShowingDetails {
+                DetailView()
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>9. Animating Collections</h5>
+
+          <p>SwiftUI makes it easy to animate changes to collections:</p>
+
+          <div class="code-block">
+            <pre>struct AnimatedListExample: View {
+    @State private var items = ["Item 1", "Item 2", "Item 3"]
+    
+    var body: some View {
+        VStack {
+            List {
+                ForEach(items, id: \.self) { item in
+                    Text(item)
+                }
+                .onDelete(perform: deleteItem)
+            }
+            
+            Button("Add Item") {
+                withAnimation {
+                    items.append("Item \(items.count + 1)")
+                }
+            }
+        }
+    }
+    
+    func deleteItem(at offsets: IndexSet) {
+        withAnimation {
+            items.remove(atOffsets: offsets)
+        }
+    }
+}</pre>
+          </div>
+
+          <h5>10. Advanced: Custom Animatable Properties</h5>
+
+          <p>For complex animations, you can create custom animatable properties:</p>
+
+          <div class="code-block">
+            <pre>struct AnimatableGradientModifier: AnimatableModifier {
+    var fromColor: Color
+    var toColor: Color
+    var percentage: CGFloat
+    
+    var animatableData: CGFloat {
+        get { percentage }
+        set { percentage = newValue }
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [fromColor, toColor]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .opacity(percentage)
+            )
+    }
+}
+
+extension View {
+    func animatableGradient(fromColor: Color, toColor: Color, percentage: CGFloat) -> some View {
+        self.modifier(AnimatableGradientModifier(fromColor: fromColor, toColor: toColor, percentage: percentage))
+    }
+}</pre>
+          </div>
+
+          <h5>Conclusion</h5>
+
+          <p>SwiftUI's animation system is designed to make creating beautiful, fluid interfaces straightforward. By
+            understanding the difference between implicit and explicit animations, how to customize animations, and how
+            to apply them strategically to different parts of your interface, you can create engaging user experiences
+            with minimal code.</p>
+
+          <p>The declarative nature of SwiftUI animations means that you focus on describing the end state you want, and
+            SwiftUI handles the transitions between states automatically. This approach makes animations more
+            maintainable and easier to reason about than traditional imperative animation code.</p>
+
+          <p>Key points to remember:</p>
+          <ul>
+            <li><strong>Implicit animations</strong> (using the <code>.animation()</code> modifier) are simpler but less
+              flexible</li>
+            <li><strong>Explicit animations</strong> (using <code>withAnimation</code>) give you more control over
+              timing and conditions</li>
+            <li>Use <strong>animation parameters</strong> like duration, delay, and repeatCount to fine-tune your
+              animations</li>
+            <li><strong>Combine animations with transitions</strong> for views that appear and disappear</li>
+            <li>Remember that animations are triggered by <strong>state changes</strong></li>
+            <li>For complex custom animations, implement the <strong>Animatable protocol</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <h4>نظام الرسوم المتحركة في SwiftUI</h4>
+
+      <p>يوفر SwiftUI نظام رسوم متحركة قوي وتصريحي يسهل إضافة انتقالات سلسة إلى واجهة المستخدم في تطبيقك. على عكس UIKit،
+        حيث تتطلب الرسوم المتحركة غالبًا كودًا معقدًا، فإن نهج SwiftUI للرسوم المتحركة بسيط ومدمج في مبادئ التصميم
+        الأساسية للإطار.</p>
+
+      <h5>مفاهيم الرسوم المتحركة الأساسية</h5>
+
+      <p>يتم بناء نظام الرسوم المتحركة في SwiftUI حول هذه المفاهيم الأساسية:</p>
+      <ul>
+        <li><span class="highlight">الخصائص القابلة للتحريك</span>: يمكن لـ SwiftUI تحريك التغييرات في خصائص معينة
+          للعرض، مثل الموضع والحجم والشفافية والدوران واللون.</li>
+        <li><span class="highlight">الرسوم المتحركة المدفوعة بالحالة</span>: يتم تشغيل الرسوم المتحركة في SwiftUI بواسطة
+          تغييرات الحالة.</li>
+        <li><span class="highlight">الرسوم المتحركة الضمنية مقابل الصريحة</span>: يوفر SwiftUI طريقتين أساسيتين لتعريف
+          الرسوم المتحركة.</li>
+        <li><span class="highlight">معدلات الرسوم المتحركة</span>: تُطبق على العروض لتحديد كيفية تحريك الخصائص.</li>
+      </ul>
+
+      <h5>1. الرسوم المتحركة الضمنية</h5>
+
+      <p>الرسوم المتحركة الضمنية هي أبسط شكل من أشكال الرسوم المتحركة في SwiftUI. إنها تعمل تلقائيًا على تحريك أي
+        تغييرات في الخصائص القابلة للتحريك للعرض عندما تتغير تلك الخصائص.</p>
+
+      <p>في هذا المثال، يخبر المعدل <code>.animation(.spring(), value: scale)</code> إطار SwiftUI بتحريك أي تغييرات في
+        العرض تحدث عندما تتغير قيمة <code>scale</code>. ستستخدم الرسوم المتحركة تأثير زنبرك.</p>
+
+      <p>نقاط أساسية حول الرسوم المتحركة الضمنية:</p>
+      <ul>
+        <li>يتم إرفاقها مباشرة بالعروض باستخدام المعدل <code>.animation()</code></li>
+        <li>تحدد المعلمة <code>value:</code> أي تغييرات في الحالة يجب أن تؤدي إلى تشغيل الرسوم المتحركة</li>
+        <li>تؤثر على جميع الخصائص القابلة للتحريك للعرض التي تتغير عندما تتغير القيمة المتتبعة</li>
+        <li>من السهل تنفيذها ولكنها توفر تحكمًا أقل من الرسوم المتحركة الصريحة</li>
+      </ul>
+
+      <h5>2. الرسوم المتحركة الصريحة</h5>
+
+      <p>تمنحك الرسوم المتحركة الصريحة مزيدًا من التحكم من خلال تحديد متى يجب أن تحدث الرسوم المتحركة بشكل صريح. تستخدم
+        وظيفة <code>withAnimation</code> لتغليف تغييرات الحالة التي يجب أن تؤدي إلى تشغيل الرسوم المتحركة.</p>
+
+      <p>نقاط أساسية حول الرسوم المتحركة الصريحة:</p>
+      <ul>
+        <li>يتم تشغيلها عن طريق تغليف تغييرات الحالة في <code>withAnimation</code></li>
+        <li>تمنحك تحكمًا أكثر دقة في وقت حدوث الرسوم المتحركة</li>
+        <li>يمكنها تحريك تغييرات خصائص متعددة معًا</li>
+        <li>مفيدة للرسوم المتحركة المعقدة أو عندما تحتاج الرسوم المتحركة إلى أن تكون شرطية</li>
+      </ul>
+
+      <h5>3. أنواع الرسوم المتحركة والتخصيص</h5>
+
+      <p>يوفر SwiftUI عدة أنواع مدمجة من الرسوم المتحركة يمكنك استخدامها للتحكم في كيفية تحريك الخصائص:</p>
+
+      <p>أنواع الرسوم المتحركة بالتفصيل:</p>
+      <ul>
+        <li><span class="highlight">linear</span>: سرعة ثابتة طوال الرسوم المتحركة</li>
+        <li><span class="highlight">easeIn</span>: تبدأ ببطء وتتسارع</li>
+        <li><span class="highlight">easeOut</span>: تبدأ بسرعة وتتباطأ</li>
+        <li><span class="highlight">easeInOut</span>: تبدأ ببطء، وتتسارع في المنتصف، ثم تتباطأ مرة أخرى</li>
+        <li><span class="highlight">spring</span>: رسوم متحركة قائمة على الفيزياء تحاكي حركة تشبه الزنبرك</li>
+      </ul>
+
+      <h5>4. تحريك خصائص محددة</h5>
+
+      <p>يمكنك استهداف خصائص محددة للرسوم المتحركة، مما يسمح بتحكم دقيق:</p>
+
+      <p>إذا كنت تريد رسومًا متحركة مختلفة لخصائص مختلفة، يمكنك استخدام معدلات رسوم متحركة متعددة، ولكن هذا يمكن أن يكون
+        مربكًا بسبب كيفية عمل المعدلات في SwiftUI. نهج أوضح هو استخدام <code>animatableData</code> أو إنشاء عروض قابلة
+        للتحريك مخصصة.</p>
+
+      <h5>5. التحكم في توقيت الرسوم المتحركة</h5>
+
+      <p>يوفر SwiftUI عدة طرق للتحكم في توقيت الرسوم المتحركة:</p>
+      <ul>
+        <li>إضافة تأخيرات باستخدام <code>.delay()</code></li>
+        <li>ضبط السرعة باستخدام مدة مخصصة</li>
+        <li>استخدام مراحل الرسوم المتحركة عن طريق جدولة الرسوم المتحركة المتتالية</li>
+      </ul>
+
+      <h5>6. معدلات الرسوم المتحركة</h5>
+
+      <p>يوفر SwiftUI العديد من المعدلات الخاصة بالرسوم المتحركة:</p>
+
+      <h6>أ. التحكم في سرعة الرسوم المتحركة</h6>
+      <p>يمكنك زيادة أو تقليل سرعة الرسوم المتحركة باستخدام <code>.speed()</code>.</p>
+
+      <h6>ب. تكرار الرسوم المتحركة</h6>
+      <p>يمكنك تكرار الرسوم المتحركة عدة مرات أو إلى الأبد باستخدام <code>.repeatCount()</code> أو
+        <code>.repeatForever()</code>.</p>
+
+      <h6>ج. إيقاف/استئناف الرسوم المتحركة</h6>
+      <p>يمكنك التحكم في تشغيل وإيقاف الرسوم المتحركة عن طريق تبديل بين استخدام رسم متحرك و <code>.none</code>.</p>
+
+      <h5>7. الرسوم المتحركة القائمة على الإيماءات</h5>
+
+      <p>يجعل SwiftUI من السهل إنشاء رسوم متحركة مدفوعة بإيماءات المستخدم، مثل السحب والتكبير/التصغير والتدوير.</p>
+
+      <h5>8. دمج الرسوم المتحركة مع الانتقالات</h5>
+
+      <p>غالبًا ما تعمل الرسوم المتحركة والانتقالات معًا لإنشاء تجارب واجهة مستخدم سلسة، خاصة عند إظهار أو إخفاء
+        العناصر.</p>
+
+      <h5>9. تحريك المجموعات</h5>
+
+      <p>يجعل SwiftUI من السهل تحريك التغييرات في المجموعات، مثل إضافة أو إزالة عناصر من قائمة.</p>
+
+      <h5>10. متقدم: خصائص قابلة للتحريك مخصصة</h5>
+
+      <p>للرسوم المتحركة المعقدة، يمكنك إنشاء خصائص قابلة للتحريك مخصصة عن طريق تنفيذ البروتوكولات مثل
+        <code>AnimatableModifier</code> أو <code>Animatable</code>.</p>
+
+      <h5>الخلاصة</h5>
+
+      <p>تم تصميم نظام الرسوم المتحركة في SwiftUI لجعل إنشاء واجهات جميلة وسلسة أمرًا سهلاً. من خلال فهم الفرق بين
+        الرسوم المتحركة الضمنية والصريحة، وكيفية تخصيص الرسوم المتحركة، وكيفية تطبيقها بشكل استراتيجي على أجزاء مختلفة
+        من واجهتك، يمكنك إنشاء تجارب مستخدم جذابة بأقل قدر من الكود.</p>
+
+      <p>الطبيعة التصريحية للرسوم المتحركة في SwiftUI تعني أنك تركز على وصف الحالة النهائية التي تريدها، ويتعامل SwiftUI
+        مع الانتقالات بين الحالات تلقائيًا. هذا النهج يجعل الرسوم المتحركة أكثر قابلية للصيانة وأسهل في التفكير من كود
+        الرسوم المتحركة الإجرائي التقليدي.</p>
+
+      <p>نقاط أساسية يجب تذكرها:</p>
+      <ul>
+        <li><span class="highlight">الرسوم المتحركة الضمنية</span> (باستخدام المعدل <code>.animation()</code>) أبسط
+          ولكنها أقل مرونة</li>
+        <li><span class="highlight">الرسوم المتحركة الصريحة</span> (باستخدام <code>withAnimation</code>) تمنحك مزيدًا من
+          التحكم في التوقيت والشروط</li>
+        <li>استخدم <span class="highlight">معلمات الرسوم المتحركة</span> مثل المدة والتأخير وعدد التكرار لضبط الرسوم
+          المتحركة بدقة</li>
+        <li><span class="highlight">ادمج الرسوم المتحركة مع الانتقالات</span> للعروض التي تظهر وتختفي</li>
+        <li>تذكر أن الرسوم المتحركة يتم تشغيلها بواسطة <span class="highlight">تغييرات الحالة</span></li>
+        <li>للرسوم المتحركة المخصصة المعقدة، قم بتنفيذ <span class="highlight">بروتوكول Animatable</span></li>
+      </ul>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

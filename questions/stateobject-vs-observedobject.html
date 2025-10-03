@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is the difference between @StateObject and @ObservedObject?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .intermediate-level {
+      background: linear-gradient(135deg, #83afd4 0%, #90b9d4 100%);
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .case-level {
+      background: linear-gradient(135deg, #8a9eae 0%, #a9bbc7 100%);
+    }
+
+    .expert-level {
+      background: linear-gradient(135deg, #8e7b95 0%, #b4a0bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+
+    <h1 class="main-title">What is the difference between @StateObject and @ObservedObject?</h1>
+
+    <div class="card basic-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <p>Both <strong>@StateObject</strong> and <strong>@ObservedObject</strong> are property wrappers in SwiftUI
+            used for managing reference type objects (typically classes conforming to ObservableObject) and triggering
+            view updates when they publish changes. However, they have key differences in their lifecycle management:
+          </p>
+
+          <h4>Key Differences:</h4>
+
+          <ol>
+            <li><strong>Ownership and Lifecycle:</strong>
+              <ul>
+                <li><strong>@StateObject</strong> owns and creates the instance, ensuring it's preserved across view
+                  updates.</li>
+                <li><strong>@ObservedObject</strong> merely references an object created elsewhere and doesn't guarantee
+                  its persistence.</li>
+              </ul>
+            </li>
+
+            <li><strong>Initialization Timing:</strong>
+              <ul>
+                <li><strong>@StateObject</strong> initializes the object only once when the view is first created.</li>
+                <li><strong>@ObservedObject</strong> doesn't control initialization and might reinitialize when views
+                  redraw.</li>
+              </ul>
+            </li>
+
+            <li><strong>Memory Management:</strong>
+              <ul>
+                <li><strong>@StateObject</strong> ensures the object stays alive for the lifetime of the view.</li>
+                <li><strong>@ObservedObject</strong> doesn't maintain the object's lifecycle and can lead to data loss
+                  during view recreation.</li>
+              </ul>
+            </li>
+
+            <li><strong>Proper Usage:</strong>
+              <ul>
+                <li><strong>@StateObject</strong> should be used when the view is responsible for creating and owning
+                  the object.</li>
+                <li><strong>@ObservedObject</strong> should be used when the object is created elsewhere and passed into
+                  the view.</li>
+              </ul>
+            </li>
+          </ol>
+
+          <div class="code-block">
+            <pre>// Example showing the difference
+class DataModel: ObservableObject {
+    @Published var value = 0
+    
+    init() {
+        print("DataModel initialized")
+    }
+}
+
+// Parent view creates and owns the model
+struct ParentView: View {
+    // Created once and persists
+    @StateObject private var dataModel = DataModel()
+    
+    var body: some View {
+        ChildView(dataModel: dataModel)
+    }
+}
+
+// Child view receives the model
+struct ChildView: View {
+    // References the model from parent
+    @ObservedObject var dataModel: DataModel
+    
+    var body: some View {
+        Text("Value: \(dataModel.value)")
+        Button("Increment") {
+            dataModel.value += 1
+        }
+    }
+}</pre>
+          </div>
+
+          <p>In the example above, if we had mistakenly used <strong>@ObservedObject</strong> in ParentView, the model
+            could be recreated whenever ParentView is redrawn, potentially causing data loss and unexpected behavior.
+          </p>
+
+          <p>Since SwiftUI iOS 14, <strong>@StateObject</strong> was introduced specifically to solve the problem of
+            object persistence during view redraws that existed with <strong>@ObservedObject</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+
+      <p>كل من <span class="highlight">@StateObject</span> و <span class="highlight">@ObservedObject</span> هما property
+        wrappers في SwiftUI يُستخدمان لإدارة الكائنات ذات النوع المرجعي (عادةً الفئات التي تتوافق مع ObservableObject)
+        وتفعيل تحديثات العرض عندما تنشر تغييرات. ومع ذلك، هناك اختلافات رئيسية في إدارة دورة حياتهما:</p>
+
+      <h4>الاختلافات الرئيسية:</h4>
+
+      <ol>
+        <li><span class="highlight">الملكية ودورة الحياة:</span>
+          <ul>
+            <li><span class="highlight">@StateObject</span> يمتلك وينشئ النسخة، ويضمن الحفاظ عليها عبر تحديثات العرض.
+            </li>
+            <li><span class="highlight">@ObservedObject</span> يشير فقط إلى كائن تم إنشاؤه في مكان آخر ولا يضمن
+              استمراريته.</li>
+          </ul>
+        </li>
+
+        <li><span class="highlight">توقيت التهيئة:</span>
+          <ul>
+            <li><span class="highlight">@StateObject</span> يقوم بتهيئة الكائن مرة واحدة فقط عند إنشاء العرض لأول مرة.
+            </li>
+            <li><span class="highlight">@ObservedObject</span> لا يتحكم في التهيئة وقد يعيد التهيئة عند إعادة رسم
+              العروض.</li>
+          </ul>
+        </li>
+
+        <li><span class="highlight">إدارة الذاكرة:</span>
+          <ul>
+            <li><span class="highlight">@StateObject</span> يضمن بقاء الكائن حيًا طوال فترة حياة العرض.</li>
+            <li><span class="highlight">@ObservedObject</span> لا يحافظ على دورة حياة الكائن ويمكن أن يؤدي إلى فقدان
+              البيانات أثناء إعادة إنشاء العرض.</li>
+          </ul>
+        </li>
+
+        <li><span class="highlight">الاستخدام المناسب:</span>
+          <ul>
+            <li><span class="highlight">@StateObject</span> يجب استخدامه عندما يكون العرض مسؤولاً عن إنشاء وامتلاك
+              الكائن.</li>
+            <li><span class="highlight">@ObservedObject</span> يجب استخدامه عندما يتم إنشاء الكائن في مكان آخر وتمريره
+              إلى العرض.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <p>في المثال المقدم، نرى كيف أن العرض الأب (ParentView) ينشئ ويمتلك النموذج باستخدام @StateObject، مما يضمن أنه
+        يتم إنشاؤه مرة واحدة فقط ويستمر حتى عندما يتم إعادة رسم العرض. ثم يتم تمرير هذا النموذج إلى العرض الابن
+        (ChildView) الذي يستخدم @ObservedObject لأنه لا يحتاج إلى امتلاك النموذج، بل فقط مراقبته.</p>
+
+      <p>لو كنا قد استخدمنا @ObservedObject في ParentView بدلاً من @StateObject، لكان من الممكن إعادة إنشاء النموذج في
+        كل مرة يتم فيها إعادة رسم ParentView، مما قد يؤدي إلى فقدان البيانات والتسبب في سلوك غير متوقع.</p>
+
+      <p>منذ iOS 14، تم تقديم @StateObject تحديدًا لحل مشكلة استمرارية الكائنات أثناء إعادة رسم العروض التي كانت موجودة
+        مع @ObservedObject.</p>
+
+      <p>باختصار، استخدم @StateObject عندما تحتاج إلى إنشاء وإدارة كائن ObservableObject داخل عرض، واستخدم
+        @ObservedObject عندما يتم تمرير الكائن من الخارج.</p>
+    </div>
+
+    <button onclick="window.location.href='../SwiftUI_Interview_Questions.html'" class="back-button">← العودة
+      للأسئلة</button>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>
