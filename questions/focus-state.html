@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is @FocusState and how to manage keyboard focus in SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(123, 166, 159, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(123, 166, 159, 0.5);
+      color: white;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #9ac2bb;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .example-box {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #9ac2bb;
+    }
+
+    .focus-demo {
+      font-family: monospace;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+
+    <h1 class="main-title">@FocusState and Keyboard Focus Management</h1>
+
+    <div class="card advanced-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>What is @FocusState?</h4>
+          <p><strong>@FocusState</strong> is a property wrapper introduced in iOS 15 that allows you to programmatically control keyboard focus in SwiftUI. It enables you to determine which text field is currently focused and to move focus between different input fields.</p>
+
+          <div class="focus-demo">
+            <div>@FocusState → Programmatic Focus Control</div>
+            <div>      ↑                    ↓</div>
+            <div>  TextField Focus  ←→  Code Control</div>
+          </div>
+
+          <h4>Basic Usage:</h4>
+          <div class="code-block">
+            <pre><code>struct LoginView: View {
+    @State private var username = ""
+    @State private var password = ""
+    @FocusState private var focusedField: Field?
+    
+    enum Field: Hashable {
+        case username
+        case password
+    }
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            TextField("Username", text: $username)
+                .focused($focusedField, equals: .username)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            SecureField("Password", text: $password)
+                .focused($focusedField, equals: .password)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            Button("Login") {
+                // Handle login
+            }
+            .disabled(username.isEmpty || password.isEmpty)
+        }
+        .padding()
+        .onAppear {
+            // Auto-focus username field when view appears
+            focusedField = .username
+        }
+        .onSubmit {
+            // Handle submission and focus management
+            switch focusedField {
+            case .username:
+                focusedField = .password
+            case .password:
+                // Submit form or dismiss keyboard
+                if !username.isEmpty && !password.isEmpty {
+                    submitLogin()
+                }
+            case .none:
+                break
+            }
+        }
+    }
+    
+    private func submitLogin() {
+        // Login logic here
+        focusedField = nil // Dismiss keyboard
+    }
+}</code></pre>
+          </div>
+
+          <h4>Advanced Focus Management Examples:</h4>
+
+          <div class="example-box">
+            <h5>1. Dynamic Form with Focus Chain</h5>
+            <div class="code-block">
+              <pre><code>struct DynamicFormView: View {
+    @State private var formFields: [FormField] = [
+        FormField(id: 0, title: "First Name", text: ""),
+        FormField(id: 1, title: "Last Name", text: ""),
+        FormField(id: 2, title: "Email", text: ""),
+        FormField(id: 3, title: "Phone", text: "")
+    ]
+    
+    @FocusState private var focusedFieldID: Int?
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                ForEach(formFields.indices, id: \.self) { index in
+                    TextField(formFields[index].title, text: $formFields[index].text)
+                        .focused($focusedFieldID, equals: formFields[index].id)
+                }
+                
+                Section {
+                    Button("Add Field") {
+                        addNewField()
+                    }
+                    
+                    Button("Focus Next Empty") {
+                        focusNextEmptyField()
+                    }
+                    
+                    Button("Clear Focus") {
+                        focusedFieldID = nil
+                    }
+                }
+            }
+            .navigationTitle("Dynamic Form")
+            .onSubmit {
+                focusNextField()
+            }
+        }
+    }
+    
+    private func addNewField() {
+        let newField = FormField(
+            id: formFields.count,
+            title: "Field \(formFields.count + 1)",
+            text: ""
+        )
+        formFields.append(newField)
+        focusedFieldID = newField.id // Auto-focus new field
+    }
+    
+    private func focusNextField() {
+        guard let currentFocus = focusedFieldID else { return }
+        
+        let nextIndex = currentFocus + 1
+        if nextIndex < formFields.count {
+            focusedFieldID = nextIndex
+        } else {
+            focusedFieldID = nil // Dismiss keyboard at end
+        }
+    }
+    
+    private func focusNextEmptyField() {
+        for field in formFields {
+            if field.text.isEmpty {
+                focusedFieldID = field.id
+                return
+            }
+        }
+    }
+}
+
+struct FormField: Identifiable {
+    let id: Int
+    let title: String
+    var text: String
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="example-box">
+            <h5>2. Boolean Focus State (Single Field)</h5>
+            <div class="code-block">
+              <pre><code>struct SearchView: View {
+    @State private var searchText = ""
+    @FocusState private var isSearchFocused: Bool
+    
+    var body: some View {
+        VStack {
+            HStack {
+                TextField("Search...", text: $searchText)
+                    .focused($isSearchFocused)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                
+                Button(isSearchFocused ? "Cancel" : "Search") {
+                    if isSearchFocused {
+                        isSearchFocused = false
+                        searchText = ""
+                    } else {
+                        isSearchFocused = true
+                    }
+                }
+            }
+            .padding()
+            
+            if isSearchFocused && !searchText.isEmpty {
+                SearchResultsView(query: searchText)
+            }
+        }
+        .animation(.easeInOut, value: isSearchFocused)
+    }
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="example-box">
+            <h5>3. OTP/Verification Code Input</h5>
+            <div class="code-block">
+              <pre><code>struct OTPView: View {
+    @State private var otpDigits: [String] = Array(repeating: "", count: 6)
+    @FocusState private var focusedIndex: Int?
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("Enter Verification Code")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            HStack(spacing: 12) {
+                ForEach(0..<6, id: \.self) { index in
+                    TextField("", text: $otpDigits[index])
+                        .frame(width: 50, height: 50)
+                        .multilineTextAlignment(.center)
+                        .keyboardType(.numberPad)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .focused($focusedIndex, equals: index)
+                        .onChange(of: otpDigits[index]) { newValue in
+                            handleOTPChange(at: index, newValue: newValue)
+                        }
+                        .onSubmit {
+                            handleSubmission(at: index)
+                        }
+                }
+            }
+            
+            Button("Verify") {
+                verifyOTP()
+            }
+            .disabled(otpDigits.contains { $0.isEmpty })
+        }
+        .padding()
+        .onAppear {
+            focusedIndex = 0 // Auto-focus first field
+        }
+    }
+    
+    private func handleOTPChange(at index: Int, newValue: String) {
+        // Limit to single digit
+        let filtered = String(newValue.prefix(1))
+        otpDigits[index] = filtered
+        
+        // Auto-advance to next field
+        if !filtered.isEmpty && index < 5 {
+            focusedIndex = index + 1
+        }
+    }
+    
+    private func handleSubmission(at index: Int) {
+        if index < 5 {
+            focusedIndex = index + 1
+        } else {
+            verifyOTP()
+        }
+    }
+    
+    private func verifyOTP() {
+        let otp = otpDigits.joined()
+        if otp.count == 6 {
+            focusedIndex = nil // Dismiss keyboard
+            // Perform verification
+        }
+    }
+}</code></pre>
+            </div>
+          </div>
+
+          <h4>Focus State Types:</h4>
+
+          <table>
+            <tr>
+              <th>Type</th>
+              <th>Use Case</th>
+              <th>Example</th>
+            </tr>
+            <tr>
+              <td>Bool</td>
+              <td>Single field focus</td>
+              <td>@FocusState private var isFocused: Bool</td>
+            </tr>
+            <tr>
+              <td>Enum</td>
+              <td>Multiple specific fields</td>
+              <td>@FocusState private var field: Field?</td>
+            </tr>
+            <tr>
+              <td>String/Int</td>
+              <td>Dynamic field identification</td>
+              <td>@FocusState private var fieldID: String?</td>
+            </tr>
+            <tr>
+              <td>Optional</td>
+              <td>Dismissible focus</td>
+              <td>Setting to nil dismisses keyboard</td>
+            </tr>
+          </table>
+
+          <h4>Common Focus Management Patterns:</h4>
+
+          <div class="example-box">
+            <h5>1. Auto-Focus on Appearance</h5>
+            <div class="code-block">
+              <pre><code>.onAppear {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        focusedField = .username
+    }
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="example-box">
+            <h5>2. Focus Chain with Return Key</h5>
+            <div class="code-block">
+              <pre><code>.onSubmit {
+    switch focusedField {
+    case .field1:
+        focusedField = .field2
+    case .field2:
+        focusedField = .field3
+    case .field3:
+        submitForm()
+        focusedField = nil
+    default:
+        break
+    }
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="example-box">
+            <h5>3. Conditional Focus Based on Validation</h5>
+            <div class="code-block">
+              <pre><code>private func validateAndFocus() {
+    if username.isEmpty {
+        focusedField = .username
+    } else if email.isEmpty {
+        focusedField = .email
+    } else if password.isEmpty {
+        focusedField = .password
+    } else {
+        focusedField = nil
+        submitForm()
+    }
+}</code></pre>
+            </div>
+          </div>
+
+          <h4>Best Practices:</h4>
+          <ul>
+            <li><strong>Accessibility:</strong> Ensure focus changes are announced by VoiceOver</li>
+            <li><strong>User Experience:</strong> Don't force focus unnecessarily</li>
+            <li><strong>Validation:</strong> Focus invalid fields to guide user attention</li>
+            <li><strong>Keyboard Dismissal:</strong> Set focus to nil to dismiss keyboard</li>
+            <li><strong>Timing:</strong> Use slight delays for auto-focus on appearance</li>
+          </ul>
+
+          <h4>Common Pitfalls:</h4>
+          <ul>
+            <li>Forgetting to make enum Hashable when using with @FocusState</li>
+            <li>Not handling keyboard dismissal (setting focus to nil)</li>
+            <li>Excessive auto-focusing disrupting user flow</li>
+            <li>Not considering accessibility implications</li>
+            <li>Focus conflicts with SwiftUI's automatic behavior</li>
+          </ul>
+
+          <h4>Accessibility Considerations:</h4>
+          <div class="code-block">
+            <pre><code>TextField("Email", text: $email)
+    .focused($focusedField, equals: .email)
+    .accessibilityLabel("Email address")
+    .accessibilityHint("Enter your email address")</code></pre>
+          </div>
+
+          <h4>Testing Focus State:</h4>
+          <div class="code-block">
+            <pre><code>// In SwiftUI tests
+func testFocusManagement() {
+    let view = ContentView()
+    let hosting = UIHostingController(rootView: view)
+    
+    // Test focus behavior
+    // Note: Focus testing is limited in UI tests
+    // Better to test the underlying logic
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+      
+      <h4>إيه هو @FocusState؟</h4>
+      <p><span class="highlight">@FocusState</span> دا property wrapper جديد في iOS 15 بيخليك تتحكم في فوكس الكيبورد برمجياً. يعني تقدر تحدد أنهي text field بيكتب فيه المستخدم دلوقتي وتنقل الفوكس بين الحقول المختلفة.</p>
+      
+      <h4>الاستخدام الأساسي:</h4>
+      <div class="code-block">
+        <pre><code>struct LoginView: View {
+    @State private var username = ""
+    @State private var password = ""
+    @FocusState private var focusedField: Field?
+    
+    enum Field: Hashable {
+        case username
+        case password
+    }
+    
+    var body: some View {
+        VStack {
+            TextField("اسم المستخدم", text: $username)
+                .focused($focusedField, equals: .username)
+            
+            SecureField("كلمة المرور", text: $password)
+                .focused($focusedField, equals: .password)
+        }
+        .onAppear {
+            focusedField = .username // فوكس تلقائي
+        }
+    }
+}</code></pre>
+      </div>
+      
+      <h4>أنواع @FocusState المختلفة:</h4>
+      
+      <div class="example-box">
+        <h5>1. Boolean (لحقل واحد)</h5>
+        <div class="code-block">
+          <pre><code>@FocusState private var isSearchFocused: Bool
+
+TextField("بحث...", text: $searchText)
+    .focused($isSearchFocused)</code></pre>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h5>2. Enum (لحقول متعددة محددة)</h5>
+        <div class="code-block">
+          <pre><code>enum Field: Hashable {
+    case name, email, phone
+}
+
+@FocusState private var focusedField: Field?</code></pre>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h5>3. String/Int (لحقول ديناميكية)</h5>
+        <div class="code-block">
+          <pre><code>@FocusState private var focusedID: Int?
+
+ForEach(0..<fields.count, id: \.self) { index in
+    TextField("حقل \(index)", text: $fields[index])
+        .focused($focusedID, equals: index)
+}</code></pre>
+        </div>
+      </div>
+      
+      <h4>أمثلة متقدمة:</h4>
+      
+      <div class="example-box">
+        <h5>كود التحقق (OTP)</h5>
+        <p>للأرقام الستة اللي بتيجي في الرسايل:</p>
+        <div class="code-block">
+          <pre><code>@State private var otpDigits: [String] = Array(repeating: "", count: 6)
+@FocusState private var focusedIndex: Int?
+
+HStack {
+    ForEach(0..<6, id: \.self) { index in
+        TextField("", text: $otpDigits[index])
+            .focused($focusedIndex, equals: index)
+            .onChange(of: otpDigits[index]) { newValue in
+                if !newValue.isEmpty && index < 5 {
+                    focusedIndex = index + 1 // انتقال تلقائي
+                }
+            }
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h5>فورم ديناميكي</h5>
+        <p>تقدر تضيف حقول وتتحكم في الفوكس بتاعها:</p>
+        <div class="code-block">
+          <pre><code>Button("أضف حقل جديد") {
+    let newField = FormField(id: fields.count, text: "")
+    fields.append(newField)
+    focusedFieldID = newField.id // فوكس على الحقل الجديد
+}</code></pre>
+        </div>
+      </div>
+      
+      <h4>أنماط شائعة:</h4>
+      
+      <div class="example-box">
+        <h5>1. الفوكس التلقائي لما الشاشة تظهر</h5>
+        <div class="code-block">
+          <pre><code>.onAppear {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        focusedField = .username
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h5>2. الانتقال بمفتاح Return</h5>
+        <div class="code-block">
+          <pre><code>.onSubmit {
+    switch focusedField {
+    case .username:
+        focusedField = .password
+    case .password:
+        submitForm()
+        focusedField = nil // إخفاء الكيبورد
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h5>3. فوكس على الحقول الفارغة</h5>
+        <div class="code-block">
+          <pre><code>func focusNextEmptyField() {
+    if username.isEmpty {
+        focusedField = .username
+    } else if email.isEmpty {
+        focusedField = .email
+    } else {
+        focusedField = nil
+    }
+}</code></pre>
+        </div>
+      </div>
+      
+      <h4>نصائح مهمة:</h4>
+      
+      <div class="example-box">
+        <h5>إخفاء الكيبورد:</h5>
+        <p>حط الفوكس = nil عشان تخفي الكيبورد</p>
+        <div class="code-block">
+          <pre><code>focusedField = nil</code></pre>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h5>التوقيت المناسب:</h5>
+        <p>استخدم delay بسيط للفوكس التلقائي</p>
+        <div class="code-block">
+          <pre><code>DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+    focusedField = .username
+}</code></pre>
+        </div>
+      </div>
+      
+      <h4>أخطاء شائعة:</h4>
+      <ul>
+        <li>نسيان خاصية Hashable في الـ enum</li>
+        <li>عدم إخفاء الكيبورد (مش حط nil)</li>
+        <li>فوكس زيادة عن اللزوم يضايق المستخدم</li>
+        <li>عدم مراعاة الـ accessibility</li>
+        <li>تعارض مع سلوك SwiftUI التلقائي</li>
+      </ul>
+      
+      <h4>للـ Accessibility:</h4>
+      <div class="code-block">
+        <pre><code>TextField("البريد الإلكتروني", text: $email)
+    .focused($focusedField, equals: .email)
+    .accessibilityLabel("البريد الإلكتروني")
+    .accessibilityHint("ادخل عنوان بريدك الإلكتروني")</code></pre>
+      </div>
+      
+      <h4>متى تستخدمه؟</h4>
+      <ul>
+        <li>فورم تسجيل الدخول</li>
+        <li>كود التحقق (OTP)</li>
+        <li>فورم طويل محتاج تنقل سلس</li>
+        <li>صفحة البحث</li>
+        <li>أي مكان محتاج تحكم دقيق في الكيبورد</li>
+      </ul>
+      
+      <p><span class="highlight">خلاصة:</span> @FocusState بيدي تحكم كامل في فوكس الكيبورد، مما يحسن تجربة المستخدم بشكل كبير في التطبيقات!</p>
+    </div>
+
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

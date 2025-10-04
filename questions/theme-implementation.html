@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme and Dark Mode Implementation in SwiftUI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        How to implement themes and dark mode in SwiftUI?
+      </h1>
+
+      <div class="highlight-box">
+        <h4>🌙 الفكرة الأساسية</h4>
+        <p>
+          <strong>Theme Implementation</strong> في SwiftUI بيشمل دعم الـ Dark Mode والـ Custom Themes. 
+          من استخدام System Colors البسيط لإنشاء Theme System متكامل مع Dynamic Theming.
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        Theme وDark Mode أصبحوا أساسيات في أي تطبيق حديث. SwiftUI بيوفر 
+        دعم تلقائي للـ system appearance، لكن إنشاء theme system مخصوص 
+        بيديك flexibility أكتر لتخصيص المظهر حسب brand وmood المطلوب.
+      </p>
+
+      <h2 class="section-title">🎯 System Color Scheme Support</h2>
+
+      <div class="success-box">
+        <h5>1. Basic Dark Mode Support</h5>
+        <p>استخدام الـ System Colors المدمجة للدعم التلقائي</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+struct ColorSchemeView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Current Theme: \(colorScheme == .dark ? "Dark" : "Light")")
+                .font(.title)
+                .foregroundColor(.primary)
+            
+            // System Colors - automatically adapt
+            VStack(spacing: 10) {
+                Rectangle()
+                    .fill(Color(.systemBackground))
+                    .frame(height: 50)
+                    .overlay(
+                        Text("System Background")
+                            .foregroundColor(.primary)
+                    )
+                
+                Rectangle()
+                    .fill(Color(.secondarySystemBackground))
+                    .frame(height: 50)
+                    .overlay(
+                        Text("Secondary Background")
+                            .foregroundColor(.primary)
+                    )
+                
+                Rectangle()
+                    .fill(Color(.tertiarySystemBackground))
+                    .frame(height: 50)
+                    .overlay(
+                        Text("Tertiary Background")
+                            .foregroundColor(.primary)
+                    )
+            }
+            
+            // Semantic Colors
+            HStack(spacing: 10) {
+                Rectangle()
+                    .fill(.red)
+                    .frame(width: 50, height: 50)
+                    .overlay(Text("Red"))
+                
+                Rectangle()
+                    .fill(.blue)
+                    .frame(width: 50, height: 50)
+                    .overlay(Text("Blue"))
+                
+                Rectangle()
+                    .fill(.green)
+                    .frame(width: 50, height: 50)
+                    .overlay(Text("Green"))
+            }
+            
+            // Custom adapted colors
+            Rectangle()
+                .fill(adaptiveColor)
+                .frame(height: 80)
+                .overlay(
+                    Text("Adaptive Custom Color")
+                        .foregroundColor(.white)
+                        .font(.headline)
+                )
+                .cornerRadius(10)
+        }
+        .padding()
+        .background(Color(.systemGroupedBackground))
+    }
+    
+    private var adaptiveColor: Color {
+        colorScheme == .dark ? 
+        Color(red: 0.2, green: 0.4, blue: 0.8) :
+        Color(red: 0.1, green: 0.3, blue: 0.7)
+    }
+}
+
+// Force specific color scheme for preview
+struct ColorSchemePreview: View {
+    var body: some View {
+        ColorSchemeView()
+            .preferredColorScheme(.dark) // or .light
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎨 Custom Theme System</h2>
+
+      <div class="concept-box">
+        <h5>إنشاء Theme System مخصوص</h5>
+        <p>نظام themes متقدم يسمح بتخصيص كل element في التطبيق</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+// Theme Protocol
+protocol Theme {
+    var name: String { get }
+    var primaryColor: Color { get }
+    var secondaryColor: Color { get }
+    var accentColor: Color { get }
+    var backgroundColor: Color { get }
+    var surfaceColor: Color { get }
+    var textPrimary: Color { get }
+    var textSecondary: Color { get }
+    var borderColor: Color { get }
+    var shadowColor: Color { get }
+    
+    // Typography
+    var headlineFont: Font { get }
+    var bodyFont: Font { get }
+    var captionFont: Font { get }
+    
+    // Spacing
+    var spacing: ThemeSpacing { get }
+    
+    // Corner Radius
+    var cornerRadius: ThemeCornerRadius { get }
+}
+
+struct ThemeSpacing {
+    let xs: CGFloat = 4
+    let sm: CGFloat = 8
+    let md: CGFloat = 16
+    let lg: CGFloat = 24
+    let xl: CGFloat = 32
+    let xxl: CGFloat = 48
+}
+
+struct ThemeCornerRadius {
+    let small: CGFloat = 4
+    let medium: CGFloat = 8
+    let large: CGFloat = 12
+    let extraLarge: CGFloat = 16
+}
+
+// Light Theme
+struct LightTheme: Theme {
+    let name = "Light"
+    let primaryColor = Color.blue
+    let secondaryColor = Color.gray
+    let accentColor = Color.orange
+    let backgroundColor = Color(.systemBackground)
+    let surfaceColor = Color(.secondarySystemBackground)
+    let textPrimary = Color.primary
+    let textSecondary = Color.secondary
+    let borderColor = Color(.separator)
+    let shadowColor = Color.black.opacity(0.1)
+    
+    let headlineFont = Font.headline.weight(.semibold)
+    let bodyFont = Font.body
+    let captionFont = Font.caption
+    
+    let spacing = ThemeSpacing()
+    let cornerRadius = ThemeCornerRadius()
+}
+
+// Dark Theme
+struct DarkTheme: Theme {
+    let name = "Dark"
+    let primaryColor = Color.cyan
+    let secondaryColor = Color.gray
+    let accentColor = Color.yellow
+    let backgroundColor = Color(.systemBackground)
+    let surfaceColor = Color(.secondarySystemBackground)
+    let textPrimary = Color.primary
+    let textSecondary = Color.secondary
+    let borderColor = Color(.separator)
+    let shadowColor = Color.white.opacity(0.1)
+    
+    let headlineFont = Font.headline.weight(.semibold)
+    let bodyFont = Font.body
+    let captionFont = Font.caption
+    
+    let spacing = ThemeSpacing()
+    let cornerRadius = ThemeCornerRadius()
+}
+
+// Ocean Theme
+struct OceanTheme: Theme {
+    let name = "Ocean"
+    let primaryColor = Color(red: 0.0, green: 0.5, blue: 0.8)
+    let secondaryColor = Color(red: 0.0, green: 0.3, blue: 0.6)
+    let accentColor = Color(red: 0.2, green: 0.8, blue: 0.8)
+    let backgroundColor = Color(red: 0.9, green: 0.95, blue: 1.0)
+    let surfaceColor = Color.white
+    let textPrimary = Color(red: 0.1, green: 0.2, blue: 0.4)
+    let textSecondary = Color(red: 0.4, green: 0.5, blue: 0.6)
+    let borderColor = Color(red: 0.8, green: 0.9, blue: 1.0)
+    let shadowColor = Color.blue.opacity(0.1)
+    
+    let headlineFont = Font.headline.weight(.bold)
+    let bodyFont = Font.body
+    let captionFont = Font.caption
+    
+    let spacing = ThemeSpacing()
+    let cornerRadius = ThemeCornerRadius()
+}
+
+// Sunset Theme
+struct SunsetTheme: Theme {
+    let name = "Sunset"
+    let primaryColor = Color(red: 1.0, green: 0.4, blue: 0.2)
+    let secondaryColor = Color(red: 1.0, green: 0.6, blue: 0.0)
+    let accentColor = Color(red: 1.0, green: 0.8, blue: 0.2)
+    let backgroundColor = Color(red: 1.0, green: 0.95, blue: 0.9)
+    let surfaceColor = Color.white
+    let textPrimary = Color(red: 0.4, green: 0.2, blue: 0.1)
+    let textSecondary = Color(red: 0.6, green: 0.4, blue: 0.3)
+    let borderColor = Color(red: 1.0, green: 0.8, blue: 0.7)
+    let shadowColor = Color.orange.opacity(0.2)
+    
+    let headlineFont = Font.headline.weight(.bold)
+    let bodyFont = Font.body
+    let captionFont = Font.caption
+    
+    let spacing = ThemeSpacing()
+    let cornerRadius = ThemeCornerRadius()
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🔧 Theme Manager</h2>
+
+      <div class="warning-box">
+        <h5>Theme Management System</h5>
+        <p>نظام إدارة الـ themes مع persistence وreal-time switching</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+import Combine
+
+class ThemeManager: ObservableObject {
+    @Published var currentTheme: Theme
+    @Published var isSystemTheme: Bool = true
+    
+    private let userDefaults = UserDefaults.standard
+    private let themeKey = "selectedTheme"
+    private let systemThemeKey = "useSystemTheme"
+    
+    static let shared = ThemeManager()
+    
+    let availableThemes: [Theme] = [
+        LightTheme(),
+        DarkTheme(),
+        OceanTheme(),
+        SunsetTheme()
+    ]
+    
+    init() {
+        self.isSystemTheme = userDefaults.bool(forKey: systemThemeKey)
+        
+        if isSystemTheme {
+            self.currentTheme = LightTheme() // Will be updated by system
+        } else {
+            let savedThemeName = userDefaults.string(forKey: themeKey) ?? "Light"
+            self.currentTheme = availableThemes.first { $0.name == savedThemeName } ?? LightTheme()
+        }
+        
+        // Listen to system color scheme changes
+        NotificationCenter.default.addObserver(
+            forName: UIDevice.orientationDidChangeNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            self.updateSystemTheme()
+        }
+    }
+    
+    func setTheme(_ theme: Theme) {
+        currentTheme = theme
+        isSystemTheme = false
+        userDefaults.set(theme.name, forKey: themeKey)
+        userDefaults.set(false, forKey: systemThemeKey)
+    }
+    
+    func enableSystemTheme() {
+        isSystemTheme = true
+        userDefaults.set(true, forKey: systemThemeKey)
+        updateSystemTheme()
+    }
+    
+    private func updateSystemTheme() {
+        guard isSystemTheme else { return }
+        
+        let colorScheme = UITraitCollection.current.userInterfaceStyle
+        currentTheme = colorScheme == .dark ? DarkTheme() : LightTheme()
+    }
+}
+
+// Theme Environment Key
+private struct ThemeKey: EnvironmentKey {
+    static let defaultValue: Theme = LightTheme()
+}
+
+extension EnvironmentValues {
+    var theme: Theme {
+        get { self[ThemeKey.self] }
+        set { self[ThemeKey.self] = newValue }
+    }
+}
+
+// Theme Modifier
+struct ThemedView<Content: View>: View {
+    @StateObject private var themeManager = ThemeManager.shared
+    let content: Content
+    
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    
+    var body: some View {
+        content
+            .environment(\.theme, themeManager.currentTheme)
+            .onReceive(themeManager.$currentTheme) { theme in
+                // Apply theme changes with animation
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    // Theme changed
+                }
+            }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎛️ Theme Settings UI</h2>
+
+      <div class="success-box">
+        <h5>واجهة إعدادات الـ Theme</h5>
+        <p>UI لاختيار وpreview الـ themes المختلفة</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+struct ThemeSettingsView: View {
+    @StateObject private var themeManager = ThemeManager.shared
+    @Environment(\.theme) var theme
+    @State private var selectedTheme: Theme?
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: theme.spacing.lg) {
+                // System Theme Toggle
+                systemThemeSection
+                
+                // Theme Selection
+                if !themeManager.isSystemTheme {
+                    themeSelectionSection
+                }
+                
+                // Preview Section
+                previewSection
+                
+                Spacer()
+            }
+            .padding()
+            .background(theme.backgroundColor)
+            .navigationTitle("Theme Settings")
+            .navigationBarTitleDisplayMode(.large)
+        }
+    }
+    
+    private var systemThemeSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.sm) {
+            Text("System Theme")
+                .font(theme.headlineFont)
+                .foregroundColor(theme.textPrimary)
+            
+            Toggle("Follow System Appearance", isOn: $themeManager.isSystemTheme)
+                .toggleStyle(SwitchToggleStyle(tint: theme.accentColor))
+                .onChange(of: themeManager.isSystemTheme) { enabled in
+                    if enabled {
+                        themeManager.enableSystemTheme()
+                    }
+                }
+        }
+        .padding()
+        .background(theme.surfaceColor)
+        .cornerRadius(theme.cornerRadius.large)
+    }
+    
+    private var themeSelectionSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.md) {
+            Text("Choose Theme")
+                .font(theme.headlineFont)
+                .foregroundColor(theme.textPrimary)
+            
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: theme.spacing.md) {
+                ForEach(themeManager.availableThemes, id: \.name) { availableTheme in
+                    ThemeCard(
+                        theme: availableTheme,
+                        isSelected: availableTheme.name == themeManager.currentTheme.name
+                    ) {
+                        withAnimation(.spring()) {
+                            themeManager.setTheme(availableTheme)
+                        }
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(theme.surfaceColor)
+        .cornerRadius(theme.cornerRadius.large)
+    }
+    
+    private var previewSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.md) {
+            Text("Preview")
+                .font(theme.headlineFont)
+                .foregroundColor(theme.textPrimary)
+            
+            ThemePreviewCard()
+        }
+        .padding()
+        .background(theme.surfaceColor)
+        .cornerRadius(theme.cornerRadius.large)
+    }
+}
+
+struct ThemeCard: View {
+    let theme: Theme
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 8) {
+                // Color Palette
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(theme.primaryColor)
+                        .frame(width: 20, height: 20)
+                    Circle()
+                        .fill(theme.secondaryColor)
+                        .frame(width: 20, height: 20)
+                    Circle()
+                        .fill(theme.accentColor)
+                        .frame(width: 20, height: 20)
+                }
+                
+                Text(theme.name)
+                    .font(.caption)
+                    .foregroundColor(theme.textPrimary)
+                    .fontWeight(isSelected ? .bold : .regular)
+            }
+            .padding()
+            .background(theme.backgroundColor)
+            .cornerRadius(theme.cornerRadius.medium)
+            .overlay(
+                RoundedRectangle(cornerRadius: theme.cornerRadius.medium)
+                    .stroke(
+                        isSelected ? theme.primaryColor : theme.borderColor,
+                        lineWidth: isSelected ? 2 : 1
+                    )
+            )
+            .scaleEffect(isSelected ? 1.05 : 1.0)
+            .animation(.easeInOut(duration: 0.2), value: isSelected)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct ThemePreviewCard: View {
+    @Environment(\.theme) var theme
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.md) {
+            // Header
+            HStack {
+                Text("Sample Card")
+                    .font(theme.headlineFont)
+                    .foregroundColor(theme.textPrimary)
+                
+                Spacer()
+                
+                Circle()
+                    .fill(theme.accentColor)
+                    .frame(width: 24, height: 24)
+            }
+            
+            // Content
+            Text("This is how your content will look with the selected theme.")
+                .font(theme.bodyFont)
+                .foregroundColor(theme.textSecondary)
+            
+            // Actions
+            HStack {
+                Button("Primary") {
+                    // Action
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, theme.spacing.md)
+                .padding(.vertical, theme.spacing.sm)
+                .background(theme.primaryColor)
+                .cornerRadius(theme.cornerRadius.small)
+                
+                Button("Secondary") {
+                    // Action
+                }
+                .foregroundColor(theme.primaryColor)
+                .padding(.horizontal, theme.spacing.md)
+                .padding(.vertical, theme.spacing.sm)
+                .background(Color.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: theme.cornerRadius.small)
+                        .stroke(theme.primaryColor, lineWidth: 1)
+                )
+                
+                Spacer()
+            }
+        }
+        .padding()
+        .background(theme.surfaceColor)
+        .cornerRadius(theme.cornerRadius.medium)
+        .overlay(
+            RoundedRectangle(cornerRadius: theme.cornerRadius.medium)
+                .stroke(theme.borderColor, lineWidth: 1)
+        )
+        .shadow(color: theme.shadowColor, radius: 4, x: 0, y: 2)
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🔄 Dynamic Theme Application</h2>
+
+      <div class="concept-box">
+        <h5>تطبيق الـ Theme ديناميكياً</h5>
+        <p>استخدام الـ theme في مختلف الـ views مع animation</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+// Themed Components
+struct ThemedButton: View {
+    let title: String
+    let style: ButtonStyle
+    let action: () -> Void
+    
+    @Environment(\.theme) var theme
+    
+    enum ButtonStyle {
+        case primary
+        case secondary
+        case ghost
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(theme.bodyFont)
+                .fontWeight(.semibold)
+                .foregroundColor(foregroundColor)
+                .padding(.horizontal, theme.spacing.md)
+                .padding(.vertical, theme.spacing.sm)
+                .background(backgroundColor)
+                .cornerRadius(theme.cornerRadius.small)
+                .overlay(overlayBorder)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private var backgroundColor: Color {
+        switch style {
+        case .primary: return theme.primaryColor
+        case .secondary: return theme.secondaryColor
+        case .ghost: return Color.clear
+        }
+    }
+    
+    private var foregroundColor: Color {
+        switch style {
+        case .primary, .secondary: return .white
+        case .ghost: return theme.primaryColor
+        }
+    }
+    
+    private var overlayBorder: some View {
+        Group {
+            if style == .ghost {
+                RoundedRectangle(cornerRadius: theme.cornerRadius.small)
+                    .stroke(theme.primaryColor, lineWidth: 1)
+            }
+        }
+    }
+}
+
+struct ThemedTextField: View {
+    let title: String
+    let placeholder: String
+    @Binding var text: String
+    
+    @Environment(\.theme) var theme
+    @FocusState private var isFocused: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.xs) {
+            Text(title)
+                .font(theme.captionFont)
+                .foregroundColor(theme.textSecondary)
+                .textCase(.uppercase)
+                .tracking(0.5)
+            
+            TextField(placeholder, text: $text)
+                .font(theme.bodyFont)
+                .foregroundColor(theme.textPrimary)
+                .padding(theme.spacing.md)
+                .background(theme.surfaceColor)
+                .cornerRadius(theme.cornerRadius.medium)
+                .overlay(
+                    RoundedRectangle(cornerRadius: theme.cornerRadius.medium)
+                        .stroke(
+                            isFocused ? theme.primaryColor : theme.borderColor,
+                            lineWidth: isFocused ? 2 : 1
+                        )
+                )
+                .focused($isFocused)
+                .animation(.easeInOut(duration: 0.2), value: isFocused)
+        }
+    }
+}
+
+struct ThemedCard<Content: View>: View {
+    let content: Content
+    
+    @Environment(\.theme) var theme
+    
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    
+    var body: some View {
+        content
+            .padding(theme.spacing.md)
+            .background(theme.surfaceColor)
+            .cornerRadius(theme.cornerRadius.large)
+            .shadow(color: theme.shadowColor, radius: 8, x: 0, y: 4)
+    }
+}
+
+// Main App with Theme
+struct ThemedApp: View {
+    var body: some View {
+        ThemedView {
+            ContentView()
+        }
+    }
+}
+
+struct ContentView: View {
+    @Environment(\.theme) var theme
+    @State private var username = ""
+    @State private var email = ""
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: theme.spacing.lg) {
+                    // Profile Section
+                    ThemedCard {
+                        VStack(spacing: theme.spacing.md) {
+                            Circle()
+                                .fill(theme.primaryColor)
+                                .frame(width: 80, height: 80)
+                                .overlay(
+                                    Image(systemName: "person.fill")
+                                        .font(.system(size: 32))
+                                        .foregroundColor(.white)
+                                )
+                            
+                            Text("John Doe")
+                                .font(theme.headlineFont)
+                                .foregroundColor(theme.textPrimary)
+                            
+                            Text("iOS Developer")
+                                .font(theme.bodyFont)
+                                .foregroundColor(theme.textSecondary)
+                        }
+                    }
+                    
+                    // Form Section
+                    ThemedCard {
+                        VStack(spacing: theme.spacing.md) {
+                            ThemedTextField(
+                                title: "Username",
+                                placeholder: "Enter username",
+                                text: $username
+                            )
+                            
+                            ThemedTextField(
+                                title: "Email",
+                                placeholder: "Enter email",
+                                text: $email
+                            )
+                            
+                            HStack {
+                                ThemedButton("Save", style: .primary) {
+                                    print("Save tapped")
+                                }
+                                
+                                ThemedButton("Cancel", style: .ghost) {
+                                    print("Cancel tapped")
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Settings Section
+                    NavigationLink(destination: ThemeSettingsView()) {
+                        ThemedCard {
+                            HStack {
+                                Image(systemName: "paintbrush")
+                                    .foregroundColor(theme.primaryColor)
+                                
+                                Text("Theme Settings")
+                                    .font(theme.bodyFont)
+                                    .foregroundColor(theme.textPrimary)
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundColor(theme.textSecondary)
+                            }
+                        }
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                .padding()
+            }
+            .background(theme.backgroundColor)
+            .navigationTitle("Themed App")
+            .navigationBarTitleDisplayMode(.large)
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Best Practices</h2>
+
+      <div class="highlight-box">
+        <h4>أفضل الممارسات للـ Theme Implementation:</h4>
+        <ol>
+          <li><strong>Semantic Colors:</strong> استخدم System Colors عند الإمكان</li>
+          <li><strong>Consistent Design:</strong> طبق الـ theme على كل الـ components</li>
+          <li><strong>Accessibility:</strong> تأكد من contrast ratios مناسبة</li>
+          <li><strong>Performance:</strong> minimize theme switching overhead</li>
+          <li><strong>Testing:</strong> اختبر all themes مع different content</li>
+          <li><strong>User Preference:</strong> اعمل persist للـ user choice</li>
+        </ol>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>Theme Implementation في SwiftUI:</strong>
+        </p>
+        <ul>
+          <li><strong>System Support:</strong> استخدم الـ Environment values</li>
+          <li><strong>Custom Themes:</strong> أنشئ theme protocol ومتعدد themes</li>
+          <li><strong>Theme Manager:</strong> اعمل centralized management</li>
+          <li><strong>Dynamic Switching:</strong> مع animations وsaving preferences</li>
+          <li><strong>Component Integration:</strong> طبق الـ theme على all UI elements</li>
+          <li><strong>Accessibility:</strong> احرص على proper contrast وreadability</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

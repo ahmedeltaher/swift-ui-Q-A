@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing SwiftUI Views and Components</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        How to test SwiftUI views and components effectively?
+      </h1>
+
+      <div class="highlight-box">
+        <h4>🧪 الفكرة الأساسية</h4>
+        <p>
+          <strong>Testing SwiftUI</strong> بيشمل Unit Testing للـ ViewModels، وSnapshot Testing للـ UI، 
+          وIntegration Testing للـ user interactions. من XCTest البسيط لاستخدام ViewInspector المتقدم.
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        Testing في SwiftUI مختلف عن UIKit لأن declarative nature بيخلي 
+        الـ view testing أكتر تحدي. محتاج تفصل بين الـ business logic والـ UI logic، 
+        وتستخدم أدوات مخصصة لـ view testing زي ViewInspector.
+      </p>
+
+      <h2 class="section-title">🎯 ViewModel Testing</h2>
+
+      <div class="success-box">
+        <h5>1. Basic ViewModel Unit Testing</h5>
+        <p>اختبار الـ business logic والـ state management في ViewModels</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import XCTest
+import Combine
+@testable import YourApp
+
+// Sample ViewModel to test
+class CounterViewModel: ObservableObject {
+    @Published var count = 0
+    @Published var isLoading = false
+    @Published var errorMessage: String?
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    func increment() {
+        count += 1
+    }
+    
+    func decrement() {
+        guard count > 0 else {
+            errorMessage = "Count cannot be negative"
+            return
+        }
+        count -= 1
+        errorMessage = nil
+    }
+    
+    func reset() {
+        count = 0
+        errorMessage = nil
+    }
+    
+    func loadDataAsync() {
+        isLoading = true
+        errorMessage = nil
+        
+        // Simulate async operation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.isLoading = false
+            self.count = 42
+        }
+    }
+    
+    func loadDataWithError() {
+        isLoading = true
+        errorMessage = nil
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.isLoading = false
+            self.errorMessage = "Failed to load data"
+        }
+    }
+}
+
+// Unit Tests for ViewModel
+class CounterViewModelTests: XCTestCase {
+    var viewModel: CounterViewModel!
+    var cancellables: Set<AnyCancellable>!
+    
+    override func setUp() {
+        super.setUp()
+        viewModel = CounterViewModel()
+        cancellables = Set<AnyCancellable>()
+    }
+    
+    override func tearDown() {
+        viewModel = nil
+        cancellables = nil
+        super.tearDown()
+    }
+    
+    // Test basic functionality
+    func testIncrement() {
+        // Given
+        let initialCount = viewModel.count
+        
+        // When
+        viewModel.increment()
+        
+        // Then
+        XCTAssertEqual(viewModel.count, initialCount + 1)
+    }
+    
+    func testDecrementWithPositiveCount() {
+        // Given
+        viewModel.count = 5
+        
+        // When
+        viewModel.decrement()
+        
+        // Then
+        XCTAssertEqual(viewModel.count, 4)
+        XCTAssertNil(viewModel.errorMessage)
+    }
+    
+    func testDecrementWithZeroCount() {
+        // Given
+        viewModel.count = 0
+        
+        // When
+        viewModel.decrement()
+        
+        // Then
+        XCTAssertEqual(viewModel.count, 0)
+        XCTAssertEqual(viewModel.errorMessage, "Count cannot be negative")
+    }
+    
+    func testReset() {
+        // Given
+        viewModel.count = 10
+        viewModel.errorMessage = "Some error"
+        
+        // When
+        viewModel.reset()
+        
+        // Then
+        XCTAssertEqual(viewModel.count, 0)
+        XCTAssertNil(viewModel.errorMessage)
+    }
+    
+    // Test async operations
+    func testLoadDataAsync() {
+        // Given
+        let expectation = XCTestExpectation(description: "Load data completes")
+        var loadingStates: [Bool] = []
+        var finalCount: Int = 0
+        
+        // When
+        viewModel.$isLoading
+            .sink { isLoading in
+                loadingStates.append(isLoading)
+                if !isLoading && loadingStates.count > 1 {
+                    finalCount = self.viewModel.count
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.loadDataAsync()
+        
+        // Then
+        wait(for: [expectation], timeout: 2.0)
+        XCTAssertEqual(loadingStates, [false, true, false])
+        XCTAssertEqual(finalCount, 42)
+    }
+    
+    func testLoadDataWithError() {
+        // Given
+        let expectation = XCTestExpectation(description: "Load data fails")
+        
+        // When
+        viewModel.$errorMessage
+            .compactMap { $0 }
+            .sink { errorMessage in
+                XCTAssertEqual(errorMessage, "Failed to load data")
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.loadDataWithError()
+        
+        // Then
+        wait(for: [expectation], timeout: 1.0)
+        XCTAssertFalse(viewModel.isLoading)
+    }
+    
+    // Test published property changes
+    func testPublishedPropertyChanges() {
+        // Given
+        let expectation = XCTestExpectation(description: "Count changes")
+        var receivedValues: [Int] = []
+        
+        // When
+        viewModel.$count
+            .sink { count in
+                receivedValues.append(count)
+                if receivedValues.count == 3 {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.increment() // 0 -> 1
+        viewModel.increment() // 1 -> 2
+        
+        // Then
+        wait(for: [expectation], timeout: 1.0)
+        XCTAssertEqual(receivedValues, [0, 1, 2])
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">📸 Snapshot Testing</h2>
+
+      <div class="concept-box">
+        <h5>اختبار الـ UI مرئياً</h5>
+        <p>استخدام Snapshot Testing للتأكد من ثبات الـ UI across different configurations</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import XCTest
+import SwiftUI
+import SnapshotTesting
+@testable import YourApp
+
+// Sample view to test
+struct ProfileView: View {
+    let user: User
+    let isLoading: Bool
+    let onEditTap: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            if isLoading {
+                ProgressView("Loading...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                AsyncImage(url: URL(string: user.avatarURL)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Circle()
+                        .fill(Color.gray.opacity(0.3))
+                }
+                .frame(width: 100, height: 100)
+                .clipShape(Circle())
+                
+                VStack(spacing: 8) {
+                    Text(user.name)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    Text(user.email)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                    
+                    Text(user.bio)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                
+                Button("Edit Profile", action: onEditTap)
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+        .padding()
+        .frame(width: 300, height: 400)
+        .background(Color(.systemBackground))
+    }
+}
+
+struct User {
+    let name: String
+    let email: String
+    let bio: String
+    let avatarURL: String
+}
+
+// Snapshot Tests
+class ProfileViewSnapshotTests: XCTestCase {
+    
+    func testProfileViewDefault() {
+        let user = User(
+            name: "John Doe",
+            email: "john@example.com",
+            bio: "iOS Developer passionate about SwiftUI and testing.",
+            avatarURL: "https://example.com/avatar.jpg"
+        )
+        
+        let view = ProfileView(
+            user: user,
+            isLoading: false,
+            onEditTap: {}
+        )
+        
+        assertSnapshot(matching: view, as: .image)
+    }
+    
+    func testProfileViewLoading() {
+        let user = User(
+            name: "",
+            email: "",
+            bio: "",
+            avatarURL: ""
+        )
+        
+        let view = ProfileView(
+            user: user,
+            isLoading: true,
+            onEditTap: {}
+        )
+        
+        assertSnapshot(matching: view, as: .image)
+    }
+    
+    func testProfileViewLongBio() {
+        let user = User(
+            name: "Jane Smith",
+            email: "jane.smith.developer@example.com",
+            bio: "Senior iOS Developer with over 10 years of experience in mobile app development. Passionate about SwiftUI, Combine, and creating beautiful user experiences.",
+            avatarURL: "https://example.com/avatar.jpg"
+        )
+        
+        let view = ProfileView(
+            user: user,
+            isLoading: false,
+            onEditTap: {}
+        )
+        
+        assertSnapshot(matching: view, as: .image)
+    }
+    
+    func testProfileViewDarkMode() {
+        let user = User(
+            name: "John Doe",
+            email: "john@example.com",
+            bio: "iOS Developer passionate about SwiftUI and testing.",
+            avatarURL: "https://example.com/avatar.jpg"
+        )
+        
+        let view = ProfileView(
+            user: user,
+            isLoading: false,
+            onEditTap: {}
+        )
+        .preferredColorScheme(.dark)
+        
+        assertSnapshot(matching: view, as: .image)
+    }
+    
+    func testProfileViewDifferentSizes() {
+        let user = User(
+            name: "John Doe",
+            email: "john@example.com",
+            bio: "iOS Developer",
+            avatarURL: "https://example.com/avatar.jpg"
+        )
+        
+        // Test different device sizes
+        let devices: [ViewImageConfig] = [
+            .iPhoneSe,
+            .iPhone13,
+            .iPhone13ProMax,
+            .iPadMini,
+            .iPadPro12_9
+        ]
+        
+        for device in devices {
+            let view = ProfileView(
+                user: user,
+                isLoading: false,
+                onEditTap: {}
+            )
+            
+            assertSnapshot(
+                matching: view,
+                as: .image(on: device),
+                named: device.name
+            )
+        }
+    }
+}
+
+// Custom snapshot strategies for SwiftUI
+extension Snapshotting where Value: SwiftUI.View, Format == UIImage {
+    static func swiftUIImage(
+        precision: Float = 1,
+        layout: SwiftUISnapshotLayout = .sizeThatFits
+    ) -> Snapshotting {
+        return SimplySnapshotting.image(precision: precision).pullback { view in
+            let controller = UIHostingController(rootView: view)
+            
+            switch layout {
+            case .sizeThatFits:
+                controller.view.frame = controller.view.intrinsicContentSize.frame
+            case .device(let config):
+                controller.view.frame = CGRect(origin: .zero, size: config.size)
+            case .fixed(let size):
+                controller.view.frame = CGRect(origin: .zero, size: size)
+            }
+            
+            return controller.view
+        }
+    }
+}
+
+enum SwiftUISnapshotLayout {
+    case sizeThatFits
+    case device(ViewImageConfig)
+    case fixed(CGSize)
+}
+
+extension CGSize {
+    var frame: CGRect {
+        return CGRect(origin: .zero, size: self)
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🔍 ViewInspector Testing</h2>
+
+      <div class="warning-box">
+        <h5>اختبار الـ View Structure والـ Interactions</h5>
+        <p>استخدام ViewInspector لاختبار الـ view hierarchy والـ user interactions</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import XCTest
+import SwiftUI
+import ViewInspector
+@testable import YourApp
+
+// Sample interactive view
+struct TodoView: View {
+    @State private var newTodo = ""
+    @State private var todos: [TodoItem] = []
+    @State private var showingAlert = false
+    
+    struct TodoItem: Identifiable, Equatable {
+        let id = UUID()
+        let text: String
+        var isCompleted: Bool = false
+    }
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                HStack {
+                    TextField("New todo", text: $newTodo)
+                        .textFieldStyle(.roundedBorder)
+                    
+                    Button("Add") {
+                        addTodo()
+                    }
+                    .disabled(newTodo.isEmpty)
+                }
+                .padding()
+                
+                List {
+                    ForEach(todos.indices, id: \.self) { index in
+                        TodoRowView(
+                            todo: $todos[index],
+                            onDelete: { deleteTodo(at: index) }
+                        )
+                    }
+                }
+                
+                if todos.isEmpty {
+                    Text("No todos yet")
+                        .foregroundColor(.secondary)
+                        .padding()
+                }
+            }
+            .navigationTitle("Todos")
+            .alert("Todo Deleted", isPresented: $showingAlert) {
+                Button("OK") { }
+            }
+        }
+    }
+    
+    private func addTodo() {
+        guard !newTodo.isEmpty else { return }
+        todos.append(TodoItem(text: newTodo))
+        newTodo = ""
+    }
+    
+    private func deleteTodo(at index: Int) {
+        todos.remove(at: index)
+        showingAlert = true
+    }
+}
+
+struct TodoRowView: View {
+    @Binding var todo: TodoView.TodoItem
+    let onDelete: () -> Void
+    
+    var body: some View {
+        HStack {
+            Button(action: { todo.isCompleted.toggle() }) {
+                Image(systemName: todo.isCompleted ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(todo.isCompleted ? .green : .gray)
+            }
+            
+            Text(todo.text)
+                .strikethrough(todo.isCompleted)
+                .foregroundColor(todo.isCompleted ? .secondary : .primary)
+            
+            Spacer()
+            
+            Button("Delete") {
+                onDelete()
+            }
+            .foregroundColor(.red)
+        }
+    }
+}
+
+// ViewInspector Tests
+extension TodoView: Inspectable { }
+extension TodoRowView: Inspectable { }
+
+class TodoViewInspectorTests: XCTestCase {
+    
+    func testInitialState() throws {
+        let view = TodoView()
+        
+        // Test initial state
+        let textField = try view.inspect().navigationView().vStack().hStack(0).textField(0)
+        XCTAssertEqual(try textField.input(), "")
+        
+        let addButton = try view.inspect().navigationView().vStack().hStack(0).button(1)
+        XCTAssertTrue(try addButton.isDisabled())
+        
+        let emptyMessage = try view.inspect().navigationView().vStack().text(2)
+        XCTAssertEqual(try emptyMessage.string(), "No todos yet")
+    }
+    
+    func testAddingTodo() throws {
+        var view = TodoView()
+        
+        // Enter text in text field
+        let textField = try view.inspect().navigationView().vStack().hStack(0).textField(0)
+        try textField.setInput("Buy groceries")
+        
+        // Check button is enabled
+        let addButton = try view.inspect().navigationView().vStack().hStack(0).button(1)
+        XCTAssertFalse(try addButton.isDisabled())
+        
+        // Tap add button
+        try addButton.tap()
+        
+        // Verify todo was added
+        let list = try view.inspect().navigationView().vStack().list(1)
+        XCTAssertEqual(try list.forEach(0).count, 1)
+        
+        // Verify text field is cleared
+        XCTAssertEqual(try textField.input(), "")
+    }
+    
+    func testTodoCompletion() throws {
+        var view = TodoView()
+        
+        // Add a todo first
+        let textField = try view.inspect().navigationView().vStack().hStack(0).textField(0)
+        try textField.setInput("Test todo")
+        
+        let addButton = try view.inspect().navigationView().vStack().hStack(0).button(1)
+        try addButton.tap()
+        
+        // Find the todo row
+        let todoRow = try view.inspect().navigationView().vStack().list(1).forEach(0).view(TodoRowView.self, 0)
+        
+        // Check initial state
+        let checkButton = try todoRow.hStack().button(0)
+        let todoText = try todoRow.hStack().text(1)
+        
+        XCTAssertEqual(try checkButton.image().actualImage().name(), "circle")
+        XCTAssertFalse(try todoText.attributes().isStrikethrough())
+        
+        // Toggle completion
+        try checkButton.tap()
+        
+        // Verify completed state
+        XCTAssertEqual(try checkButton.image().actualImage().name(), "checkmark.circle.fill")
+        XCTAssertTrue(try todoText.attributes().isStrikethrough())
+    }
+    
+    func testDeletingTodo() throws {
+        var view = TodoView()
+        
+        // Add a todo
+        let textField = try view.inspect().navigationView().vStack().hStack(0).textField(0)
+        try textField.setInput("Todo to delete")
+        
+        let addButton = try view.inspect().navigationView().vStack().hStack(0).button(1)
+        try addButton.tap()
+        
+        // Verify todo exists
+        let list = try view.inspect().navigationView().vStack().list(1)
+        XCTAssertEqual(try list.forEach(0).count, 1)
+        
+        // Delete the todo
+        let todoRow = try list.forEach(0).view(TodoRowView.self, 0)
+        let deleteButton = try todoRow.hStack().button(2)
+        try deleteButton.tap()
+        
+        // Verify todo is deleted and alert is shown
+        XCTAssertEqual(try list.forEach(0).count, 0)
+        
+        let alert = try view.inspect().navigationView().alert()
+        XCTAssertEqual(try alert.title().string(), "Todo Deleted")
+    }
+    
+    func testEmptyTodoHandling() throws {
+        var view = TodoView()
+        
+        // Try to add empty todo
+        let addButton = try view.inspect().navigationView().vStack().hStack(0).button(1)
+        XCTAssertTrue(try addButton.isDisabled())
+        
+        // Add space-only text
+        let textField = try view.inspect().navigationView().vStack().hStack(0).textField(0)
+        try textField.setInput("   ")
+        
+        // Button should still be disabled for whitespace-only input
+        XCTAssertFalse(try addButton.isDisabled()) // Based on isEmpty check
+        
+        try addButton.tap()
+        
+        // No todo should be added for empty text
+        let list = try view.inspect().navigationView().vStack().list(1)
+        XCTAssertEqual(try list.forEach(0).count, 0)
+    }
+}
+
+// Helper extensions for ViewInspector
+extension Text {
+    func isStrikethrough() throws -> Bool {
+        return try attributes().isStrikethrough()
+    }
+}
+
+extension InspectableView where View == ViewType.Text {
+    func attributes() throws -> Text.AttributedStringKey {
+        return try Text.AttributedStringKey()
+    }
+}
+
+extension Text.AttributedStringKey {
+    func isStrikethrough() -> Bool {
+        // This would need to be implemented based on actual AttributedString inspection
+        return false // Placeholder implementation
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🧩 Integration Testing</h2>
+
+      <div class="success-box">
+        <h5>اختبار تكامل الـ Components</h5>
+        <p>اختبار تفاعل الـ views مع الـ data sources والـ external services</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import XCTest
+import SwiftUI
+import Combine
+@testable import YourApp
+
+// Mock services for testing
+protocol UserServiceProtocol {
+    func fetchUsers() async throws -> [User]
+    func updateUser(_ user: User) async throws -> User
+}
+
+class MockUserService: UserServiceProtocol {
+    var shouldFailFetch = false
+    var shouldFailUpdate = false
+    var fetchDelay: TimeInterval = 0
+    var updateDelay: TimeInterval = 0
+    
+    var mockUsers: [User] = [
+        User(name: "John Doe", email: "john@example.com", bio: "Developer", avatarURL: ""),
+        User(name: "Jane Smith", email: "jane@example.com", bio: "Designer", avatarURL: "")
+    ]
+    
+    func fetchUsers() async throws -> [User] {
+        if fetchDelay > 0 {
+            try await Task.sleep(nanoseconds: UInt64(fetchDelay * 1_000_000_000))
+        }
+        
+        if shouldFailFetch {
+            throw URLError(.networkConnectionLost)
+        }
+        
+        return mockUsers
+    }
+    
+    func updateUser(_ user: User) async throws -> User {
+        if updateDelay > 0 {
+            try await Task.sleep(nanoseconds: UInt64(updateDelay * 1_000_000_000))
+        }
+        
+        if shouldFailUpdate {
+            throw URLError(.badServerResponse)
+        }
+        
+        // Update mock data
+        if let index = mockUsers.firstIndex(where: { $0.email == user.email }) {
+            mockUsers[index] = user
+        }
+        
+        return user
+    }
+}
+
+// ViewModel with dependency injection
+class UsersViewModel: ObservableObject {
+    @Published var users: [User] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
+    
+    private let userService: UserServiceProtocol
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(userService: UserServiceProtocol = UserService()) {
+        self.userService = userService
+    }
+    
+    @MainActor
+    func loadUsers() async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            users = try await userService.fetchUsers()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        
+        isLoading = false
+    }
+    
+    @MainActor
+    func updateUser(_ user: User) async {
+        do {
+            let updatedUser = try await userService.updateUser(user)
+            if let index = users.firstIndex(where: { $0.email == user.email }) {
+                users[index] = updatedUser
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
+// Integration tests
+class UsersViewModelIntegrationTests: XCTestCase {
+    var viewModel: UsersViewModel!
+    var mockService: MockUserService!
+    
+    @MainActor
+    override func setUp() {
+        super.setUp()
+        mockService = MockUserService()
+        viewModel = UsersViewModel(userService: mockService)
+    }
+    
+    override func tearDown() {
+        viewModel = nil
+        mockService = nil
+        super.tearDown()
+    }
+    
+    @MainActor
+    func testSuccessfulUserLoad() async {
+        // Given
+        mockService.shouldFailFetch = false
+        
+        // When
+        await viewModel.loadUsers()
+        
+        // Then
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertEqual(viewModel.users.count, 2)
+        XCTAssertEqual(viewModel.users.first?.name, "John Doe")
+        XCTAssertNil(viewModel.errorMessage)
+    }
+    
+    @MainActor
+    func testFailedUserLoad() async {
+        // Given
+        mockService.shouldFailFetch = true
+        
+        // When
+        await viewModel.loadUsers()
+        
+        // Then
+        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertTrue(viewModel.users.isEmpty)
+        XCTAssertNotNil(viewModel.errorMessage)
+    }
+    
+    @MainActor
+    func testLoadingState() async {
+        // Given
+        mockService.fetchDelay = 0.5
+        var loadingStates: [Bool] = []
+        
+        let expectation = expectation(description: "Loading completes")
+        
+        viewModel.$isLoading
+            .sink { isLoading in
+                loadingStates.append(isLoading)
+                if !isLoading && loadingStates.count > 1 {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // When
+        await viewModel.loadUsers()
+        
+        // Then
+        await fulfillment(of: [expectation], timeout: 1.0)
+        XCTAssertEqual(loadingStates, [false, true, false])
+    }
+    
+    @MainActor
+    func testUserUpdate() async {
+        // Given
+        await viewModel.loadUsers()
+        let originalUser = viewModel.users.first!
+        let updatedUser = User(
+            name: "John Updated",
+            email: originalUser.email,
+            bio: "Updated bio",
+            avatarURL: originalUser.avatarURL
+        )
+        
+        // When
+        await viewModel.updateUser(updatedUser)
+        
+        // Then
+        let userInViewModel = viewModel.users.first { $0.email == originalUser.email }
+        XCTAssertEqual(userInViewModel?.name, "John Updated")
+        XCTAssertEqual(userInViewModel?.bio, "Updated bio")
+    }
+    
+    private var cancellables = Set<AnyCancellable>()
+}
+
+// UI Integration Tests
+class UsersViewIntegrationTests: XCTestCase {
+    var mockService: MockUserService!
+    
+    override func setUp() {
+        super.setUp()
+        mockService = MockUserService()
+    }
+    
+    override func tearDown() {
+        mockService = nil
+        super.tearDown()
+    }
+    
+    func testUserListView() throws {
+        // Given
+        let viewModel = UsersViewModel(userService: mockService)
+        let view = UsersListView(viewModel: viewModel)
+        
+        // When - Load users
+        let expectation = XCTestExpectation(description: "Users loaded")
+        
+        Task { @MainActor in
+            await viewModel.loadUsers()
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        // Then - Verify view structure
+        let navigationView = try view.inspect().navigationView()
+        let list = try navigationView.vStack().list(1)
+        
+        XCTAssertEqual(try list.forEach(0).count, 2)
+        
+        let firstUserRow = try list.forEach(0).hStack(0)
+        let userName = try firstUserRow.text(1)
+        XCTAssertEqual(try userName.string(), "John Doe")
+    }
+    
+    func testErrorStateDisplay() throws {
+        // Given
+        mockService.shouldFailFetch = true
+        let viewModel = UsersViewModel(userService: mockService)
+        let view = UsersListView(viewModel: viewModel)
+        
+        // When
+        let expectation = XCTestExpectation(description: "Error state reached")
+        
+        Task { @MainActor in
+            await viewModel.loadUsers()
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 2.0)
+        
+        // Then
+        let errorText = try view.inspect().navigationView().vStack().text(2)
+        XCTAssertTrue(try errorText.string().contains("connection"))
+    }
+}
+
+// Sample view for testing
+struct UsersListView: View {
+    @ObservedObject var viewModel: UsersViewModel
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                if viewModel.isLoading {
+                    ProgressView("Loading users...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    List(viewModel.users, id: \.email) { user in
+                        HStack {
+                            Circle()
+                                .fill(Color.blue)
+                                .frame(width: 40, height: 40)
+                            
+                            VStack(alignment: .leading) {
+                                Text(user.name)
+                                    .font(.headline)
+                                Text(user.email)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    
+                    if let errorMessage = viewModel.errorMessage {
+                        Text("Error: \(errorMessage)")
+                            .foregroundColor(.red)
+                            .padding()
+                    }
+                }
+            }
+            .navigationTitle("Users")
+            .task {
+                await viewModel.loadUsers()
+            }
+        }
+    }
+}
+
+extension UsersListView: Inspectable { }
+
+// Real service for production
+class UserService: UserServiceProtocol {
+    func fetchUsers() async throws -> [User] {
+        // Real API implementation
+        throw URLError(.notConnectedToInternet)
+    }
+    
+    func updateUser(_ user: User) async throws -> User {
+        // Real API implementation
+        throw URLError(.notConnectedToInternet)
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Testing Best Practices</h2>
+
+      <div class="highlight-box">
+        <h4>أفضل الممارسات لـ SwiftUI Testing:</h4>
+        <ol>
+          <li><strong>Separation of Concerns:</strong> فصل الـ business logic عن الـ UI logic</li>
+          <li><strong>Dependency Injection:</strong> استخدم mocks وstubs للـ external dependencies</li>
+          <li><strong>Testable Architecture:</strong> اعمل ViewModels قابلة للاختبار</li>
+          <li><strong>Snapshot Testing:</strong> للـ UI regression testing</li>
+          <li><strong>Integration Tests:</strong> لاختبار الـ complete user flows</li>
+          <li><strong>Accessibility Testing:</strong> تأكد من accessibility support</li>
+        </ol>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>SwiftUI Testing Strategy:</strong>
+        </p>
+        <ul>
+          <li><strong>Unit Testing:</strong> للـ ViewModels والـ business logic</li>
+          <li><strong>Snapshot Testing:</strong> للـ UI consistency وregression detection</li>
+          <li><strong>ViewInspector:</strong> للـ view structure وuser interaction testing</li>
+          <li><strong>Integration Testing:</strong> للـ complete user scenarios</li>
+          <li><strong>Mock Services:</strong> للـ isolated وpredictable testing</li>
+          <li><strong>Async Testing:</strong> للـ modern Swift concurrency patterns</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

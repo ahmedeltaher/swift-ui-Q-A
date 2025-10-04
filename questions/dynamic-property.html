@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What are @dynamicProperty and property wrappers in SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(123, 166, 159, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(123, 166, 159, 0.5);
+      color: white;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #9ac2bb;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .example-box {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #9ac2bb;
+    }
+
+    .wrapper-demo {
+      font-family: monospace;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+
+    <h1 class="main-title">@dynamicProperty and Property Wrappers in SwiftUI</h1>
+
+    <div class="card advanced-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>What is @dynamicProperty?</h4>
+          <p><strong>@dynamicProperty</strong> is a protocol that enables custom property wrappers to participate in SwiftUI's view update system. It allows your custom property wrappers to trigger view updates when their values change.</p>
+
+          <div class="wrapper-demo">
+            <div>Custom Property Wrapper + @dynamicProperty = SwiftUI Integration</div>
+            <div>      ↑                                    ↓</div>
+            <div>  Property Changes    →    Automatic View Updates</div>
+          </div>
+
+          <h4>Basic Property Wrapper Review:</h4>
+          <div class="code-block">
+            <pre><code>@propertyWrapper
+struct Capitalized {
+    private var value: String = ""
+    
+    var wrappedValue: String {
+        get { value }
+        set { value = newValue.capitalized }
+    }
+    
+    init(wrappedValue: String) {
+        self.value = wrappedValue.capitalized
+    }
+}
+
+// Usage
+struct ContentView: View {
+    @Capitalized var userName: String = "john doe"
+    
+    var body: some View {
+        Text(userName) // Displays "John Doe"
+    }
+}</code></pre>
+          </div>
+
+          <h4>Adding @dynamicProperty:</h4>
+          <p>To make a property wrapper work with SwiftUI's update system, conform to DynamicProperty:</p>
+
+          <div class="code-block">
+            <pre><code>@propertyWrapper
+struct UserDefaultsWrapper: DynamicProperty {
+    @State private var value: String
+    private let key: String
+    private let defaultValue: String
+    
+    var wrappedValue: String {
+        get { value }
+        nonmutating set {
+            value = newValue
+            UserDefaults.standard.set(newValue, forKey: key)
+        }
+    }
+    
+    init(key: String, defaultValue: String = "") {
+        self.key = key
+        self.defaultValue = defaultValue
+        let stored = UserDefaults.standard.string(forKey: key) ?? defaultValue
+        self._value = State(initialValue: stored)
+    }
+    
+    // DynamicProperty requirement - called when view updates
+    func update() {
+        let stored = UserDefaults.standard.string(forKey: key) ?? defaultValue
+        if stored != value {
+            value = stored
+        }
+    }
+}
+
+// Usage in SwiftUI
+struct SettingsView: View {
+    @UserDefaultsWrapper(key: "username", defaultValue: "Guest") var username
+    @UserDefaultsWrapper(key: "theme", defaultValue: "light") var theme
+    
+    var body: some View {
+        VStack {
+            Text("Hello, \(username)")
+            Text("Theme: \(theme)")
+            
+            Button("Change Username") {
+                username = "NewUser\(Int.random(in: 1...100))"
+            }
+            
+            Button("Toggle Theme") {
+                theme = theme == "light" ? "dark" : "light"
+            }
+        }
+        .padding()
+    }
+}</code></pre>
+          </div>
+
+          <h4>Built-in SwiftUI Property Wrappers:</h4>
+
+          <table>
+            <tr>
+              <th>Property Wrapper</th>
+              <th>Purpose</th>
+              <th>Use Case</th>
+            </tr>
+            <tr>
+              <td>@State</td>
+              <td>Local mutable state</td>
+              <td>Simple values owned by view</td>
+            </tr>
+            <tr>
+              <td>@Binding</td>
+              <td>Two-way data binding</td>
+              <td>Child views modifying parent data</td>
+            </tr>
+            <tr>
+              <td>@ObservedObject</td>
+              <td>External observable object</td>
+              <td>Shared data between views</td>
+            </tr>
+            <tr>
+              <td>@StateObject</td>
+              <td>Owned observable object</td>
+              <td>Creating and owning data models</td>
+            </tr>
+            <tr>
+              <td>@EnvironmentObject</td>
+              <td>Dependency injection</td>
+              <td>App-wide shared state</td>
+            </tr>
+            <tr>
+              <td>@Environment</td>
+              <td>System values</td>
+              <td>Color scheme, size class, etc.</td>
+            </tr>
+            <tr>
+              <td>@AppStorage</td>
+              <td>UserDefaults integration</td>
+              <td>Persistent settings</td>
+            </tr>
+            <tr>
+              <td>@SceneStorage</td>
+              <td>Scene-specific storage</td>
+              <td>Multi-window app state</td>
+            </tr>
+            <tr>
+              <td>@FocusState</td>
+              <td>Focus management</td>
+              <td>Keyboard focus control</td>
+            </tr>
+          </table>
+
+          <h4>Advanced Custom Property Wrapper Examples:</h4>
+
+          <div class="example-box">
+            <h5>1. Debounced Input Wrapper</h5>
+            <div class="code-block">
+              <pre><code>@propertyWrapper
+struct Debounced<T: Equatable>: DynamicProperty {
+    @State private var currentValue: T
+    @State private var debouncedValue: T
+    @State private var debounceTask: Task<Void, Never>?
+    
+    private let delay: TimeInterval
+    
+    var wrappedValue: T {
+        get { debouncedValue }
+        nonmutating set {
+            currentValue = newValue
+            debounceTask?.cancel()
+            debounceTask = Task {
+                try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                if !Task.isCancelled {
+                    debouncedValue = currentValue
+                }
+            }
+        }
+    }
+    
+    init(wrappedValue: T, delay: TimeInterval = 0.5) {
+        self.delay = delay
+        self._currentValue = State(initialValue: wrappedValue)
+        self._debouncedValue = State(initialValue: wrappedValue)
+    }
+}
+
+// Usage
+struct SearchView: View {
+    @Debounced(delay: 0.3) var searchText: String = ""
+    
+    var body: some View {
+        VStack {
+            TextField("Search", text: $searchText)
+            Text("Searching for: \(searchText)")
+                .onChange(of: searchText) { newValue in
+                    // This will only trigger after 0.3 seconds of no changes
+                    performSearch(newValue)
+                }
+        }
+    }
+    
+    func performSearch(_ query: String) {
+        // Perform actual search
+    }
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="example-box">
+            <h5>2. Network State Wrapper</h5>
+            <div class="code-block">
+              <pre><code>@propertyWrapper
+struct NetworkState<T>: DynamicProperty {
+    @State private var value: T?
+    @State private var isLoading: Bool = false
+    @State private var error: Error?
+    
+    private let url: URL
+    private let decoder: JSONDecoder
+    
+    var wrappedValue: NetworkResult<T> {
+        NetworkResult(
+            value: value,
+            isLoading: isLoading,
+            error: error,
+            reload: reload
+        )
+    }
+    
+    init(_ url: URL, decoder: JSONDecoder = JSONDecoder()) {
+        self.url = url
+        self.decoder = decoder
+    }
+    
+    private func reload() {
+        isLoading = true
+        error = nil
+        
+        Task {
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                let decoded = try decoder.decode(T.self, from: data)
+                
+                await MainActor.run {
+                    self.value = decoded
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = error
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+    
+    func update() {
+        if value == nil && !isLoading {
+            reload()
+        }
+    }
+}
+
+struct NetworkResult<T> {
+    let value: T?
+    let isLoading: Bool
+    let error: Error?
+    let reload: () -> Void
+}
+
+// Usage
+struct DataView: View {
+    @NetworkState<[User]>(URL(string: "https://api.example.com/users")!)
+    var usersData
+    
+    var body: some View {
+        VStack {
+            if usersData.isLoading {
+                ProgressView("Loading users...")
+            } else if let error = usersData.error {
+                Text("Error: \(error.localizedDescription)")
+                Button("Retry") {
+                    usersData.reload()
+                }
+            } else if let users = usersData.value {
+                List(users, id: \.id) { user in
+                    Text(user.name)
+                }
+            }
+        }
+    }
+}</code></pre>
+            </div>
+          </div>
+
+          <h4>DynamicProperty Protocol Requirements:</h4>
+
+          <div class="example-box">
+            <h5>Optional Methods:</h5>
+            <ul>
+              <li><strong>update():</strong> Called before each view update cycle</li>
+              <li><strong>mutating func</strong> for any methods that modify the wrapper</li>
+            </ul>
+          </div>
+
+          <h4>Key Concepts:</h4>
+
+          <div class="example-box">
+            <h5>1. Property Wrapper Lifecycle</h5>
+            <ul>
+              <li>Initialization when view is created</li>
+              <li>update() called before each view update</li>
+              <li>wrappedValue accessed during view rendering</li>
+            </ul>
+          </div>
+
+          <div class="example-box">
+            <h5>2. State Synchronization</h5>
+            <ul>
+              <li>Use @State internally for reactive updates</li>
+              <li>Implement update() to sync external changes</li>
+              <li>Handle async operations properly</li>
+            </ul>
+          </div>
+
+          <h4>Best Practices:</h4>
+          <ul>
+            <li><strong>Performance:</strong> Keep update() method lightweight</li>
+            <li><strong>State Management:</strong> Use @State for internal reactive state</li>
+            <li><strong>Async Operations:</strong> Handle Task cancellation in update()</li>
+            <li><strong>Error Handling:</strong> Provide clear error states</li>
+            <li><strong>Testing:</strong> Make property wrappers testable in isolation</li>
+          </ul>
+
+          <h4>Common Use Cases:</h4>
+          <ul>
+            <li>Custom storage backends (Core Data, Realm, etc.)</li>
+            <li>Network state management</li>
+            <li>Input validation and formatting</li>
+            <li>Debouncing and throttling</li>
+            <li>Caching and memoization</li>
+            <li>Analytics and logging integration</li>
+          </ul>
+
+          <h4>Testing Custom Property Wrappers:</h4>
+          <div class="code-block">
+            <pre><code>// Unit test for custom property wrapper
+func testDebouncedWrapper() async {
+    @Debounced(delay: 0.1) var testValue: String = ""
+    
+    testValue = "a"
+    testValue = "ab"
+    testValue = "abc"
+    
+    // Should still be empty immediately
+    XCTAssertEqual(testValue, "")
+    
+    // Wait for debounce delay
+    try? await Task.sleep(nanoseconds: 150_000_000) // 0.15 seconds
+    
+    // Now should have the final value
+    XCTAssertEqual(testValue, "abc")
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+      
+      <h4>إيه هو @dynamicProperty؟</h4>
+      <p><span class="highlight">@dynamicProperty</span> دا protocol بيخلي الـ property wrappers المخصصة تتفاعل مع نظام التحديث في SwiftUI. يعني لما قيمة الـ wrapper تتغير، الـ view يتحدث تلقائياً.</p>
+      
+      <h4>Property Wrappers أساساً:</h4>
+      <p>دي طريقة إنك تعمل سلوك مخصوص للخصائص (properties)، زي إنك تخلي النص يتكتب بحروف كبيرة أوتوماتيكياً:</p>
+      
+      <div class="code-block">
+        <pre><code>@propertyWrapper
+struct Capitalized {
+    private var value: String = ""
+    
+    var wrappedValue: String {
+        get { value }
+        set { value = newValue.capitalized }
+    }
+}
+
+// الاستخدام
+struct MyView: View {
+    @Capitalized var name: String = "ahmed"
+    
+    var body: some View {
+        Text(name) // هيطبع "Ahmed"
+    }
+}</code></pre>
+      </div>
+      
+      <h4>ازاي نضيف @dynamicProperty؟</h4>
+      <p>عشان الـ wrapper يشتغل مع SwiftUI صح، لازم يعمل conform للـ DynamicProperty:</p>
+      
+      <div class="code-block">
+        <pre><code>@propertyWrapper
+struct UserDefaultsWrapper: DynamicProperty {
+    @State private var value: String
+    private let key: String
+    
+    var wrappedValue: String {
+        get { value }
+        set {
+            value = newValue
+            UserDefaults.standard.set(newValue, forKey: key)
+        }
+    }
+    
+    init(key: String, defaultValue: String = "") {
+        self.key = key
+        let stored = UserDefaults.standard.string(forKey: key) ?? defaultValue
+        self._value = State(initialValue: stored)
+    }
+    
+    func update() {
+        // دا بيتنادي قبل كل تحديث للـ view
+        let stored = UserDefaults.standard.string(forKey: key) ?? ""
+        if stored != value {
+            value = stored
+        }
+    }
+}</code></pre>
+      </div>
+      
+      <h4>الـ Property Wrappers الجاهزة في SwiftUI:</h4>
+      
+      <div class="example-box">
+        <h5>للبيانات المحلية:</h5>
+        <ul>
+          <li><strong>@State:</strong> للقيم البسيطة في نفس الـ view</li>
+          <li><strong>@Binding:</strong> للربط بين parent و child views</li>
+        </ul>
+      </div>
+
+      <div class="example-box">
+        <h5>للبيانات المعقدة:</h5>
+        <ul>
+          <li><strong>@StateObject:</strong> لما تعمل model جديد وتملكه</li>
+          <li><strong>@ObservedObject:</strong> لما تشارك model موجود</li>
+          <li><strong>@EnvironmentObject:</strong> للبيانات على مستوى التطبيق</li>
+        </ul>
+      </div>
+
+      <div class="example-box">
+        <h5>للإعدادات:</h5>
+        <ul>
+          <li><strong>@AppStorage:</strong> للحفظ في UserDefaults</li>
+          <li><strong>@SceneStorage:</strong> للحفظ على مستوى النافذة</li>
+        </ul>
+      </div>
+
+      <div class="example-box">
+        <h5>للتحكم:</h5>
+        <ul>
+          <li><strong>@FocusState:</strong> للتحكم في الفوكس</li>
+          <li><strong>@Environment:</strong> لقيم النظام زي اللون والحجم</li>
+        </ul>
+      </div>
+      
+      <h4>أمثلة متقدمة:</h4>
+      
+      <div class="example-box">
+        <h5>Debounced Input (تأخير الكتابة):</h5>
+        <p>عشان ماتعملش search مع كل حرف، بل تستنى شوية:</p>
+        <div class="code-block">
+          <pre><code>@Debounced(delay: 0.3) var searchText: String = ""
+
+// دا مش هيبعت إلا لما المستخدم يبطل كتابة لمدة 0.3 ثانية</code></pre>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h5>Network State (حالة الشبكة):</h5>
+        <p>wrapper يدير لك التحميل والأخطاء:</p>
+        <div class="code-block">
+          <pre><code>@NetworkState<[User]>(url) var usersData
+
+if usersData.isLoading {
+    ProgressView("بيحمل...")
+} else if let users = usersData.value {
+    List(users) { user in
+        Text(user.name)
+    }
+}</code></pre>
+        </div>
+      </div>
+      
+      <h4>متطلبات DynamicProperty:</h4>
+      
+      <div class="example-box">
+        <h5>update() Function:</h5>
+        <p>بتتنادي قبل كل تحديث للـ view. هنا تحط أي logic للمزامنة مع البيانات الخارجية.</p>
+      </div>
+      
+      <h4>نصائح مهمة:</h4>
+      <ul>
+        <li>خلي update() سريعة عشان الأداء</li>
+        <li>استخدم @State جوا الـ wrapper للـ reactive updates</li>
+        <li>اتعامل مع الـ async operations صح</li>
+        <li>حط error handling واضح</li>
+        <li>اعمل test للـ wrappers لوحدها</li>
+      </ul>
+      
+      <h4>استخدامات شائعة:</h4>
+      <ul>
+        <li>تخزين مخصص (Core Data, Realm)</li>
+        <li>إدارة حالة الشبكة</li>
+        <li>التحقق من صحة البيانات</li>
+        <li>تأخير الاستجابة (debouncing)</li>
+        <li>التخزين المؤقت (caching)</li>
+        <li>ربط التحليلات والـ logging</li>
+      </ul>
+      
+      <h4>مثال للاختبار:</h4>
+      <div class="code-block">
+        <pre><code>func testDebounced() async {
+    @Debounced(delay: 0.1) var text: String = ""
+    
+    text = "أ"
+    text = "أح"
+    text = "أحمد"
+    
+    // لازم يكون فاضي في الأول
+    XCTAssertEqual(text, "")
+    
+    // استنى الـ delay
+    try? await Task.sleep(nanoseconds: 150_000_000)
+    
+    // دلوقتي لازم يكون فيه القيمة الأخيرة
+    XCTAssertEqual(text, "أحمد")
+}</code></pre>
+      </div>
+      
+      <p><span class="highlight">خلاصة:</span> @dynamicProperty بيخليك تعمل property wrappers مخصصة تتفاعل مع SwiftUI بطريقة احترافية ومرنة!</p>
+    </div>
+
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

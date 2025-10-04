@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debugging SwiftUI Views and Performance</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        How to debug SwiftUI views and performance issues?
+      </h1>
+
+      <div class="highlight-box">
+        <h4>🔍 الفكرة الأساسية</h4>
+        <p>
+          <strong>Debugging SwiftUI</strong> بيتطلب فهم الـ View lifecycle، وamation timing، وperformance bottlenecks. 
+          من الـ Print statements البسيطة لاستخدام Instruments المتقدم والـ View Hierarchy debugging.
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        Debugging في SwiftUI مختلف عن UIKit لأن declarative nature بيخلي 
+        الـ view updates غير مباشرة. محتاج تفهم كيف الـ state changes بتأثر على 
+        الـ view rebuilding وتعرف تتبع performance issues والـ view lifecycle.
+      </p>
+
+      <h2 class="section-title">🎯 Basic Debugging Techniques</h2>
+
+      <div class="success-box">
+        <h5>1. Print Debugging and View Lifecycle</h5>
+        <p>استخدام print statements لتتبع الـ view lifecycle والـ state changes</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// Custom debugging view modifier
+struct DebugModifier: ViewModifier {
+    let id: String
+    
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                print("🟢 [\(id)] View appeared")
+            }
+            .onDisappear {
+                print("🔴 [\(id)] View disappeared")
+            }
+    }
+}
+
+extension View {
+    func debug(_ id: String) -> some View {
+        modifier(DebugModifier(id: id))
+    }
+}
+
+// State debugging helper
+@propertyWrapper
+struct DebugState<Value>: DynamicProperty {
+    @State private var value: Value
+    private let name: String
+    
+    init(wrappedValue: Value, _ name: String) {
+        self._value = State(wrappedValue: wrappedValue)
+        self.name = name
+        print("🔨 [\(name)] Initial value: \(wrappedValue)")
+    }
+    
+    var wrappedValue: Value {
+        get {
+            print("📖 [\(name)] Reading value: \(value)")
+            return value
+        }
+        nonmutating set {
+            print("✏️ [\(name)] Writing value: \(value) -> \(newValue)")
+            value = newValue
+        }
+    }
+    
+    var projectedValue: Binding<Value> {
+        Binding(
+            get: { self.wrappedValue },
+            set: { self.wrappedValue = $0 }
+        )
+    }
+}
+
+// Performance debugging view
+struct DebuggableView: View {
+    @DebugState("Counter") var counter = 0
+    @DebugState("IsVisible") var isVisible = true
+    @State private var items: [String] = []
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Debug Counter: \(counter)")
+                .debug("CounterText")
+            
+            Button("Increment") {
+                counter += 1
+            }
+            .debug("IncrementButton")
+            
+            Button("Toggle Visibility") {
+                isVisible.toggle()
+            }
+            .debug("ToggleButton")
+            
+            if isVisible {
+                expensiveView
+                    .debug("ExpensiveView")
+            }
+            
+            Button("Add Items") {
+                addItems()
+            }
+            .debug("AddButton")
+            
+            LazyVStack {
+                ForEach(items, id: \.self) { item in
+                    Text(item)
+                        .debug("Item-\(item)")
+                }
+            }
+            .debug("ItemsList")
+        }
+        .debug("MainView")
+        .onAppear {
+            print("🚀 Main view appeared")
+            measurePerformance()
+        }
+    }
+    
+    private var expensiveView: some View {
+        // Simulate expensive computation
+        let _ = print("💰 Expensive view being created")
+        return VStack {
+            ForEach(0..<100, id: \.self) { i in
+                Text("Heavy item \(i)")
+                    .background(Color.red.opacity(0.1))
+            }
+        }
+    }
+    
+    private func addItems() {
+        print("📝 Adding items...")
+        let startTime = CFAbsoluteTimeGetCurrent()
+        
+        items.append(contentsOf: (0..<10).map { "Item \($0 + items.count)" })
+        
+        let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
+        print("⏱️ Items added in \(timeElapsed) seconds")
+    }
+    
+    private func measurePerformance() {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        
+        // Simulate some work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
+            print("⚡ Performance measurement: \(timeElapsed) seconds")
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🔬 Advanced Debugging Tools</h2>
+
+      <div class="concept-box">
+        <h5>استخدام View Inspector وSelf-Sizing</h5>
+        <p>أدوات متقدمة لفهم الـ view hierarchy والـ layout issues</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+// View Inspector for debugging layouts
+struct ViewInspector<Content: View>: View {
+    let content: Content
+    let title: String
+    @State private var frame: CGRect = .zero
+    
+    init(_ title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+    
+    var body: some View {
+        content
+            .background(
+                GeometryReader { geometry in
+                    Color.clear
+                        .onAppear {
+                            frame = geometry.frame(in: .global)
+                            print("📏 [\(title)] Frame: \(frame)")
+                        }
+                        .onChange(of: geometry.frame(in: .global)) { newFrame in
+                            frame = newFrame
+                            print("📐 [\(title)] Frame changed: \(frame)")
+                        }
+                }
+            )
+            .overlay(
+                VStack {
+                    HStack {
+                        Text("\(title)")
+                            .font(.caption2)
+                            .padding(4)
+                            .background(Color.black.opacity(0.7))
+                            .foregroundColor(.white)
+                            .cornerRadius(4)
+                        Spacer()
+                    }
+                    Spacer()
+                }
+            )
+    }
+}
+
+// Memory debugging helper
+class MemoryDebugger: ObservableObject {
+    @Published var memoryUsage: String = ""
+    private var timer: Timer?
+    
+    init() {
+        startMonitoring()
+    }
+    
+    deinit {
+        timer?.invalidate()
+    }
+    
+    private func startMonitoring() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            self.updateMemoryUsage()
+        }
+    }
+    
+    private func updateMemoryUsage() {
+        let info = mach_task_basic_info()
+        var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size)/4
+        
+        let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
+                task_info(mach_task_self_,
+                         task_flavor_t(MACH_TASK_BASIC_INFO),
+                         $0,
+                         &count)
+            }
+        }
+        
+        if kerr == KERN_SUCCESS {
+            let usedMB = Double(info.resident_size) / 1024.0 / 1024.0
+            DispatchQueue.main.async {
+                self.memoryUsage = String(format: "%.1f MB", usedMB)
+                if usedMB > 100 { // Alert if memory usage is high
+                    print("⚠️ High memory usage: \(self.memoryUsage)")
+                }
+            }
+        }
+    }
+}
+
+// Performance monitoring view
+struct PerformanceMonitor: View {
+    @StateObject private var memoryDebugger = MemoryDebugger()
+    @State private var frameRate: Double = 60.0
+    @State private var lastUpdate = Date()
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Memory: \(memoryDebugger.memoryUsage)")
+                Spacer()
+                Text("FPS: \(frameRate, specifier: "%.1f")")
+            }
+            .font(.caption)
+            .padding(8)
+            .background(Color.black.opacity(0.8))
+            .foregroundColor(.white)
+            .cornerRadius(8)
+        }
+        .onReceive(Timer.publish(every: 1/60, on: .main, in: .common).autoconnect()) { _ in
+            updateFrameRate()
+        }
+    }
+    
+    private func updateFrameRate() {
+        let now = Date()
+        let interval = now.timeIntervalSince(lastUpdate)
+        frameRate = 1.0 / interval
+        lastUpdate = now
+        
+        if frameRate < 50 {
+            print("⚠️ Low frame rate: \(frameRate)")
+        }
+    }
+}
+
+// Animation debugging
+struct AnimationDebugger: View {
+    @State private var isAnimating = false
+    @State private var animationProgress: Double = 0
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Animation Debug")
+                .font(.title)
+            
+            Circle()
+                .fill(Color.blue)
+                .frame(width: 50, height: 50)
+                .scaleEffect(isAnimating ? 1.5 : 1.0)
+                .rotationEffect(.degrees(animationProgress * 360))
+                .animation(
+                    .easeInOut(duration: 2.0)
+                    .repeatForever(autoreverses: true),
+                    value: isAnimating
+                )
+                .onAnimationCompleted(for: animationProgress) {
+                    print("🎬 Animation completed for progress: \(animationProgress)")
+                }
+            
+            Button("Start Animation") {
+                print("🎬 Starting animation")
+                isAnimating.toggle()
+                
+                withAnimation(.linear(duration: 4.0)) {
+                    animationProgress = isAnimating ? 1.0 : 0.0
+                }
+            }
+            
+            Slider(value: $animationProgress, in: 0...1)
+                .onChange(of: animationProgress) { value in
+                    print("🎚️ Animation progress: \(value)")
+                }
+        }
+        .overlay(PerformanceMonitor(), alignment: .topTrailing)
+    }
+}
+
+// Animation completion detection
+extension View {
+    func onAnimationCompleted<Value: VectorArithmetic>(
+        for value: Value,
+        completion: @escaping () -> Void
+    ) -> some View {
+        modifier(AnimationCompletionModifier(targetValue: value, completion: completion))
+    }
+}
+
+struct AnimationCompletionModifier<Value: VectorArithmetic>: ViewModifier {
+    let targetValue: Value
+    let completion: () -> Void
+    
+    @State private var lastValue: Value?
+    
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: targetValue) { newValue in
+                if let last = lastValue, last != newValue {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if targetValue == newValue {
+                            completion()
+                        }
+                    }
+                }
+                lastValue = newValue
+            }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🛠️ Common Debugging Scenarios</h2>
+
+      <div class="warning-box">
+        <h5>حل المشاكل الشائعة</h5>
+        <p>مجموعة من الحلول للمشاكل الشائعة في SwiftUI</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+// State debugging scenarios
+struct StateDebuggingView: View {
+    @State private var count = 0
+    @State private var isLoading = false
+    @StateObject private var viewModel = DebugViewModel()
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            // Problem: State not updating
+            problematicStateView
+            
+            // Problem: Infinite updates
+            fixedInfiniteUpdateView
+            
+            // Problem: Memory leaks
+            memoryLeakFixedView
+        }
+    }
+    
+    // Problem: View not updating when it should
+    private var problematicStateView: some View {
+        VStack {
+            Text("Count: \(count)")
+                .onTapGesture {
+                    // Wrong: This won't trigger view update
+                    // count = count + 1
+                    
+                    // Correct: Use proper state mutation
+                    count += 1
+                    print("🔄 Count updated to: \(count)")
+                }
+            
+            // Debug: Check if view is rebuilding
+            let _ = print("🏗️ Count view rebuilding with count: \(count)")
+        }
+    }
+    
+    // Problem: onAppear called multiple times
+    private var fixedInfiniteUpdateView: some View {
+        VStack {
+            Text("Loading: \(isLoading ? "Yes" : "No")")
+                .onAppear {
+                    // Wrong: This can cause infinite updates
+                    // isLoading = true
+                    
+                    // Correct: Use task or check current state
+                    if !isLoading {
+                        print("🔄 Starting load operation")
+                        loadData()
+                    }
+                }
+        }
+    }
+    
+    // Problem: Memory leaks with closures
+    private var memoryLeakFixedView: some View {
+        VStack {
+            Text("View Model Count: \(viewModel.count)")
+            
+            Button("Increment") {
+                // Correct: ViewModel automatically manages memory
+                viewModel.increment()
+            }
+        }
+    }
+    
+    private func loadData() {
+        guard !isLoading else { return }
+        
+        isLoading = true
+        print("📡 Starting data load...")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            isLoading = false
+            print("✅ Data load completed")
+        }
+    }
+}
+
+class DebugViewModel: ObservableObject {
+    @Published var count = 0
+    
+    func increment() {
+        print("📈 ViewModel incrementing: \(count) -> \(count + 1)")
+        count += 1
+    }
+    
+    deinit {
+        print("🗑️ ViewModel deallocated")
+    }
+}
+
+// Layout debugging
+struct LayoutDebuggingView: View {
+    @State private var showDebugOverlay = false
+    
+    var body: some View {
+        VStack {
+            Toggle("Show Debug Overlay", isOn: $showDebugOverlay)
+            
+            HStack {
+                debuggableView("Left")
+                    .background(showDebugOverlay ? Color.red.opacity(0.3) : Color.clear)
+                
+                debuggableView("Center")
+                    .background(showDebugOverlay ? Color.green.opacity(0.3) : Color.clear)
+                
+                debuggableView("Right")
+                    .background(showDebugOverlay ? Color.blue.opacity(0.3) : Color.clear)
+            }
+            .overlay(
+                showDebugOverlay ? 
+                GeometryReader { geometry in
+                    Path { path in
+                        // Draw center lines for debugging
+                        let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                        path.move(to: CGPoint(x: 0, y: center.y))
+                        path.addLine(to: CGPoint(x: geometry.size.width, y: center.y))
+                        path.move(to: CGPoint(x: center.x, y: 0))
+                        path.addLine(to: CGPoint(x: center.x, y: geometry.size.height))
+                    }
+                    .stroke(Color.purple, lineWidth: 1)
+                } : nil
+            )
+        }
+        .padding()
+    }
+    
+    private func debuggableView(_ title: String) -> some View {
+        ViewInspector(title) {
+            VStack {
+                Text(title)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
+            }
+        }
+    }
+}
+
+// Network debugging
+class NetworkDebugger: ObservableObject {
+    @Published var requests: [NetworkRequest] = []
+    
+    struct NetworkRequest: Identifiable {
+        let id = UUID()
+        let url: String
+        let method: String
+        let timestamp: Date
+        let duration: TimeInterval?
+        let statusCode: Int?
+        let error: String?
+    }
+    
+    func logRequest(
+        url: String,
+        method: String = "GET",
+        duration: TimeInterval? = nil,
+        statusCode: Int? = nil,
+        error: String? = nil
+    ) {
+        let request = NetworkRequest(
+            url: url,
+            method: method,
+            timestamp: Date(),
+            duration: duration,
+            statusCode: statusCode,
+            error: error
+        )
+        
+        requests.append(request)
+        
+        print("🌐 Network Request: \(method) \(url)")
+        if let statusCode = statusCode {
+            print("📊 Status: \(statusCode)")
+        }
+        if let duration = duration {
+            print("⏱️ Duration: \(duration)s")
+        }
+        if let error = error {
+            print("❌ Error: \(error)")
+        }
+    }
+}
+
+struct NetworkDebugView: View {
+    @StateObject private var networkDebugger = NetworkDebugger()
+    
+    var body: some View {
+        NavigationView {
+            List(networkDebugger.requests) { request in
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(request.method)
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(methodColor(request.method))
+                            .foregroundColor(.white)
+                            .cornerRadius(4)
+                        
+                        Spacer()
+                        
+                        if let statusCode = request.statusCode {
+                            Text("\(statusCode)")
+                                .font(.caption)
+                                .foregroundColor(statusColor(statusCode))
+                        }
+                    }
+                    
+                    Text(request.url)
+                        .font(.body)
+                        .lineLimit(2)
+                    
+                    HStack {
+                        Text(request.timestamp, style: .time)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        if let duration = request.duration {
+                            Text("\(duration, specifier: "%.2f")s")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        if let error = request.error {
+                            Text("Error: \(error)")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+            .navigationTitle("Network Debug")
+            .toolbar {
+                Button("Test Request") {
+                    simulateNetworkRequest()
+                }
+            }
+        }
+    }
+    
+    private func methodColor(_ method: String) -> Color {
+        switch method {
+        case "GET": return .blue
+        case "POST": return .green
+        case "PUT": return .orange
+        case "DELETE": return .red
+        default: return .gray
+        }
+    }
+    
+    private func statusColor(_ statusCode: Int) -> Color {
+        switch statusCode {
+        case 200..<300: return .green
+        case 300..<400: return .orange
+        case 400..<500: return .red
+        case 500...: return .purple
+        default: return .gray
+        }
+    }
+    
+    private func simulateNetworkRequest() {
+        let urls = [
+            "https://api.example.com/users",
+            "https://api.example.com/posts",
+            "https://api.example.com/comments"
+        ]
+        
+        let url = urls.randomElement()!
+        
+        networkDebugger.logRequest(url: url, method: "GET")
+        
+        // Simulate network delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.5...2.0)) {
+            let statusCode = [200, 201, 404, 500].randomElement()!
+            let duration = Double.random(in: 0.1...2.0)
+            
+            networkDebugger.logRequest(
+                url: url,
+                method: "GET",
+                duration: duration,
+                statusCode: statusCode,
+                error: statusCode >= 400 ? "Request failed" : nil
+            )
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">⚡ Performance Optimization</h2>
+
+      <div class="success-box">
+        <h5>تحسين الأداء ومنع المشاكل</h5>
+        <p>تقنيات لتحسين أداء التطبيق ومنع performance bottlenecks</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+// Performance optimization techniques
+struct OptimizedListView: View {
+    @State private var items: [ListItem] = []
+    @State private var isLoading = false
+    
+    struct ListItem: Identifiable, Hashable {
+        let id = UUID()
+        let title: String
+        let subtitle: String
+        let imageURL: String?
+    }
+    
+    var body: some View {
+        NavigationView {
+            List {
+                // Optimized: Use LazyVStack for large lists
+                LazyVStack(spacing: 0) {
+                    ForEach(items) { item in
+                        OptimizedListRow(item: item)
+                            .onAppear {
+                                // Load more items when near the end
+                                if item == items.last {
+                                    loadMoreItems()
+                                }
+                            }
+                    }
+                }
+            }
+            .navigationTitle("Optimized List")
+            .refreshable {
+                await refreshItems()
+            }
+            .task {
+                await loadInitialItems()
+            }
+        }
+    }
+    
+    private func loadInitialItems() async {
+        guard items.isEmpty else { return }
+        
+        isLoading = true
+        defer { isLoading = false }
+        
+        // Simulate API call
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        
+        items = (0..<20).map { index in
+            ListItem(
+                title: "Item \(index)",
+                subtitle: "Subtitle for item \(index)",
+                imageURL: "https://picsum.photos/100/100?random=\(index)"
+            )
+        }
+    }
+    
+    private func loadMoreItems() {
+        guard !isLoading else { return }
+        
+        Task {
+            isLoading = true
+            defer { isLoading = false }
+            
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            
+            let newItems = (items.count..<items.count + 10).map { index in
+                ListItem(
+                    title: "Item \(index)",
+                    subtitle: "Subtitle for item \(index)",
+                    imageURL: "https://picsum.photos/100/100?random=\(index)"
+                )
+            }
+            
+            items.append(contentsOf: newItems)
+        }
+    }
+    
+    private func refreshItems() async {
+        items.removeAll()
+        await loadInitialItems()
+    }
+}
+
+struct OptimizedListRow: View {
+    let item: OptimizedListView.ListItem
+    
+    var body: some View {
+        HStack {
+            // Optimized: Use AsyncImage with placeholder
+            AsyncImage(url: URL(string: item.imageURL ?? "")) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .overlay(
+                        ProgressView()
+                            .scaleEffect(0.5)
+                    )
+            }
+            .frame(width: 60, height: 60)
+            .clipped()
+            .cornerRadius(8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.title)
+                    .font(.headline)
+                    .lineLimit(1)
+                
+                Text(item.subtitle)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+            }
+            
+            Spacer()
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+// Memory efficient data handling
+class EfficientDataManager: ObservableObject {
+    @Published var items: [DataItem] = []
+    private var cache: [String: DataItem] = [:]
+    private let maxCacheSize = 100
+    
+    struct DataItem: Identifiable {
+        let id: String
+        let data: String
+        let timestamp: Date
+    }
+    
+    func loadItem(id: String) async -> DataItem? {
+        // Check cache first
+        if let cachedItem = cache[id] {
+            print("📋 Cache hit for: \(id)")
+            return cachedItem
+        }
+        
+        print("🌐 Loading from network: \(id)")
+        
+        // Simulate network load
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        
+        let item = DataItem(
+            id: id,
+            data: "Data for \(id)",
+            timestamp: Date()
+        )
+        
+        // Add to cache with size limit
+        cache[id] = item
+        if cache.count > maxCacheSize {
+            // Remove oldest items
+            let sortedKeys = cache.keys.sorted {
+                cache[$0]!.timestamp < cache[$1]!.timestamp
+            }
+            cache.removeValue(forKey: sortedKeys.first!)
+            print("🗑️ Cache evicted old item")
+        }
+        
+        return item
+    }
+    
+    func clearCache() {
+        cache.removeAll()
+        print("🧹 Cache cleared")
+    }
+    
+    deinit {
+        print("🗑️ DataManager deallocated")
+    }
+}
+
+// Debugging dashboard
+struct DebuggingDashboard: View {
+    @State private var selectedTab = 0
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            DebuggableView()
+                .tabItem {
+                    Image(systemName: "eye")
+                    Text("View Debug")
+                }
+                .tag(0)
+            
+            AnimationDebugger()
+                .tabItem {
+                    Image(systemName: "play.circle")
+                    Text("Animation")
+                }
+                .tag(1)
+            
+            LayoutDebuggingView()
+                .tabItem {
+                    Image(systemName: "square.grid.3x3")
+                    Text("Layout")
+                }
+                .tag(2)
+            
+            NetworkDebugView()
+                .tabItem {
+                    Image(systemName: "network")
+                    Text("Network")
+                }
+                .tag(3)
+            
+            OptimizedListView()
+                .tabItem {
+                    Image(systemName: "list.bullet")
+                    Text("Performance")
+                }
+                .tag(4)
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Best Practices</h2>
+
+      <div class="highlight-box">
+        <h4>أفضل الممارسات للـ SwiftUI Debugging:</h4>
+        <ol>
+          <li><strong>Systematic Logging:</strong> استخدم structured logging للـ view lifecycle</li>
+          <li><strong>Performance Monitoring:</strong> راقب الـ memory usage والـ frame rate</li>
+          <li><strong>State Tracking:</strong> تتبع الـ state changes واسبابها</li>
+          <li><strong>Visual Debugging:</strong> استخدم debug overlays للـ layout issues</li>
+          <li><strong>Instruments Integration:</strong> استخدم Xcode Instruments للـ deep analysis</li>
+          <li><strong>Testing:</strong> اكتب unit tests للـ view models والـ business logic</li>
+        </ol>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>SwiftUI Debugging Strategy:</strong>
+        </p>
+        <ul>
+          <li><strong>Print Debugging:</strong> للـ quick insights والـ state tracking</li>
+          <li><strong>Visual Debugging:</strong> للـ layout والـ animation issues</li>
+          <li><strong>Performance Monitoring:</strong> للـ memory وframerate optimization</li>
+          <li><strong>Instruments:</strong> للـ deep performance analysis</li>
+          <li><strong>Systematic Approach:</strong> استخدم debugging tools مجتمعة</li>
+          <li><strong>Prevention:</strong> اكتب clean code من البداية</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

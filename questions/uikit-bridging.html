@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to bridge UIKit views inside SwiftUI?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(123, 166, 159, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(123, 166, 159, 0.5);
+      color: white;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #9ac2bb;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .example-box {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #9ac2bb;
+    }
+
+    .protocol-demo {
+      font-family: monospace;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+
+    <h1 class="main-title">How to bridge UIKit views inside SwiftUI?</h1>
+
+    <div class="card advanced-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>UIKit Bridging in SwiftUI</h4>
+          <p>SwiftUI provides two main protocols to integrate UIKit components: <strong>UIViewRepresentable</strong> for UIView subclasses and <strong>UIViewControllerRepresentable</strong> for UIViewController subclasses.</p>
+
+          <h4>1. UIViewRepresentable Protocol</h4>
+          <p>Used to wrap UIKit views (UIView subclasses) for use in SwiftUI:</p>
+
+          <div class="protocol-demo">
+            <div>UIKit View → UIViewRepresentable → SwiftUI</div>
+            <div>      ↑                              ↓</div>
+            <div>   Native UIKit     SwiftUI Compatible</div>
+          </div>
+
+          <div class="code-block">
+            <pre><code>import SwiftUI
+import UIKit
+
+struct CustomUITextView: UIViewRepresentable {
+    @Binding var text: String
+    
+    // Required: Create the UIKit view
+    func makeUIView(context: Context) -> UITextView {
+        let textView = UITextView()
+        textView.backgroundColor = UIColor.systemBackground
+        textView.font = UIFont.systemFont(ofSize: 16)
+        textView.delegate = context.coordinator
+        return textView
+    }
+    
+    // Required: Update the view when SwiftUI state changes
+    func updateUIView(_ uiView: UITextView, context: Context) {
+        if uiView.text != text {
+            uiView.text = text
+        }
+    }
+    
+    // Optional: Create coordinator for delegation
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UITextViewDelegate {
+        var parent: CustomUITextView
+        
+        init(_ parent: CustomUITextView) {
+            self.parent = parent
+        }
+        
+        func textViewDidChange(_ textView: UITextView) {
+            parent.text = textView.text
+        }
+    }
+}
+
+// Usage in SwiftUI
+struct ContentView: View {
+    @State private var text = "Enter text here..."
+    
+    var body: some View {
+        VStack {
+            Text("Current text: \(text)")
+            CustomUITextView(text: $text)
+                .frame(height: 200)
+                .border(Color.gray)
+        }
+        .padding()
+    }
+}</code></pre>
+          </div>
+
+          <h4>2. UIViewControllerRepresentable Protocol</h4>
+          <p>Used to wrap UIKit view controllers for use in SwiftUI:</p>
+
+          <div class="code-block">
+            <pre><code>import SwiftUI
+import UIKit
+
+struct ImagePickerView: UIViewControllerRepresentable {
+    @Binding var selectedImage: UIImage?
+    @Environment(\.presentationMode) var presentationMode
+    
+    // Required: Create the view controller
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.delegate = context.coordinator
+        return picker
+    }
+    
+    // Required: Update when needed
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
+        // Usually no updates needed for image picker
+    }
+    
+    // Coordinator for delegation
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        var parent: ImagePickerView
+        
+        init(_ parent: ImagePickerView) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                parent.selectedImage = image
+            }
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+    }
+}
+
+// Usage in SwiftUI
+struct PhotoPickerView: View {
+    @State private var selectedImage: UIImage?
+    @State private var showingImagePicker = false
+    
+    var body: some View {
+        VStack {
+            if let image = selectedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 300)
+            } else {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 300)
+                    .overlay(Text("No image selected"))
+            }
+            
+            Button("Select Photo") {
+                showingImagePicker = true
+            }
+            .sheet(isPresented: $showingImagePicker) {
+                ImagePickerView(selectedImage: $selectedImage)
+            }
+        }
+        .padding()
+    }
+}</code></pre>
+          </div>
+
+          <h4>Key Methods Comparison:</h4>
+
+          <table>
+            <tr>
+              <th>Protocol</th>
+              <th>Required Methods</th>
+              <th>Purpose</th>
+            </tr>
+            <tr>
+              <td>UIViewRepresentable</td>
+              <td>makeUIView(), updateUIView()</td>
+              <td>Wrap UIView subclasses</td>
+            </tr>
+            <tr>
+              <td>UIViewControllerRepresentable</td>
+              <td>makeUIViewController(), updateUIViewController()</td>
+              <td>Wrap UIViewController subclasses</td>
+            </tr>
+          </table>
+
+          <h4>Common Use Cases:</h4>
+
+          <div class="example-box">
+            <h5>UIViewRepresentable Examples:</h5>
+            <ul>
+              <li><strong>UITextView:</strong> Rich text editing</li>
+              <li><strong>UIWebView/WKWebView:</strong> Web content</li>
+              <li><strong>UIActivityIndicatorView:</strong> Custom loading indicators</li>
+              <li><strong>UIVisualEffectView:</strong> Blur effects</li>
+              <li><strong>Custom UIViews:</strong> Complex drawings or animations</li>
+            </ul>
+          </div>
+
+          <div class="example-box">
+            <h5>UIViewControllerRepresentable Examples:</h5>
+            <ul>
+              <li><strong>UIImagePickerController:</strong> Photo/camera access</li>
+              <li><strong>UIDocumentPickerViewController:</strong> File selection</li>
+              <li><strong>UIActivityViewController:</strong> Sharing</li>
+              <li><strong>Custom ViewControllers:</strong> Complex navigation or modal presentations</li>
+            </ul>
+          </div>
+
+          <h4>Advanced Example - Web View:</h4>
+          <div class="code-block">
+            <pre><code>import SwiftUI
+import WebKit
+
+struct WebView: UIViewRepresentable {
+    let url: URL
+    @Binding var isLoading: Bool
+    @Binding var canGoBack: Bool
+    @Binding var canGoForward: Bool
+    
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.navigationDelegate = context.coordinator
+        return webView
+    }
+    
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        let request = URLRequest(url: url)
+        uiView.load(request)
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, WKNavigationDelegate {
+        var parent: WebView
+        
+        init(_ parent: WebView) {
+            self.parent = parent
+        }
+        
+        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+            parent.isLoading = true
+        }
+        
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            parent.isLoading = false
+            parent.canGoBack = webView.canGoBack
+            parent.canGoForward = webView.canGoForward
+        }
+    }
+}
+
+// Usage with navigation controls
+struct BrowserView: View {
+    @State private var isLoading = false
+    @State private var canGoBack = false
+    @State private var canGoForward = false
+    
+    let url = URL(string: "https://www.apple.com")!
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Button("Back") { /* webView.goBack() */ }
+                    .disabled(!canGoBack)
+                Button("Forward") { /* webView.goForward() */ }
+                    .disabled(!canGoForward)
+                Spacer()
+                if isLoading {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                }
+            }
+            .padding()
+            
+            WebView(url: url, isLoading: $isLoading, canGoBack: $canGoBack, canGoForward: $canGoForward)
+        }
+    }
+}</code></pre>
+          </div>
+
+          <h4>Best Practices:</h4>
+          <ul>
+            <li><strong>Coordinator Pattern:</strong> Use coordinators for delegation and complex interactions</li>
+            <li><strong>State Synchronization:</strong> Keep SwiftUI and UIKit states in sync</li>
+            <li><strong>Memory Management:</strong> Be careful with retain cycles in coordinators</li>
+            <li><strong>Performance:</strong> Minimize unnecessary updates in updateUIView/updateUIViewController</li>
+            <li><strong>Lifecycle:</strong> Handle view lifecycle properly</li>
+          </ul>
+
+          <h4>Common Pitfalls:</h4>
+          <ul>
+            <li>Creating new instances in updateUIView instead of updating existing ones</li>
+            <li>Not implementing coordinators for delegation</li>
+            <li>Forgetting to update SwiftUI state from UIKit callbacks</li>
+            <li>Memory leaks due to strong reference cycles</li>
+            <li>Not handling orientation changes or device rotations</li>
+          </ul>
+
+          <h4>Communication Patterns:</h4>
+
+          <div class="example-box">
+            <h5>SwiftUI → UIKit</h5>
+            <p>Use updateUIView/updateUIViewController to pass data from SwiftUI to UIKit</p>
+          </div>
+
+          <div class="example-box">
+            <h5>UIKit → SwiftUI</h5>
+            <p>Use @Binding properties and coordinator delegates to send data back to SwiftUI</p>
+          </div>
+
+          <h4>Testing Considerations:</h4>
+          <ul>
+            <li>Test the bridged component separately from SwiftUI views</li>
+            <li>Mock UIKit dependencies when testing SwiftUI logic</li>
+            <li>Use UITests for integration testing</li>
+            <li>Test coordinator delegation thoroughly</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+      
+      <h4>إيه هو UIKit Bridging؟</h4>
+      <p>دي طريقة إنك تستخدم مكونات UIKit القديمة جوا SwiftUI الجديد. SwiftUI بيوفر <span class="highlight">بروتوكولين</span> أساسيين للموضوع دا.</p>
+      
+      <h4>البروتوكولين الأساسيين:</h4>
+      
+      <div class="example-box">
+        <h5>1. UIViewRepresentable</h5>
+        <p>للـ UIViews العادية زي UITextView, UIWebView, إلخ...</p>
+        <div class="code-block">
+          <pre><code>struct MyUIView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UITextView {
+        // إنشاء الـ view
+    }
+    
+    func updateUIView(_ uiView: UITextView, context: Context) {
+        // تحديث الـ view
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <h5>2. UIViewControllerRepresentable</h5>
+        <p>للـ ViewControllers زي UIImagePickerController, UIDocumentPicker, إلخ...</p>
+        <div class="code-block">
+          <pre><code>struct MyViewController: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        // إنشاء الـ view controller
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
+        // تحديث الـ view controller
+    }
+}</code></pre>
+        </div>
+      </div>
+      
+      <h4>المتطلبات الأساسية:</h4>
+      
+      <div class="example-box">
+        <h5>للـ UIViewRepresentable:</h5>
+        <ul>
+          <li><strong>makeUIView:</strong> عشان تعمل الـ view</li>
+          <li><strong>updateUIView:</strong> عشان تحدث الـ view</li>
+        </ul>
+      </div>
+
+      <div class="example-box">
+        <h5>للـ UIViewControllerRepresentable:</h5>
+        <ul>
+          <li><strong>makeUIViewController:</strong> عشان تعمل الـ controller</li>
+          <li><strong>updateUIViewController:</strong> عشان تحدث الـ controller</li>
+        </ul>
+      </div>
+      
+      <h4>الـ Coordinator Pattern:</h4>
+      <p>دا class بيساعدك تتعامل مع الـ delegates والـ callbacks:</p>
+      
+      <div class="code-block">
+        <pre><code>func makeCoordinator() -> Coordinator {
+    Coordinator(self)
+}
+
+class Coordinator: NSObject, UITextViewDelegate {
+    var parent: CustomTextView
+    
+    init(_ parent: CustomTextView) {
+        self.parent = parent
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        // إرسال التغيير لـ SwiftUI
+        parent.text = textView.text
+    }
+}</code></pre>
+      </div>
+      
+      <h4>أمثلة شائعة:</h4>
+      
+      <div class="example-box">
+        <h5>Image Picker (اختيار صور):</h5>
+        <p>عشان المستخدم يختار صورة من الجاليري أو الكاميرا</p>
+      </div>
+
+      <div class="example-box">
+        <h5>Web View (عرض مواقع):</h5>
+        <p>عشان تعرض صفحات إنترنت جوا التطبيق</p>
+      </div>
+
+      <div class="example-box">
+        <h5>Text View (نص متقدم):</h5>
+        <p>عشان كتابة نصوص طويلة بخصائص متقدمة</p>
+      </div>
+      
+      <h4>إزاي البيانات تتنقل:</h4>
+      
+      <div class="example-box">
+        <h5>من SwiftUI لـ UIKit:</h5>
+        <p>استخدم updateUIView عشان ترسل البيانات الجديدة</p>
+      </div>
+
+      <div class="example-box">
+        <h5>من UIKit لـ SwiftUI:</h5>
+        <p>استخدم @Binding والـ Coordinator عشان ترجع البيانات</p>
+      </div>
+      
+      <h4>نصائح مهمة:</h4>
+      <ul>
+        <li>استخدم Coordinator للتعامل مع الـ delegates</li>
+        <li>خلي البيانات متزامنة بين SwiftUI و UIKit</li>
+        <li>انتبه للـ memory leaks</li>
+        <li>قلل التحديثات غير الضرورية</li>
+      </ul>
+      
+      <h4>أخطاء شائعة:</h4>
+      <ul>
+        <li>إنشاء views جديدة في updateUIView بدل التحديث</li>
+        <li>نسيان عمل Coordinator</li>
+        <li>عدم تحديث حالة SwiftUI من UIKit</li>
+        <li>مشاكل الذاكرة</li>
+      </ul>
+      
+      <h4>متى تستخدم كل واحد؟</h4>
+      
+      <div class="example-box">
+        <h5>UIViewRepresentable:</h5>
+        <p>لما تحتاج view بسيط زي text field متقدم، web view، أو رسومات مخصصة</p>
+      </div>
+
+      <div class="example-box">
+        <h5>UIViewControllerRepresentable:</h5>
+        <p>لما تحتاج functionality معقد زي اختيار ملفات، الكاميرا، أو مشاركة</p>
+      </div>
+      
+      <p><span class="highlight">خلاصة:</span> UIKit bridging بيخليك تستفيد من قوة UIKit جوا SwiftUI، بس لازم تعرف تدير التواصل بينهم صح!</p>
+    </div>
+
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

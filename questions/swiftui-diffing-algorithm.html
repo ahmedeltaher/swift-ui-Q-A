@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How does SwiftUI's diffing algorithm work under the hood?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(123, 166, 159, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(123, 166, 159, 0.5);
+      color: white;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #9ac2bb;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .process-step {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #9ac2bb;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+
+    <h1 class="main-title">How does SwiftUI's diffing algorithm work under the hood?</h1>
+
+    <div class="card advanced-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>SwiftUI's Diffing Algorithm (Reconciliation Process):</h4>
+          
+          <p>SwiftUI uses a sophisticated diffing algorithm to efficiently update the UI by comparing the current view tree with the previous one. This process is called <strong>reconciliation</strong>.</p>
+
+          <h4>How the Algorithm Works:</h4>
+          
+          <div class="process-step">
+            <h5>1. View Tree Creation</h5>
+            <p>When state changes, SwiftUI creates a new view tree by calling the <code>body</code> property of affected views.</p>
+          </div>
+
+          <div class="process-step">
+            <h5>2. Identity-Based Comparison</h5>
+            <p>SwiftUI compares views using their identity (determined by type, id, and position in the hierarchy).</p>
+          </div>
+
+          <div class="process-step">
+            <h5>3. Structural Diffing</h5>
+            <p>The algorithm performs a tree diff to find the minimal set of changes needed to transform the old tree into the new one.</p>
+          </div>
+
+          <div class="process-step">
+            <h5>4. Selective Updates</h5>
+            <p>Only views that actually changed are updated in the underlying UIKit/AppKit layer.</p>
+          </div>
+
+          <h4>Body Re-computation Triggers:</h4>
+          <ul>
+            <li><strong>@State changes:</strong> Local state modifications</li>
+            <li><strong>@ObservedObject/@StateObject updates:</strong> External object changes</li>
+            <li><strong>@Environment changes:</strong> Environmental value modifications</li>
+            <li><strong>Parent view updates:</strong> When parent re-renders</li>
+          </ul>
+
+          <div class="code-block">
+            <pre><code>struct ContentView: View {
+    @State private var counter = 0
+    
+    var body: some View {
+        // This body is re-computed when counter changes
+        VStack {
+            Text("Count: \(counter)")
+            Button("Increment") {
+                counter += 1  // Triggers body re-computation
+            }
+        }
+    }
+}</code></pre>
+          </div>
+
+          <h4>Optimization Techniques:</h4>
+          <table>
+            <tr>
+              <th>Technique</th>
+              <th>Purpose</th>
+              <th>When to Use</th>
+            </tr>
+            <tr>
+              <td>EquatableView</td>
+              <td>Skip updates when content hasn't changed</td>
+              <td>Expensive view computations</td>
+            </tr>
+            <tr>
+              <td>Structural Identity</td>
+              <td>Help SwiftUI understand view relationships</td>
+              <td>Dynamic content with stable IDs</td>
+            </tr>
+            <tr>
+              <td>LazyStacks</td>
+              <td>Defer view creation until needed</td>
+              <td>Large lists or grids</td>
+            </tr>
+          </table>
+
+          <h4>Identity Types:</h4>
+          <div class="code-block">
+            <pre><code>// Structural Identity - based on type and position
+Text("Hello")
+
+// Explicit Identity - using id modifier
+Text("Hello").id("greeting")
+
+// Data Identity - for data-driven views
+ForEach(items, id: \.id) { item in
+    Text(item.name)
+}</code></pre>
+          </div>
+
+          <h4>Performance Considerations:</h4>
+          <ul>
+            <li>Avoid expensive computations in body</li>
+            <li>Use @State for view-local data only</li>
+            <li>Minimize unnecessary parent updates</li>
+            <li>Use explicit IDs for dynamic content</li>
+            <li>Consider EquatableView for complex views</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+      
+      <h4>خوارزمية المقارنة في SwiftUI:</h4>
+      <p>SwiftUI بيستخدم خوارزمية ذكية عشان يحدث الـ UI بكفاءة، والخوارزمية دي اسمها <span class="highlight">Diffing Algorithm</span> أو <span class="highlight">Reconciliation</span>.</p>
+      
+      <h4>ازاي بتشتغل:</h4>
+      
+      <div class="process-step">
+        <h5>1. إنشاء شجرة الـ Views</h5>
+        <p>لما الـ state يتغير، SwiftUI بيعمل شجرة جديدة من الـ views عن طريق استدعاء الـ body.</p>
+      </div>
+
+      <div class="process-step">
+        <h5>2. المقارنة بالهوية</h5>
+        <p>بيقارن الـ views بناءً على هويتها (النوع، الـ ID، والمكان في الـ hierarchy).</p>
+      </div>
+
+      <div class="process-step">
+        <h5>3. حساب الفروق</h5>
+        <p>بيحسب أقل التغييرات المطلوبة عشان يحول الشجرة القديمة للجديدة.</p>
+      </div>
+
+      <div class="process-step">
+        <h5>4. التحديث الانتقائي</h5>
+        <p>بيحدث بس الـ views اللي اتغيرت فعلاً في الـ UIKit من تحت.</p>
+      </div>
+      
+      <h4>متى بيعيد حساب الـ Body:</h4>
+      <ul>
+        <li><strong>@State يتغير:</strong> لما الحالة المحلية تتغير</li>
+        <li><strong>@ObservedObject يتحدث:</strong> لما الكائن الخارجي يتغير</li>
+        <li><strong>الـ Parent يتحدث:</strong> لما الـ view الأب يتغير</li>
+        <li><strong>@Environment يتغير:</strong> لما قيم البيئة تتغير</li>
+      </ul>
+      
+      <h4>طرق التحسين:</h4>
+      <ul>
+        <li><strong>EquatableView:</strong> عشان تتجنب التحديثات الغير ضرورية</li>
+        <li><strong>استخدام IDs واضحة:</strong> عشان SwiftUI يفهم الـ views أحسن</li>
+        <li><strong>LazyStacks:</strong> عشان تأجل إنشاء الـ views لحد ما تحتاجها</li>
+        <li><strong>تجنب الحسابات المعقدة في body:</strong> عشان ماتبطأش الأداء</li>
+      </ul>
+      
+      <p><span class="highlight">نصيحة مهمة:</span> فهم الخوارزمية دي مهم جداً عشان تكتب كود SwiftUI سريع وفعال!</p>
+    </div>
+
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>

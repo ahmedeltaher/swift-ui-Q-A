@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is LazyVGrid and LazyHGrid, and how are they different from List?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .advanced-level {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(123, 166, 159, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #7ba69f 0%, #9ac2bb 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(123, 166, 159, 0.5);
+      color: white;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #9ac2bb;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .grid-visual {
+      font-family: monospace;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .comparison-box {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #9ac2bb;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+
+    <h1 class="main-title">What is LazyVGrid and LazyHGrid, and how are they different from List?</h1>
+
+    <div class="card advanced-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>LazyVGrid and LazyHGrid Overview:</h4>
+          <p><strong>LazyVGrid</strong> and <strong>LazyHGrid</strong> are container views that arrange child views in a grid with lazy loading. They only create views that are visible on screen, making them memory-efficient for large datasets.</p>
+
+          <h4>LazyVGrid (Vertical Grid):</h4>
+          <p>Arranges items in columns, scrolling vertically:</p>
+          <div class="code-block">
+            <pre><code>struct PhotoGrid: View {
+    let photos = Array(1...100).map { "photo\($0)" }
+    
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(photos, id: \.self) { photo in
+                    AsyncImage(url: URL(string: photo))
+                        .frame(height: 100)
+                        .background(Color.gray)
+                        .cornerRadius(8)
+                }
+            }
+            .padding()
+        }
+    }
+}</code></pre>
+          </div>
+
+          <div class="grid-visual">
+            <div>LazyVGrid Layout:</div>
+            <div>┌─────┬─────┬─────┐</div>
+            <div>│  1  │  2  │  3  │</div>
+            <div>├─────┼─────┼─────┤</div>
+            <div>│  4  │  5  │  6  │</div>
+            <div>├─────┼─────┼─────┤</div>
+            <div>│  7  │  8  │  9  │</div>
+            <div>└─────┴─────┴─────┘</div>
+            <div>↓ Scrolls vertically</div>
+          </div>
+
+          <h4>LazyHGrid (Horizontal Grid):</h4>
+          <p>Arranges items in rows, scrolling horizontally:</p>
+          <div class="code-block">
+            <pre><code>struct CategoryGrid: View {
+    let categories = Array(1...50).map { "Category \($0)" }
+    
+    let rows = [
+        GridItem(.fixed(60)),
+        GridItem(.fixed(60)),
+        GridItem(.fixed(60))
+    ]
+    
+    var body: some View {
+        ScrollView(.horizontal) {
+            LazyHGrid(rows: rows, spacing: 20) {
+                ForEach(categories, id: \.self) { category in
+                    Text(category)
+                        .frame(width: 120, height: 50)
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                }
+            }
+            .padding()
+        }
+    }
+}</code></pre>
+          </div>
+
+          <div class="grid-visual">
+            <div>LazyHGrid Layout:</div>
+            <div>┌─────┬─────┬─────┬─────┐</div>
+            <div>│  1  │  4  │  7  │ 10  │ →</div>
+            <div>├─────┼─────┼─────┼─────┤</div>
+            <div>│  2  │  5  │  8  │ 11  │ →</div>
+            <div>├─────┼─────┼─────┼─────┤</div>
+            <div>│  3  │  6  │  9  │ 12  │ →</div>
+            <div>└─────┴─────┴─────┴─────┘</div>
+            <div>Scrolls horizontally →</div>
+          </div>
+
+          <h4>GridItem Types:</h4>
+          <div class="code-block">
+            <pre><code>// Fixed size
+GridItem(.fixed(100))           // Exactly 100 points
+
+// Flexible size
+GridItem(.flexible())           // Takes available space
+GridItem(.flexible(minimum: 50, maximum: 200))
+
+// Adaptive size
+GridItem(.adaptive(minimum: 80)) // Fits as many as possible with min size</code></pre>
+          </div>
+
+          <h4>Comparison with List:</h4>
+
+          <table>
+            <tr>
+              <th>Feature</th>
+              <th>List</th>
+              <th>LazyVGrid/LazyHGrid</th>
+            </tr>
+            <tr>
+              <td>Layout</td>
+              <td>Single column, vertical</td>
+              <td>Multiple columns/rows, customizable</td>
+            </tr>
+            <tr>
+              <td>Built-in Features</td>
+              <td>Selection, swipe actions, refresh</td>
+              <td>No built-in interactions</td>
+            </tr>
+            <tr>
+              <td>Appearance</td>
+              <td>Table-like with separators</td>
+              <td>Grid layout, no separators</td>
+            </tr>
+            <tr>
+              <td>Lazy Loading</td>
+              <td>Yes</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>Customization</td>
+              <td>Limited to list style</td>
+              <td>Highly customizable grid</td>
+            </tr>
+            <tr>
+              <td>Use Cases</td>
+              <td>Settings, contacts, feeds</td>
+              <td>Photo galleries, product grids</td>
+            </tr>
+          </table>
+
+          <h4>When to Use Each:</h4>
+
+          <div class="comparison-box">
+            <h5>Use List when:</h5>
+            <ul>
+              <li>You need a traditional table view</li>
+              <li>You want built-in selection and swipe actions</li>
+              <li>You're displaying text-heavy content</li>
+              <li>You need sections with headers/footers</li>
+            </ul>
+          </div>
+
+          <div class="comparison-box">
+            <h5>Use LazyVGrid when:</h5>
+            <ul>
+              <li>You need a photo/image gallery</li>
+              <li>You want multiple columns</li>
+              <li>You're creating a card-based layout</li>
+              <li>You need custom grid arrangements</li>
+            </ul>
+          </div>
+
+          <div class="comparison-box">
+            <h5>Use LazyHGrid when:</h5>
+            <ul>
+              <li>You need horizontal scrolling content</li>
+              <li>You're creating category browsing</li>
+              <li>You want horizontal card layouts</li>
+              <li>You need multiple rows with horizontal flow</li>
+            </ul>
+          </div>
+
+          <h4>Performance Considerations:</h4>
+          <div class="code-block">
+            <pre><code>// ✅ Good - Lazy loading with proper IDs
+LazyVGrid(columns: columns) {
+    ForEach(items, id: \.id) { item in
+        ItemView(item: item)
+    }
+}
+
+// ❌ Avoid - Creating all views at once
+VStack {
+    ForEach(items) { item in
+        ItemView(item: item)  // Creates all views immediately
+    }
+}</code></pre>
+          </div>
+
+          <h4>Advanced Grid Features:</h4>
+          <div class="code-block">
+            <pre><code>// Adaptive columns that adjust to screen size
+let adaptiveColumns = [GridItem(.adaptive(minimum: 150))]
+
+LazyVGrid(columns: adaptiveColumns, spacing: 20) {
+    ForEach(items) { item in
+        ItemCard(item: item)
+            .aspectRatio(1, contentMode: .fit)
+    }
+}
+
+// Mixed column sizes
+let mixedColumns = [
+    GridItem(.fixed(100)),
+    GridItem(.flexible()),
+    GridItem(.fixed(50))
+]</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+      
+      <h4>إيه هي LazyVGrid و LazyHGrid؟</h4>
+      <p>دول containers في SwiftUI بيرتبوا الـ views في شكل grid (شبكة) مع <span class="highlight">lazy loading</span> - يعني بيعملوا الـ views بس لما تظهر على الشاشة.</p>
+      
+      <h4>LazyVGrid (الشبكة العمودية):</h4>
+      <p>بيرتب العناصر في أعمدة، والتمرير بيكون عمودي (من فوق لتحت):</p>
+      
+      <div class="grid-visual">
+        <div>شكل LazyVGrid:</div>
+        <div>┌─────┬─────┬─────┐</div>
+        <div>│  1  │  2  │  3  │</div>
+        <div>├─────┼─────┼─────┤</div>
+        <div>│  4  │  5  │  6  │</div>
+        <div>├─────┼─────┼─────┤</div>
+        <div>│  7  │  8  │  9  │</div>
+        <div>└─────┴─────┴─────┘</div>
+        <div>↓ التمرير عمودي</div>
+      </div>
+      
+      <h4>LazyHGrid (الشبكة الأفقية):</h4>
+      <p>بيرتب العناصر في صفوف، والتمرير بيكون أفقي (من اليمين للشمال):</p>
+      
+      <div class="grid-visual">
+        <div>شكل LazyHGrid:</div>
+        <div>┌─────┬─────┬─────┬─────┐</div>
+        <div>│  1  │  4  │  7  │ 10  │ ←</div>
+        <div>├─────┼─────┼─────┼─────┤</div>
+        <div>│  2  │  5  │  8  │ 11  │ ←</div>
+        <div>├─────┼─────┼─────┼─────┤</div>
+        <div>│  3  │  6  │  9  │ 12  │ ←</div>
+        <div>└─────┴─────┴─────┴─────┘</div>
+        <div>التمرير أفقي ←</div>
+      </div>
+      
+      <h4>أنواع GridItem:</h4>
+      <ul>
+        <li><strong>Fixed:</strong> حجم ثابت</li>
+        <li><strong>Flexible:</strong> حجم مرن حسب المساحة المتاحة</li>
+        <li><strong>Adaptive:</strong> يحط أكبر عدد ممكن من العناصر</li>
+      </ul>
+      
+      <h4>الفرق بين Grid و List:</h4>
+      
+      <div class="comparison-box">
+        <h5>List (القائمة):</h5>
+        <ul>
+          <li>عمود واحد بس</li>
+          <li>شكل تقليدي زي الجداول</li>
+          <li>فيه مميزات جاهزة زي الاختيار والسحب</li>
+          <li>مناسب للنصوص والقوائم</li>
+        </ul>
+      </div>
+
+      <div class="comparison-box">
+        <h5>LazyVGrid/LazyHGrid (الشبكة):</h5>
+        <ul>
+          <li>أعمدة أو صفوف متعددة</li>
+          <li>تحكم كامل في الشكل</li>
+          <li>مناسب للصور والكروت</li>
+          <li>مرونة أكبر في التصميم</li>
+        </ul>
+      </div>
+      
+      <h4>متى تستخدم إيه:</h4>
+      
+      <p><strong>استخدم List لما:</strong></p>
+      <ul>
+        <li>عايز قائمة تقليدية زي الإعدادات</li>
+        <li>محتاج مميزات زي الاختيار والسحب</li>
+        <li>المحتوى نصوص أساساً</li>
+      </ul>
+      
+      <p><strong>استخدم LazyVGrid لما:</strong></p>
+      <ul>
+        <li>عايز معرض صور</li>
+        <li>محتاج أعمدة متعددة</li>
+        <li>بتعمل layout للكروت</li>
+      </ul>
+      
+      <p><strong>استخدم LazyHGrid لما:</strong></p>
+      <ul>
+        <li>عايز التمرير يكون أفقي</li>
+        <li>بتعمل categories أو فئات</li>
+        <li>محتاج صفوف متعددة أفقية</li>
+      </ul>
+      
+      <h4>مثال عملي:</h4>
+      <div class="code-block">
+        <pre><code>// شبكة صور بثلاث أعمدة
+let columns = [
+    GridItem(.flexible()),
+    GridItem(.flexible()),
+    GridItem(.flexible())
+]
+
+LazyVGrid(columns: columns) {
+    ForEach(photos) { photo in
+        AsyncImage(url: photo.url)
+            .aspectRatio(1, contentMode: .fill)
+    }
+}</code></pre>
+      </div>
+      
+      <h4>مميزات الـ Lazy Loading:</h4>
+      <ul>
+        <li>بيوفر في الذاكرة</li>
+        <li>أداء أفضل مع البيانات الكبيرة</li>
+        <li>تمرير سلس</li>
+        <li>بيعمل الـ views بس لما تحتاجها</li>
+      </ul>
+      
+      <p><span class="highlight">خلاصة:</span> الـ Grids مثالية للمحتوى المرئي زي الصور والكروت، بينما الـ List أفضل للقوائم التقليدية!</p>
+    </div>
+
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>
