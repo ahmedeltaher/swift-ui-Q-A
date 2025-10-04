@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is the difference between List and ForEach?</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .card {
+      margin-bottom: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      border: none;
+    }
+
+    .basic-level {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+    }
+
+    .card-header {
+      color: white;
+      font-weight: bold;
+      border-radius: 0 !important;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .card-body {
+      padding: 25px;
+      line-height: 1.8;
+      color: white;
+      text-align: left;
+    }
+
+    .main-title {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      filter: brightness(1.2);
+      text-shadow: 0 0 15px rgba(107, 140, 206, 0.5);
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .answer-section {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .explanation-section {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .answer-title,
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .code-block {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    .back-button {
+      background: linear-gradient(135deg, #6b8cce 0%, #8b6cb0 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(107, 140, 206, 0.5);
+      color: white;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #a0a0a0;
+      padding: 20px;
+    }
+
+    .highlight {
+      color: #83afd4;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px 0;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-container">
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+
+    <h1 class="main-title">What is the difference between List and ForEach?</h1>
+
+    <div class="card basic-level">
+      <div class="card-header">
+        <h3 class="mb-0">Answer in English</h3>
+      </div>
+      <div class="card-body">
+        <div class="answer-section">
+          <h4>List:</h4>
+          <p>List is a container view that displays a scrollable collection of data in a table-like format. It provides built-in functionality like:</p>
+          <ul>
+            <li>Automatic scrolling</li>
+            <li>Row separators</li>
+            <li>Selection handling</li>
+            <li>Swipe actions</li>
+            <li>Pull-to-refresh</li>
+          </ul>
+          
+          <div class="code-block">
+            <pre><code>List {
+    Text("Item 1")
+    Text("Item 2")
+    Text("Item 3")
+}
+
+// Or with data
+List(items, id: \.self) { item in
+    Text(item.name)
+}</code></pre>
+          </div>
+
+          <h4>ForEach:</h4>
+          <p>ForEach is a view that creates views dynamically based on a collection of data. It's more flexible and can be used inside any container:</p>
+          
+          <div class="code-block">
+            <pre><code>ForEach(items, id: \.self) { item in
+    Text(item.name)
+}
+
+// Can be used in different containers
+VStack {
+    ForEach(items, id: \.self) { item in
+        HStack {
+            Image(item.icon)
+            Text(item.name)
+        }
+    }
+}</code></pre>
+          </div>
+
+          <h4>Key Differences:</h4>
+          <table>
+            <tr>
+              <th>Aspect</th>
+              <th>List</th>
+              <th>ForEach</th>
+            </tr>
+            <tr>
+              <td>Purpose</td>
+              <td>Complete scrollable list container</td>
+              <td>Dynamic view generation</td>
+            </tr>
+            <tr>
+              <td>Scrolling</td>
+              <td>Built-in scrolling</td>
+              <td>No built-in scrolling</td>
+            </tr>
+            <tr>
+              <td>Styling</td>
+              <td>Table-like appearance with separators</td>
+              <td>No default styling</td>
+            </tr>
+            <tr>
+              <td>Flexibility</td>
+              <td>Limited to list format</td>
+              <td>Can be used in any layout</td>
+            </tr>
+            <tr>
+              <td>Features</td>
+              <td>Selection, swipe actions, refresh</td>
+              <td>Just view generation</td>
+            </tr>
+          </table>
+
+          <h4>When to Use Which:</h4>
+          <p><strong>Use List when:</strong></p>
+          <ul>
+            <li>You want a traditional scrollable list</li>
+            <li>You need built-in list features (selection, swipe actions)</li>
+            <li>You want the standard iOS list appearance</li>
+          </ul>
+
+          <p><strong>Use ForEach when:</strong></p>
+          <ul>
+            <li>You want custom layouts (grids, stacks)</li>
+            <li>You need dynamic views in non-list containers</li>
+            <li>You want full control over styling and behavior</li>
+          </ul>
+
+          <h4>Combined Usage:</h4>
+          <div class="code-block">
+            <pre><code>List {
+    Section("Header") {
+        ForEach(items) { item in
+            CustomRowView(item: item)
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation-section">
+      <h3 class="explanation-title">الشرح بالعربي</h3>
+      
+      <h4>List (القائمة):</h4>
+      <p>دا container جاهز عشان يعرض البيانات في شكل قائمة قابلة للتمرير، وفيه مميزات جاهزة زي:</p>
+      <ul>
+        <li>التمرير التلقائي</li>
+        <li>الخطوط الفاصلة بين الصفوف</li>
+        <li>الاختيار</li>
+        <li>السحب للإجراءات (Swipe Actions)</li>
+        <li>السحب للتحديث</li>
+      </ul>
+      
+      <h4>ForEach (التكرار):</h4>
+      <p>دا أداة لإنشاء views من مجموعة بيانات، بس مش container بذاته. ممكن تستخدمه جوا أي container تاني.</p>
+      
+      <p><span class="highlight">الفرق الأساسي:</span></p>
+      <ul>
+        <li><strong>List:</strong> حل كامل للقوائم مع كل المميزات</li>
+        <li><strong>ForEach:</strong> أداة لتوليد views بس، محتاج container</li>
+      </ul>
+      
+      <p><span class="highlight">متى تستخدم إيه:</span></p>
+      
+      <p><strong>استخدم List لما:</strong></p>
+      <ul>
+        <li>عايز قائمة تقليدية زي قوائم iOS</li>
+        <li>محتاج مميزات زي الاختيار والسحب</li>
+        <li>عايز الشكل الجاهز للقوائم</li>
+      </ul>
+      
+      <p><strong>استخدم ForEach لما:</strong></p>
+      <ul>
+        <li>عايز layouts مخصصة (Grid، Stack)</li>
+        <li>محتاج views ديناميكية في containers مختلفة</li>
+        <li>عايز تحكم كامل في الشكل والسلوك</li>
+      </ul>
+      
+      <p><span class="highlight">مثال عملي:</span></p>
+      <div class="code-block">
+        <pre><code>// List للقوائم التقليدية
+List(contacts) { contact in
+    ContactRow(contact: contact)
+}
+
+// ForEach للـ layouts المخصصة  
+LazyVGrid(columns: columns) {
+    ForEach(photos) { photo in
+        PhotoCard(photo: photo)
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <a href="../SwiftUI_Interview_Questions.html" class="back-button">← العودة للأسئلة</a>
+  </div>
+
+  <footer>
+    صفحة إجابة سؤال SwiftUI — الشرح بالعربي والإنجليزي
+  </footer>
+</body>
+
+</html>
