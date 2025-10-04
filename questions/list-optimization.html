@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Performance Optimization in SwiftUI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .performance-metric {
+        background: #e8f5e8;
+        border: 1px solid #28a745;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        text-align: center;
+      }
+      .anti-pattern {
+        background: #f8d7da;
+        border: 1px solid #dc3545;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        How do you optimize List performance for large datasets?
+      </h1>
+
+      <div class="highlight-box">
+        <h4>⚡ الفكرة الأساسية</h4>
+        <p>
+          تحسين أداء الـ List في SwiftUI بيعتمد على <strong>lazy loading</strong> و <strong>view recycling</strong> 
+          و <strong>efficient data structures</strong>. أهم التقنيات هي استخدام proper identifiers، 
+          تجنب expensive computations في الـ row views، واستخدام LazyVStack للـ custom layouts.
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        لما يبقى عندك آلاف من الـ items في List، الأداء ممكن يبقى بطيء جداً لو مش مطبق الـ best practices. 
+        SwiftUI بيوفر lazy rendering بس لازم تخلي بالك من الـ view identity، expensive operations، 
+        وحجم الـ data. الهدف إننا نخلي الـ scrolling smooth ونقلل استهلاك الـ memory.
+      </p>
+
+      <h2 class="section-title">🚫 Common Performance Anti-Patterns</h2>
+
+      <div class="anti-pattern">
+        <h5>❌ مشاكل شائعة تبطئ الـ List</h5>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === ANTI-PATTERN 1: Expensive computations in row views ===
+struct SlowListView: View {
+    let items: [DataItem]
+    
+    struct DataItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let data: [Double]
+        let timestamp: Date
+    }
+    
+    var body: some View {
+        List(items) { item in
+            SlowRowView(item: item) // ❌ Creating heavy view for each row
+        }
+    }
+}
+
+struct SlowRowView: View {
+    let item: SlowListView.DataItem
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(item.title)
+                .font(.headline)
+            
+            // ❌ PROBLEM: Expensive computation on every render
+            Text("Average: \(calculateExpensiveAverage())")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            // ❌ PROBLEM: Complex date formatting on every render
+            Text("Date: \(formatComplexDate())")
+                .font(.caption)
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+    
+    private func calculateExpensiveAverage() -> String {
+        // ❌ This runs on EVERY scroll and re-render!
+        let sum = item.data.reduce(0, +)
+        let average = sum / Double(item.data.count)
+        
+        // Simulate expensive computation
+        Thread.sleep(forTimeInterval: 0.01) // 10ms delay PER ROW!
+        
+        return String(format: "%.2f", average)
+    }
+    
+    private func formatComplexDate() -> String {
+        // ❌ Creating new formatter every time
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: item.timestamp)
+    }
+}
+
+// === ANTI-PATTERN 2: Missing or bad identifiers ===
+struct BadIdentifierListView: View {
+    @State private var items: [String] = []
+    
+    var body: some View {
+        List(items, id: \.self) { item in // ❌ Using content as identifier
+            HeavyRowView(text: item)
+        }
+        .onAppear {
+            loadItems()
+        }
+    }
+    
+    private func loadItems() {
+        // ❌ PROBLEM: Duplicate content means broken identity
+        items = [
+            "Item", "Item", "Item", // Same content = same ID!
+            "Another Item", "Another Item"
+        ]
+    }
+}
+
+struct HeavyRowView: View {
+    let text: String
+    @State private var animationOffset: CGFloat = 0
+    
+    var body: some View {
+        HStack {
+            // ❌ PROBLEM: Heavy animation in every row
+            Circle()
+                .fill(Color.blue)
+                .frame(width: 50, height: 50)
+                .offset(x: animationOffset)
+                .onAppear {
+                    withAnimation(.linear(duration: 2).repeatForever()) {
+                        animationOffset = 20
+                    }
+                }
+            
+            Text(text)
+            
+            Spacer()
+        }
+    }
+}
+
+// === ANTI-PATTERN 3: Loading all data at once ===
+struct LoadAllDataView: View {
+    @State private var allItems: [LargeDataItem] = []
+    @State private var isLoading = false
+    
+    struct LargeDataItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let content: String
+        let metadata: [String: Any] = [:]
+        let largeData: Data
+    }
+    
+    var body: some View {
+        NavigationView {
+            if isLoading {
+                ProgressView("Loading all 10,000 items...")
+            } else {
+                // ❌ PROBLEM: All items loaded in memory at once
+                List(allItems) { item in
+                    VStack(alignment: .leading) {
+                        Text(item.title)
+                        Text("Size: \(item.largeData.count) bytes")
+                            .font(.caption)
+                    }
+                }
+            }
+        }
+        .task {
+            await loadAllDataAtOnce() // ❌ Bad approach
+        }
+    }
+    
+    private func loadAllDataAtOnce() async {
+        isLoading = true
+        
+        // ❌ Loading thousands of items with large data
+        allItems = (1...10000).map { index in
+            LargeDataItem(
+                title: "Item \(index)",
+                content: String(repeating: "Large content ", count: 100),
+                largeData: Data(repeating: 0, count: 1000) // 1KB per item = 10MB total!
+            )
+        }
+        
+        isLoading = false
+    }
+}
+
+// === ANTI-PATTERN 4: No view recycling optimization ===
+struct NoRecyclingView: View {
+    let items: [ComplexItem]
+    
+    struct ComplexItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let value: Double
+        let category: String
+    }
+    
+    var body: some View {
+        List(items) { item in
+            // ❌ PROBLEM: Complex view created for every item
+            ComplexRowView(item: item)
+        }
+    }
+}
+
+struct ComplexRowView: View {
+    let item: NoRecyclingView.ComplexItem
+    @State private var isExpanded = false
+    @State private var animationValue: Double = 0
+    
+    var body: some View {
+        VStack {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(item.title)
+                        .font(.headline)
+                    
+                    Text(item.category)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                // ❌ PROBLEM: Heavy visual effects
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            gradient: Gradient(colors: [.blue, .purple]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 25
+                        )
+                    )
+                    .frame(width: 50, height: 50)
+                    .scaleEffect(1 + animationValue * 0.1)
+                    .onAppear {
+                        withAnimation(.easeInOut(duration: 1).repeatForever()) {
+                            animationValue = 1
+                        }
+                    }
+                
+                Button(isExpanded ? "Collapse" : "Expand") {
+                    withAnimation {
+                        isExpanded.toggle()
+                    }
+                }
+            }
+            
+            if isExpanded {
+                // ❌ PROBLEM: Conditional content affects layout
+                VStack {
+                    Text("Value: \(item.value)")
+                    Text("Additional details...")
+                    Text("More content that takes space...")
+                }
+                .transition(.slide)
+            }
+        }
+        .padding()
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">✅ Optimized List Implementation</h2>
+
+      <div class="performance-metric">
+        <h5>🚀 Performance Goals</h5>
+        <p>60 FPS scrolling • Low memory usage • Instant response • Smooth animations</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === OPTIMIZED APPROACH 1: Efficient data structures and caching ===
+struct OptimizedListView: View {
+    @StateObject private var viewModel = ListViewModel()
+    
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(viewModel.displayedItems) { item in
+                    OptimizedRowView(item: item)
+                        .onAppear {
+                            viewModel.itemAppeared(item)
+                        }
+                }
+                
+                if viewModel.isLoadingMore {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .scaleEffect(0.8)
+                        Text("Loading more...")
+                            .font(.caption)
+                        Spacer()
+                    }
+                    .padding()
+                }
+            }
+            .refreshable {
+                await viewModel.refresh()
+            }
+            .searchable(text: $viewModel.searchText)
+            .navigationTitle("Optimized List")
+        }
+    }
+}
+
+// === Efficient ViewModel with pagination ===
+@MainActor
+class ListViewModel: ObservableObject {
+    @Published var displayedItems: [OptimizedDataItem] = []
+    @Published var searchText = ""
+    @Published var isLoadingMore = false
+    
+    private var allItems: [OptimizedDataItem] = []
+    private var currentPage = 0
+    private let itemsPerPage = 50
+    
+    // ✅ Cached expensive computations
+    private var computationCache: [UUID: ComputedValues] = [:]
+    
+    // ✅ Shared date formatter
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter
+    }()
+    
+    struct ComputedValues {
+        let average: String
+        let formattedDate: String
+    }
+    
+    init() {
+        Task {
+            await loadInitialData()
+        }
+    }
+    
+    func loadInitialData() async {
+        await loadPage(0)
+    }
+    
+    func refresh() async {
+        currentPage = 0
+        allItems.removeAll()
+        displayedItems.removeAll()
+        computationCache.removeAll()
+        await loadPage(0)
+    }
+    
+    func itemAppeared(_ item: OptimizedDataItem) {
+        // ✅ Load more when reaching near the end
+        if let index = displayedItems.firstIndex(where: { $0.id == item.id }),
+           index >= displayedItems.count - 10 {
+            Task {
+                await loadMoreIfNeeded()
+            }
+        }
+    }
+    
+    private func loadMoreIfNeeded() async {
+        guard !isLoadingMore else { return }
+        
+        isLoadingMore = true
+        await loadPage(currentPage + 1)
+        isLoadingMore = false
+    }
+    
+    private func loadPage(_ page: Int) async {
+        // Simulate network delay
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        
+        let startIndex = page * itemsPerPage
+        let endIndex = min(startIndex + itemsPerPage, 1000) // Max 1000 items
+        
+        let newItems = (startIndex..<endIndex).map { index in
+            OptimizedDataItem(
+                id: UUID(),
+                title: "Optimized Item \(index + 1)",
+                value: Double.random(in: 0...100),
+                data: Array(repeating: Double.random(in: 0...10), count: 100),
+                timestamp: Date().addingTimeInterval(Double(-index * 3600)),
+                category: ["Tech", "Science", "Art", "Music"][index % 4]
+            )
+        }
+        
+        allItems.append(contentsOf: newItems)
+        
+        // ✅ Pre-compute expensive values
+        await precomputeValues(for: newItems)
+        
+        updateDisplayedItems()
+        currentPage = page
+    }
+    
+    private func precomputeValues(for items: [OptimizedDataItem]) async {
+        for item in items {
+            // ✅ Compute once and cache
+            let average = item.data.reduce(0, +) / Double(item.data.count)
+            let averageString = String(format: "%.2f", average)
+            let formattedDate = dateFormatter.string(from: item.timestamp)
+            
+            computationCache[item.id] = ComputedValues(
+                average: averageString,
+                formattedDate: formattedDate
+            )
+        }
+    }
+    
+    func getComputedValues(for item: OptimizedDataItem) -> ComputedValues? {
+        return computationCache[item.id]
+    }
+    
+    private func updateDisplayedItems() {
+        if searchText.isEmpty {
+            displayedItems = allItems
+        } else {
+            displayedItems = allItems.filter { item in
+                item.title.localizedCaseInsensitiveContains(searchText) ||
+                item.category.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
+}
+
+struct OptimizedDataItem: Identifiable {
+    let id: UUID // ✅ Stable, unique identifier
+    let title: String
+    let value: Double
+    let data: [Double]
+    let timestamp: Date
+    let category: String
+}
+
+// === Optimized Row View ===
+struct OptimizedRowView: View {
+    let item: OptimizedDataItem
+    @EnvironmentObject private var viewModel: ListViewModel
+    
+    var body: some View {
+        HStack {
+            // ✅ Simple, efficient visual indicator
+            CategoryIcon(category: item.category)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.title)
+                    .font(.headline)
+                    .lineLimit(1)
+                
+                HStack {
+                    // ✅ Using cached computed values
+                    if let computed = viewModel.getComputedValues(for: item) {
+                        Text("Avg: \(computed.average)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        Text(computed.formattedDate)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            
+            Spacer()
+            
+            // ✅ Simple value display
+            Text("\(item.value, specifier: "%.1f")")
+                .font(.callout)
+                .fontWeight(.medium)
+                .foregroundColor(.blue)
+        }
+        .padding(.vertical, 8)
+        .contentShape(Rectangle()) // ✅ Improves tap area
+    }
+}
+
+struct CategoryIcon: View {
+    let category: String
+    
+    var body: some View {
+        // ✅ Simple, performant icon system
+        Image(systemName: iconName)
+            .foregroundColor(iconColor)
+            .frame(width: 24, height: 24)
+    }
+    
+    private var iconName: String {
+        switch category {
+        case "Tech": return "laptopcomputer"
+        case "Science": return "flask"
+        case "Art": return "paintbrush"
+        case "Music": return "music.note"
+        default: return "circle"
+        }
+    }
+    
+    private var iconColor: Color {
+        switch category {
+        case "Tech": return .blue
+        case "Science": return .green
+        case "Art": return .purple
+        case "Music": return .orange
+        default: return .gray
+        }
+    }
+}
+
+// === Advanced: Virtual Scrolling with LazyVStack ===
+struct VirtualScrollingView: View {
+    @StateObject private var virtualModel = VirtualScrollModel()
+    
+    var body: some View {
+        NavigationView {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(spacing: 1) {
+                        ForEach(virtualModel.visibleItems) { item in
+                            VirtualRowView(item: item)
+                                .onAppear {
+                                    virtualModel.itemBecameVisible(item)
+                                }
+                                .onDisappear {
+                                    virtualModel.itemBecameInvisible(item)
+                                }
+                        }
+                    }
+                }
+                .navigationTitle("Virtual Scrolling")
+                .toolbar {
+                    Button("Jump to 500") {
+                        withAnimation {
+                            proxy.scrollTo(virtualModel.getItemId(at: 500), anchor: .center)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@MainActor
+class VirtualScrollModel: ObservableObject {
+    @Published var visibleItems: [VirtualItem] = []
+    
+    private let totalItems = 10000
+    private var visibleRange: ClosedRange<Int> = 0...100
+    private let bufferSize = 50
+    
+    init() {
+        updateVisibleItems()
+    }
+    
+    func itemBecameVisible(_ item: VirtualItem) {
+        // ✅ Expand visible range when needed
+        if let index = getIndex(for: item.id) {
+            let newStart = max(0, min(visibleRange.lowerBound, index - bufferSize))
+            let newEnd = min(totalItems - 1, max(visibleRange.upperBound, index + bufferSize))
+            
+            if newStart != visibleRange.lowerBound || newEnd != visibleRange.upperBound {
+                visibleRange = newStart...newEnd
+                updateVisibleItems()
+            }
+        }
+    }
+    
+    func itemBecameInvisible(_ item: VirtualItem) {
+        // Could implement cleanup logic here
+    }
+    
+    func getItemId(at index: Int) -> UUID {
+        return UUID(uuidString: String(format: "%08X-0000-0000-0000-000000000000", index)) ?? UUID()
+    }
+    
+    private func updateVisibleItems() {
+        visibleItems = visibleRange.map { index in
+            VirtualItem(
+                id: getItemId(at: index),
+                index: index,
+                title: "Virtual Item \(index + 1)",
+                content: "Content for item \(index + 1)"
+            )
+        }
+    }
+    
+    private func getIndex(for id: UUID) -> Int? {
+        return visibleItems.first { $0.id == id }?.index
+    }
+}
+
+struct VirtualItem: Identifiable {
+    let id: UUID
+    let index: Int
+    let title: String
+    let content: String
+}
+
+struct VirtualRowView: View {
+    let item: VirtualItem
+    
+    var body: some View {
+        HStack {
+            Text("#\(item.index + 1)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .frame(width: 50, alignment: .leading)
+            
+            VStack(alignment: .leading) {
+                Text(item.title)
+                    .font(.headline)
+                
+                Text(item.content)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color.gray.opacity(0.05))
+    }
+}
+
+// === Memory-Efficient Image Loading ===
+struct ImageListView: View {
+    @StateObject private var imageModel = ImageListModel()
+    
+    var body: some View {
+        NavigationView {
+            List(imageModel.items) { item in
+                ImageRowView(item: item)
+            }
+            .navigationTitle("Images")
+        }
+    }
+}
+
+@MainActor
+class ImageListModel: ObservableObject {
+    @Published var items: [ImageItem] = []
+    
+    init() {
+        items = (1...100).map { index in
+            ImageItem(
+                id: UUID(),
+                title: "Image \(index)",
+                imageURL: URL(string: "https://picsum.photos/200/200?random=\(index)")!
+            )
+        }
+    }
+}
+
+struct ImageItem: Identifiable {
+    let id: UUID
+    let title: String
+    let imageURL: URL
+}
+
+struct ImageRowView: View {
+    let item: ImageItem
+    
+    var body: some View {
+        HStack {
+            // ✅ Efficient async image loading with placeholder
+            AsyncImage(url: item.imageURL) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .overlay(
+                        ProgressView()
+                            .scaleEffect(0.6)
+                    )
+            }
+            .frame(width: 60, height: 60)
+            .clipped()
+            .cornerRadius(8)
+            
+            VStack(alignment: .leading) {
+                Text(item.title)
+                    .font(.headline)
+                
+                Text("Tap to view")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">⚡ Advanced Optimization Techniques</h2>
+
+      <div class="success-box">
+        <h5>🎯 تقنيات متقدمة للتحسين</h5>
+        <p>استراتيجيات متقدمة للحصول على أفضل أداء ممكن</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === TECHNIQUE 1: Equatable Views for precise updates ===
+struct EquatableOptimizedList: View {
+    @State private var items: [EquatableItem] = []
+    @State private var selectedIds: Set<UUID> = []
+    
+    var body: some View {
+        List {
+            ForEach(items) { item in
+                EquatableRowView(
+                    item: item,
+                    isSelected: selectedIds.contains(item.id),
+                    onToggle: { toggleSelection(item.id) }
+                )
+                .equatable() // ✅ Prevents unnecessary re-renders
+            }
+        }
+        .onAppear {
+            loadEquatableItems()
+        }
+    }
+    
+    private func toggleSelection(_ id: UUID) {
+        if selectedIds.contains(id) {
+            selectedIds.remove(id)
+        } else {
+            selectedIds.insert(id)
+        }
+    }
+    
+    private func loadEquatableItems() {
+        items = (1...1000).map { index in
+            EquatableItem(
+                id: UUID(),
+                title: "Item \(index)",
+                value: Double.random(in: 0...100),
+                isImportant: index % 10 == 0
+            )
+        }
+    }
+}
+
+struct EquatableItem: Identifiable, Equatable {
+    let id: UUID
+    let title: String
+    let value: Double
+    let isImportant: Bool
+    
+    // ✅ Custom equality for performance
+    static func == (lhs: EquatableItem, rhs: EquatableItem) -> Bool {
+        lhs.id == rhs.id &&
+        lhs.title == rhs.title &&
+        lhs.value == rhs.value &&
+        lhs.isImportant == rhs.isImportant
+    }
+}
+
+struct EquatableRowView: View, Equatable {
+    let item: EquatableItem
+    let isSelected: Bool
+    let onToggle: () -> Void
+    
+    var body: some View {
+        HStack {
+            // ✅ Conditional rendering only when needed
+            if item.isImportant {
+                Image(systemName: "star.fill")
+                    .foregroundColor(.yellow)
+            }
+            
+            VStack(alignment: .leading) {
+                Text(item.title)
+                    .font(.headline)
+                
+                Text("Value: \(item.value, specifier: "%.1f")")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Button(action: onToggle) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(isSelected ? .blue : .gray)
+            }
+        }
+        .padding(.vertical, 4)
+        .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
+    }
+    
+    // ✅ Equatable implementation prevents unnecessary updates
+    static func == (lhs: EquatableRowView, rhs: EquatableRowView) -> Bool {
+        lhs.item == rhs.item && lhs.isSelected == rhs.isSelected
+    }
+}
+
+// === TECHNIQUE 2: Sectioned List with Optimized Headers ===
+struct OptimizedSectionedList: View {
+    @StateObject private var sectionModel = SectionedListModel()
+    
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(sectionModel.sections, id: \.category) { section in
+                    Section {
+                        ForEach(section.items) { item in
+                            SectionItemView(item: item)
+                        }
+                    } header: {
+                        // ✅ Lightweight header view
+                        SectionHeaderView(
+                            category: section.category,
+                            count: section.items.count
+                        )
+                    }
+                }
+            }
+            .navigationTitle("Sectioned List")
+            .searchable(text: $sectionModel.searchText)
+        }
+    }
+}
+
+@MainActor
+class SectionedListModel: ObservableObject {
+    @Published var sections: [SectionData] = []
+    @Published var searchText = "" {
+        didSet {
+            updateFilteredSections()
+        }
+    }
+    
+    private var allSections: [SectionData] = []
+    
+    struct SectionData {
+        let category: String
+        let items: [SectionItem]
+    }
+    
+    init() {
+        loadSectionedData()
+    }
+    
+    private func loadSectionedData() {
+        let categories = ["Work", "Personal", "Shopping", "Health", "Education"]
+        
+        allSections = categories.map { category in
+            let items = (1...200).map { index in
+                SectionItem(
+                    id: UUID(),
+                    title: "\(category) Item \(index)",
+                    category: category,
+                    priority: Int.random(in: 1...5)
+                )
+            }
+            return SectionData(category: category, items: items)
+        }
+        
+        sections = allSections
+    }
+    
+    private func updateFilteredSections() {
+        if searchText.isEmpty {
+            sections = allSections
+        } else {
+            sections = allSections.compactMap { section in
+                let filteredItems = section.items.filter { item in
+                    item.title.localizedCaseInsensitiveContains(searchText)
+                }
+                
+                return filteredItems.isEmpty ? nil : SectionData(
+                    category: section.category,
+                    items: filteredItems
+                )
+            }
+        }
+    }
+}
+
+struct SectionItem: Identifiable {
+    let id: UUID
+    let title: String
+    let category: String
+    let priority: Int
+}
+
+struct SectionHeaderView: View {
+    let category: String
+    let count: Int
+    
+    var body: some View {
+        HStack {
+            Text(category)
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            Spacer()
+            
+            Text("\(count) items")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct SectionItemView: View {
+    let item: SectionItem
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(item.title)
+                    .font(.body)
+                
+                Text("Priority: \(item.priority)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            // ✅ Simple priority indicator
+            ForEach(1...item.priority, id: \.self) { _ in
+                Circle()
+                    .fill(Color.orange)
+                    .frame(width: 6, height: 6)
+            }
+        }
+    }
+}
+
+// === TECHNIQUE 3: Diffable Data Source Pattern ===
+struct DiffableListView: View {
+    @StateObject private var diffModel = DiffableListModel()
+    
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(diffModel.currentItems) { item in
+                    DiffableItemView(item: item)
+                        .transition(.asymmetric(
+                            insertion: .scale.combined(with: .opacity),
+                            removal: .opacity
+                        ))
+                }
+                .onDelete(perform: diffModel.deleteItems)
+                .onMove(perform: diffModel.moveItems)
+            }
+            .animation(.easeInOut(duration: 0.3), value: diffModel.currentItems)
+            .navigationTitle("Diffable List")
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button("Add Random") {
+                        diffModel.addRandomItem()
+                    }
+                    
+                    Button("Shuffle") {
+                        diffModel.shuffleItems()
+                    }
+                }
+            }
+        }
+    }
+}
+
+@MainActor
+class DiffableListModel: ObservableObject {
+    @Published var currentItems: [DiffableItem] = []
+    
+    init() {
+        currentItems = (1...20).map { index in
+            DiffableItem(
+                id: UUID(),
+                title: "Diffable Item \(index)",
+                value: Double.random(in: 0...100),
+                color: [.red, .blue, .green, .orange, .purple].randomElement()!
+            )
+        }
+    }
+    
+    func addRandomItem() {
+        let newItem = DiffableItem(
+            id: UUID(),
+            title: "New Item \(Int.random(in: 100...999))",
+            value: Double.random(in: 0...100),
+            color: [.red, .blue, .green, .orange, .purple].randomElement()!
+        )
+        
+        withAnimation {
+            currentItems.insert(newItem, at: Int.random(in: 0...currentItems.count))
+        }
+    }
+    
+    func deleteItems(at offsets: IndexSet) {
+        withAnimation {
+            currentItems.remove(atOffsets: offsets)
+        }
+    }
+    
+    func moveItems(from source: IndexSet, to destination: Int) {
+        withAnimation {
+            currentItems.move(fromOffsets: source, toOffset: destination)
+        }
+    }
+    
+    func shuffleItems() {
+        withAnimation {
+            currentItems.shuffle()
+        }
+    }
+}
+
+struct DiffableItem: Identifiable, Equatable {
+    let id: UUID
+    let title: String
+    let value: Double
+    let color: Color
+    
+    static func == (lhs: DiffableItem, rhs: DiffableItem) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
+struct DiffableItemView: View {
+    let item: DiffableItem
+    
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(item.color)
+                .frame(width: 30, height: 30)
+            
+            VStack(alignment: .leading) {
+                Text(item.title)
+                    .font(.headline)
+                
+                Text("Value: \(item.value, specifier: "%.1f")")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// === TECHNIQUE 4: Performance Monitoring ===
+struct PerformanceMonitoredList: View {
+    @StateObject private var monitor = PerformanceMonitor()
+    @State private var items: [MonitoredItem] = []
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                // ✅ Performance metrics display
+                PerformanceStatsView(monitor: monitor)
+                
+                List(items) { item in
+                    MonitoredItemView(item: item, monitor: monitor)
+                }
+            }
+            .navigationTitle("Performance Monitor")
+            .onAppear {
+                loadMonitoredItems()
+            }
+        }
+    }
+    
+    private func loadMonitoredItems() {
+        items = (1...500).map { index in
+            MonitoredItem(
+                id: UUID(),
+                title: "Monitored Item \(index)",
+                complexity: Int.random(in: 1...5)
+            )
+        }
+    }
+}
+
+@MainActor
+class PerformanceMonitor: ObservableObject {
+    @Published var rowRenderCount = 0
+    @Published var averageRenderTime: Double = 0
+    @Published var memoryWarnings = 0
+    
+    private var renderTimes: [Double] = []
+    
+    func recordRowRender(duration: Double) {
+        rowRenderCount += 1
+        renderTimes.append(duration)
+        
+        // Keep only last 100 measurements
+        if renderTimes.count > 100 {
+            renderTimes.removeFirst()
+        }
+        
+        averageRenderTime = renderTimes.reduce(0, +) / Double(renderTimes.count)
+        
+        // Simulate memory warning detection
+        if duration > 0.016 { // More than one frame (16ms)
+            memoryWarnings += 1
+        }
+    }
+}
+
+struct PerformanceStatsView: View {
+    @ObservedObject let monitor: PerformanceMonitor
+    
+    var body: some View {
+        HStack {
+            VStack {
+                Text("\(monitor.rowRenderCount)")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                Text("Renders")
+                    .font(.caption)
+            }
+            
+            Spacer()
+            
+            VStack {
+                Text("\(monitor.averageRenderTime * 1000, specifier: "%.1f")ms")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(monitor.averageRenderTime > 0.016 ? .red : .green)
+                Text("Avg Time")
+                    .font(.caption)
+            }
+            
+            Spacer()
+            
+            VStack {
+                Text("\(monitor.memoryWarnings)")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(monitor.memoryWarnings > 10 ? .red : .green)
+                Text("Warnings")
+                    .font(.caption)
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+        .padding(.horizontal)
+    }
+}
+
+struct MonitoredItem: Identifiable {
+    let id: UUID
+    let title: String
+    let complexity: Int
+}
+
+struct MonitoredItemView: View {
+    let item: MonitoredItem
+    let monitor: PerformanceMonitor
+    
+    var body: some View {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        
+        return HStack {
+            VStack(alignment: .leading) {
+                Text(item.title)
+                    .font(.headline)
+                
+                // Simulate complexity
+                ForEach(1...item.complexity, id: \.self) { level in
+                    Text("Complexity Level \(level)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Spacer()
+            
+            Text("C: \(item.complexity)")
+                .font(.caption)
+                .padding(4)
+                .background(complexityColor)
+                .cornerRadius(4)
+        }
+        .onAppear {
+            let endTime = CFAbsoluteTimeGetCurrent()
+            monitor.recordRowRender(duration: endTime - startTime)
+        }
+    }
+    
+    private var complexityColor: Color {
+        switch item.complexity {
+        case 1: return .green
+        case 2: return .yellow
+        case 3: return .orange
+        case 4: return .red
+        default: return .purple
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Performance Best Practices</h2>
+
+      <div class="highlight-box">
+        <h4>📋 الـ Checklist للـ List Performance</h4>
+        <div>
+          <h5>✅ Essential Optimizations:</h5>
+          <ul>
+            <li><strong>Stable IDs:</strong> استخدم UUID أو stable identifiers</li>
+            <li><strong>Cache Computations:</strong> احسب القيم المعقدة مرة واحدة فقط</li>
+            <li><strong>Lazy Loading:</strong> اعمل pagination للـ data الكبيرة</li>
+            <li><strong>Simple Row Views:</strong> تجنب الـ complex animations في الـ rows</li>
+            <li><strong>Equatable Views:</strong> استخدم Equatable لتجنب unnecessary re-renders</li>
+          </ul>
+          
+          <h5>🚀 Advanced Techniques:</h5>
+          <ul>
+            <li><strong>Virtual Scrolling:</strong> للـ datasets الضخمة جداً</li>
+            <li><strong>Image Optimization:</strong> استخدم AsyncImage مع proper caching</li>
+            <li><strong>Memory Monitoring:</strong> راقب الأداء والـ memory usage</li>
+            <li><strong>Sectioned Data:</strong> قسم الـ data لتحسين الـ navigation</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>List Performance Optimization Summary:</strong>
+        </p>
+        <ul>
+          <li><strong>Data Structure:</strong> استخدم stable IDs وpagination للـ large datasets</li>
+          <li><strong>View Design:</strong> اعمل lightweight row views وcache expensive computations</li>
+          <li><strong>Memory Management:</strong> استخدم lazy loading وautomatic view recycling</li>
+          <li><strong>Advanced Patterns:</strong> Virtual scrolling، Equatable views، وperformance monitoring</li>
+          <li><strong>60 FPS Goal:</strong> اهدف لـ render times أقل من 16ms per frame</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftUI Diffing and Identity System</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .danger-box {
+        background: #f8d7da;
+        border-left: 4px solid #dc3545;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        Explain how SwiftUI uses diffing and identity to determine view updates
+      </h1>
+
+      <div class="highlight-box">
+        <h4>🔍 الفكرة الأساسية</h4>
+        <p>
+          <strong>SwiftUI Diffing & Identity</strong> هو النظام الداخلي اللي بيستخدمه SwiftUI عشان يحدد امتى يعيد رسم الـ views. 
+          بيعتمد على View Identity وStructural Identity وValue-based comparison عشان يحسن الأداء ويمنع الـ unnecessary updates.
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        SwiftUI مش بيعيد رسم كل الـ views في كل مرة. بدلاً من كده، بيستخدم نظام ذكي 
+        اسمه Diffing Algorithm عشان يقارن بين الـ old tree والـ new tree، ويحدد بالضبط 
+        إيه اللي اتغير وإيه اللي محتاج update. ده بيعتمد على View Identity وStructural Identity.
+      </p>
+
+      <h2 class="section-title">🎯 View Identity Fundamentals</h2>
+
+      <div class="success-box">
+        <h5>1. Structural Identity vs Explicit Identity</h5>
+        <p>فهم الـ identity types اللي بيستخدمها SwiftUI للـ view comparison</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// Example: Different types of identity
+struct IdentityExampleView: View {
+    @State private var showAlternateView = false
+    @State private var items = ["A", "B", "C"]
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            // === Structural Identity ===
+            // SwiftUI uses position in view hierarchy to identify views
+            if showAlternateView {
+                Text("First Text") // Same structural position
+                    .foregroundColor(.red)
+            } else {
+                Text("Second Text") // Same structural position
+                    .foregroundColor(.blue)
+            }
+            
+            Button("Toggle") {
+                withAnimation {
+                    showAlternateView.toggle()
+                }
+            }
+            
+            Divider()
+            
+            // === Explicit Identity with id() ===
+            VStack {
+                ForEach(items, id: \.self) { item in
+                    Text("Item: \(item)")
+                        .id(item) // Explicit identity
+                        .transition(.slide)
+                }
+            }
+            
+            Button("Shuffle") {
+                withAnimation {
+                    items.shuffle()
+                }
+            }
+            
+            Button("Add Item") {
+                withAnimation {
+                    items.append(String(Character(UnicodeScalar(65 + items.count)!)))
+                }
+            }
+        }
+        .padding()
+    }
+}
+
+// === Advanced Identity Concepts ===
+struct AdvancedIdentityView: View {
+    @State private var users: [User] = [
+        User(id: 1, name: "Ahmed", isActive: true),
+        User(id: 2, name: "Sara", isActive: false),
+        User(id: 3, name: "Omar", isActive: true)
+    ]
+    
+    struct User: Identifiable {
+        let id: Int
+        var name: String
+        var isActive: Bool
+    }
+    
+    var body: some View {
+        NavigationView {
+            List {
+                // === ForEach with Identifiable ===
+                // SwiftUI uses the 'id' property for identity
+                ForEach(users) { user in
+                    UserRowView(user: user)
+                        // Key: SwiftUI tracks this view by user.id
+                        .animation(.easeInOut, value: user.isActive)
+                }
+                .onDelete(perform: deleteUsers)
+                .onMove(perform: moveUsers)
+            }
+            .navigationTitle("Users")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Toggle First User Status") {
+                        if !users.isEmpty {
+                            users[0].isActive.toggle()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func deleteUsers(offsets: IndexSet) {
+        withAnimation {
+            users.remove(atOffsets: offsets)
+        }
+    }
+    
+    private func moveUsers(from source: IndexSet, to destination: Int) {
+        withAnimation {
+            users.move(fromOffsets: source, toOffset: destination)
+        }
+    }
+}
+
+struct UserRowView: View {
+    let user: AdvancedIdentityView.User
+    
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(user.isActive ? Color.green : Color.gray)
+                .frame(width: 10, height: 10)
+            
+            Text(user.name)
+                .font(.headline)
+            
+            Spacer()
+            
+            Text(user.isActive ? "Active" : "Inactive")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
+        // Important: This view is identified by the user.id from parent ForEach
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">⚡ SwiftUI Diffing Algorithm</h2>
+
+      <div class="concept-box">
+        <h5>كيف SwiftUI بيقارن الـ View Trees</h5>
+        <p>فهم الـ diffing process والـ reconciliation algorithm</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+// === Demonstrating View Diffing ===
+struct DiffingDemoView: View {
+    @State private var counter = 0
+    @State private var showExtraContent = false
+    @State private var textColor: Color = .primary
+    
+    var body: some View {
+        VStack {
+            // === Case 1: Value Change (Same View Type) ===
+            Text("Counter: \(counter)")
+                .font(.title)
+                .foregroundColor(textColor)
+                // SwiftUI will diff the text content and color
+                // but keep the same Text view instance
+            
+            // === Case 2: Conditional View (Different Types) ===
+            Group {
+                if showExtraContent {
+                    // Type: VStack
+                    VStack {
+                        Text("Extra Content")
+                        Text("More details here")
+                    }
+                    .transition(.scale.combined(with: .opacity))
+                } else {
+                    // Type: Text
+                    Text("Basic content")
+                        .transition(.opacity)
+                }
+            }
+            
+            // === Case 3: Dynamic List (Identity-based Diffing) ===
+            ScrollView {
+                LazyVStack {
+                    ForEach(0..<counter, id: \.self) { index in
+                        NumberCardView(number: index)
+                            // Each card has explicit identity (index)
+                            .transition(.asymmetric(
+                                insertion: .move(edge: .trailing).combined(with: .opacity),
+                                removal: .move(edge: .leading).combined(with: .opacity)
+                            ))
+                    }
+                }
+            }
+            .frame(height: 200)
+            
+            // Controls
+            HStack {
+                Button("Increment") {
+                    withAnimation(.spring()) {
+                        counter += 1
+                    }
+                }
+                
+                Button("Toggle Content") {
+                    withAnimation(.easeInOut) {
+                        showExtraContent.toggle()
+                    }
+                }
+                
+                Button("Change Color") {
+                    withAnimation {
+                        textColor = textColor == .primary ? .red : .primary
+                    }
+                }
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding()
+    }
+}
+
+struct NumberCardView: View {
+    let number: Int
+    
+    var body: some View {
+        HStack {
+            Text("\(number)")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Spacer()
+            
+            Text("Item")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.blue.opacity(0.1))
+        .cornerRadius(8)
+        .padding(.horizontal)
+    }
+}
+
+// === Performance Optimization through Identity ===
+struct OptimizedListView: View {
+    @State private var items: [ListItem] = []
+    
+    struct ListItem: Identifiable, Equatable {
+        let id = UUID()
+        var title: String
+        var subtitle: String
+        var isSelected: Bool = false
+        
+        // Implementing Equatable helps SwiftUI optimize updates
+        static func == (lhs: ListItem, rhs: ListItem) -> Bool {
+            return lhs.id == rhs.id &&
+                   lhs.title == rhs.title &&
+                   lhs.subtitle == rhs.subtitle &&
+                   lhs.isSelected == rhs.isSelected
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(items) { item in
+                    OptimizedRowView(item: item) {
+                        toggleSelection(for: item.id)
+                    }
+                }
+            }
+            .navigationTitle("Optimized List")
+            .onAppear {
+                loadItems()
+            }
+        }
+    }
+    
+    private func loadItems() {
+        items = (1...100).map { index in
+            ListItem(
+                title: "Item \(index)",
+                subtitle: "Subtitle for item \(index)"
+            )
+        }
+    }
+    
+    private func toggleSelection(for id: UUID) {
+        if let index = items.firstIndex(where: { $0.id == id }) {
+            items[index].isSelected.toggle()
+        }
+    }
+}
+
+// Using EquatableView for performance optimization
+struct OptimizedRowView: View, Equatable {
+    let item: OptimizedListView.ListItem
+    let onTap: () -> Void
+    
+    // Implementing Equatable prevents unnecessary re-renders
+    static func == (lhs: OptimizedRowView, rhs: OptimizedRowView) -> Bool {
+        return lhs.item == rhs.item
+    }
+    
+    var body: some View {
+        HStack {
+            Image(systemName: item.isSelected ? "checkmark.circle.fill" : "circle")
+                .foregroundColor(item.isSelected ? .blue : .gray)
+            
+            VStack(alignment: .leading) {
+                Text(item.title)
+                    .font(.headline)
+                Text(item.subtitle)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTap()
+        }
+        .background(item.isSelected ? Color.blue.opacity(0.1) : Color.clear)
+        .animation(.easeInOut(duration: 0.2), value: item.isSelected)
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🧠 View Tree Reconciliation</h2>
+
+      <div class="warning-box">
+        <h5>فهم عملية الـ Reconciliation</h5>
+        <p>كيف SwiftUI بيقرر إيه اللي يحتفظ به وإيه اللي يعيد إنشاؤه</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+// === Advanced Reconciliation Examples ===
+struct ReconciliationDemoView: View {
+    @State private var viewMode: ViewMode = .list
+    @State private var items: [DataItem] = []
+    
+    enum ViewMode: CaseIterable {
+        case list, grid, cards
+        
+        var title: String {
+            switch self {
+            case .list: return "List"
+            case .grid: return "Grid"
+            case .cards: return "Cards"
+            }
+        }
+    }
+    
+    struct DataItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let color: Color
+        
+        static func random() -> DataItem {
+            let colors: [Color] = [.red, .blue, .green, .orange, .purple]
+            return DataItem(
+                title: "Item \(Int.random(in: 1...100))",
+                color: colors.randomElement()!
+            )
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                // Mode Picker
+                Picker("View Mode", selection: $viewMode) {
+                    ForEach(ViewMode.allCases, id: \.self) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding()
+                
+                // Content View - Different view types based on mode
+                Group {
+                    switch viewMode {
+                    case .list:
+                        // Type: List
+                        List(items) { item in
+                            ItemRowView(item: item)
+                        }
+                        
+                    case .grid:
+                        // Type: ScrollView + LazyVGrid
+                        ScrollView {
+                            LazyVGrid(columns: [
+                                GridItem(.flexible()),
+                                GridItem(.flexible()),
+                                GridItem(.flexible())
+                            ]) {
+                                ForEach(items) { item in
+                                    ItemCardView(item: item)
+                                }
+                            }
+                            .padding()
+                        }
+                        
+                    case .cards:
+                        // Type: ScrollView + VStack
+                        ScrollView {
+                            VStack(spacing: 16) {
+                                ForEach(items) { item in
+                                    ItemLargeCardView(item: item)
+                                }
+                            }
+                            .padding()
+                        }
+                    }
+                }
+                .animation(.easeInOut, value: viewMode)
+                // Note: When viewMode changes, SwiftUI will completely recreate
+                // the content view because the types are different
+            }
+            .navigationTitle("Reconciliation Demo")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Add Item") {
+                        withAnimation {
+                            items.append(DataItem.random())
+                        }
+                    }
+                }
+            }
+        }
+        .onAppear {
+            items = (1...5).map { _ in DataItem.random() }
+        }
+    }
+}
+
+struct ItemRowView: View {
+    let item: ReconciliationDemoView.DataItem
+    
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(item.color)
+                .frame(width: 20, height: 20)
+            
+            Text(item.title)
+                .font(.body)
+            
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct ItemCardView: View {
+    let item: ReconciliationDemoView.DataItem
+    
+    var body: some View {
+        VStack {
+            Circle()
+                .fill(item.color)
+                .frame(width: 40, height: 40)
+            
+            Text(item.title)
+                .font(.caption)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+struct ItemLargeCardView: View {
+    let item: ReconciliationDemoView.DataItem
+    
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(item.color)
+                .frame(width: 60, height: 60)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text(item.title)
+                    .font(.headline)
+                
+                Text("Description for \(item.title)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(radius: 2)
+    }
+}
+
+// === Identity Preservation Techniques ===
+struct IdentityPreservationView: View {
+    @State private var isExpanded = false
+    @State private var selectedTab = 0
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            // Tab 1: Preserved State
+            VStack {
+                ExpandableSection(title: "Preserved State", isExpanded: $isExpanded) {
+                    VStack {
+                        Text("This content maintains its state")
+                        Text("Even when the parent view updates")
+                        
+                        CounterView() // This will preserve its state
+                    }
+                    .padding()
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(8)
+                }
+                
+                Button("Toggle Expansion") {
+                    withAnimation {
+                        isExpanded.toggle()
+                    }
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .tabItem {
+                Image(systemName: "1.circle")
+                Text("Preserved")
+            }
+            .tag(0)
+            
+            // Tab 2: Reset State
+            VStack {
+                if selectedTab == 1 {
+                    Text("This tab recreates content when selected")
+                    CounterView() // This will reset when tab changes
+                        .id("tab1-counter") // Explicit identity
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .tabItem {
+                Image(systemName: "2.circle")
+                Text("Reset")
+            }
+            .tag(1)
+        }
+    }
+}
+
+struct ExpandableSection<Content: View>: View {
+    let title: String
+    @Binding var isExpanded: Bool
+    let content: Content
+    
+    init(title: String, isExpanded: Binding<Bool>, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self._isExpanded = isExpanded
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack {
+            Text(title)
+                .font(.headline)
+                .padding()
+            
+            if isExpanded {
+                content
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
+    }
+}
+
+struct CounterView: View {
+    @State private var count = 0
+    
+    var body: some View {
+        VStack {
+            Text("Count: \(count)")
+                .font(.title2)
+            
+            Button("Increment") {
+                count += 1
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding()
+        .background(Color.yellow.opacity(0.2))
+        .cornerRadius(8)
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🔧 Performance Implications</h2>
+
+      <div class="danger-box">
+        <h5>Common Performance Pitfalls</h5>
+        <p>الأخطاء الشائعة اللي بتأثر على أداء الـ diffing algorithm</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+// === Performance Anti-patterns ===
+struct PerformanceAntiPatternsView: View {
+    @State private var items: [String] = Array(1...1000).map { "Item \($0)" }
+    @State private var filter = ""
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                TextField("Filter", text: $filter)
+                    .textFieldStyle(.roundedBorder)
+                    .padding()
+                
+                // ❌ BAD: Creating new array on every render
+                List {
+                    ForEach(filteredItemsBad, id: \.self) { item in
+                        Text(item)
+                    }
+                }
+            }
+            .navigationTitle("Anti-patterns")
+        }
+    }
+    
+    // ❌ BAD: Computed property that creates new array every time
+    private var filteredItemsBad: [String] {
+        print("🔴 Filtering items (expensive operation)")
+        return filter.isEmpty ? items : items.filter { $0.contains(filter) }
+    }
+}
+
+// === Performance Best Practices ===
+struct PerformanceBestPracticesView: View {
+    @State private var items: [String] = Array(1...1000).map { "Item \($0)" }
+    @State private var filter = ""
+    @State private var filteredItems: [String] = []
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                TextField("Filter", text: $filter)
+                    .textFieldStyle(.roundedBorder)
+                    .padding()
+                    .onChange(of: filter) { newValue in
+                        updateFilteredItems(filter: newValue)
+                    }
+                
+                // ✅ GOOD: Using cached filtered array
+                List {
+                    ForEach(filteredItems, id: \.self) { item in
+                        Text(item)
+                    }
+                }
+            }
+            .navigationTitle("Best Practices")
+            .onAppear {
+                filteredItems = items
+            }
+        }
+    }
+    
+    // ✅ GOOD: Update filtered items only when needed
+    private func updateFilteredItems(filter: String) {
+        print("🟢 Filtering items (optimized)")
+        if filter.isEmpty {
+            filteredItems = items
+        } else {
+            filteredItems = items.filter { $0.contains(filter) }
+        }
+    }
+}
+
+// === Advanced Optimization with EquatableView ===
+struct OptimizedComplexView: View {
+    @State private var data: [ComplexData] = []
+    
+    struct ComplexData: Identifiable, Equatable {
+        let id = UUID()
+        var name: String
+        var details: [String]
+        var isExpanded: Bool = false
+        
+        static func == (lhs: ComplexData, rhs: ComplexData) -> Bool {
+            return lhs.id == rhs.id &&
+                   lhs.name == rhs.name &&
+                   lhs.details == rhs.details &&
+                   lhs.isExpanded == rhs.isExpanded
+        }
+    }
+    
+    var body: some View {
+        List {
+            ForEach(data.indices, id: \.self) { index in
+                // Using EquatableView to prevent unnecessary re-renders
+                EquatableView(
+                    content: ComplexRowView(
+                        data: data[index],
+                        onToggle: {
+                            data[index].isExpanded.toggle()
+                        }
+                    )
+                )
+            }
+        }
+        .onAppear {
+            loadComplexData()
+        }
+    }
+    
+    private func loadComplexData() {
+        data = (1...50).map { index in
+            ComplexData(
+                name: "Complex Item \(index)",
+                details: (1...10).map { "Detail \($0) for item \(index)" }
+            )
+        }
+    }
+}
+
+struct ComplexRowView: View, Equatable {
+    let data: OptimizedComplexView.ComplexData
+    let onToggle: () -> Void
+    
+    static func == (lhs: ComplexRowView, rhs: ComplexRowView) -> Bool {
+        return lhs.data == rhs.data
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(data.name)
+                    .font(.headline)
+                
+                Spacer()
+                
+                Button(data.isExpanded ? "Collapse" : "Expand") {
+                    withAnimation {
+                        onToggle()
+                    }
+                }
+                .buttonStyle(.borderless)
+            }
+            
+            if data.isExpanded {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(data.details, id: \.self) { detail in
+                        Text(detail)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.top, 8)
+                .transition(.opacity.combined(with: .slide))
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// === Memory Management and View Lifecycle ===
+struct ViewLifecycleObserver: View {
+    @State private var viewCount = 0
+    @State private var showChildViews = false
+    
+    var body: some View {
+        VStack {
+            Text("Active Views: \(viewCount)")
+                .font(.title)
+                .padding()
+            
+            Button("Toggle Child Views") {
+                withAnimation {
+                    showChildViews.toggle()
+                }
+            }
+            .padding()
+            
+            if showChildViews {
+                ScrollView {
+                    VStack {
+                        ForEach(0..<10, id: \.self) { index in
+                            LifecycleAwareView(
+                                id: index,
+                                onAppear: { viewCount += 1 },
+                                onDisappear: { viewCount -= 1 }
+                            )
+                        }
+                    }
+                }
+                .transition(.opacity)
+            }
+        }
+    }
+}
+
+struct LifecycleAwareView: View {
+    let id: Int
+    let onAppear: () -> Void
+    let onDisappear: () -> Void
+    
+    var body: some View {
+        Text("View \(id)")
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .cornerRadius(8)
+            .onAppear {
+                print("View \(id) appeared")
+                onAppear()
+            }
+            .onDisappear {
+                print("View \(id) disappeared")
+                onDisappear()
+            }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Best Practices Summary</h2>
+
+      <div class="highlight-box">
+        <h4>أفضل الممارسات للـ SwiftUI Identity & Diffing:</h4>
+        <ol>
+          <li><strong>Use Stable Identity:</strong> استخدم consistent IDs للـ ForEach</li>
+          <li><strong>Implement Equatable:</strong> للـ complex data structures</li>
+          <li><strong>Avoid Expensive Computations:</strong> في الـ computed properties</li>
+          <li><strong>Cache Filtered Data:</strong> بدلاً من إعادة حسابها</li>
+          <li><strong>Use EquatableView:</strong> للـ performance optimization</li>
+          <li><strong>Minimize State Changes:</strong> تجنب الـ unnecessary updates</li>
+        </ol>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>SwiftUI Diffing & Identity System:</strong>
+        </p>
+        <ul>
+          <li><strong>Structural Identity:</strong> based on position في الـ view hierarchy</li>
+          <li><strong>Explicit Identity:</strong> using id() modifier أو Identifiable protocol</li>
+          <li><strong>Diffing Algorithm:</strong> بيقارن view trees للـ optimal updates</li>
+          <li><strong>Reconciliation:</strong> بيحدد إيه اللي يحتفظ به وإيه اللي يعيد إنشاؤه</li>
+          <li><strong>Performance:</strong> استخدم Equatable وEquatableView للـ optimization</li>
+          <li><strong>Memory Management:</strong> SwiftUI بيدير الـ view lifecycle تلقائياً</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

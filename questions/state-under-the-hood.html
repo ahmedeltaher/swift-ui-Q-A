@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Wrappers Under the Hood in SwiftUI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .property-wrapper-anatomy {
+        background: #f0f8ff;
+        border: 2px solid #4169e1;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+      .implementation-deep-dive {
+        background: #fff5ee;
+        border: 2px solid #ff6347;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        How do Property Wrappers work under the hood in SwiftUI?
+      </h1>
+
+      <div class="highlight-box">
+        <h4>⚡ الفكرة الأساسية</h4>
+        <p>
+          Property Wrappers في SwiftUI هي <strong>compiler sugar</strong> بتحول الـ properties لـ computed properties 
+          مع backing storage. الـ <strong>@State</strong> بيخزن القيمة في DynamicProperty، <strong>@Binding</strong> 
+          بيعمل reference للـ source، و <strong>@ObservedObject</strong> بيعمل subscription للـ ObjectWillChange publisher.
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        لما تكتب <code>@State private var count = 0</code>، الـ Swift compiler بيحول ده لـ computed property 
+        مع backing storage field اسمه <code>_count</code>. كل property wrapper بيعمل implement للـ DynamicProperty protocol 
+        علشان SwiftUI يعرف إمتى يعمل re-render للـ view. ده بيخليك تفهم ليه بعض الـ patterns بتشتغل والتانية لأ.
+      </p>
+
+      <h2 class="section-title">🔧 Property Wrapper Anatomy</h2>
+
+      <div class="property-wrapper-anatomy">
+        <h5>🏗️ Basic Property Wrapper Structure</h5>
+        <p>فهم الـ building blocks الأساسية لأي property wrapper</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+import Combine
+
+// === Understanding Property Wrapper Basics ===
+
+// Simple custom property wrapper to understand the mechanics
+@propertyWrapper
+struct CustomState<Value> {
+    private var storage: Value
+    
+    init(wrappedValue: Value) {
+        self.storage = wrappedValue
+        print("🏗️ CustomState initialized with: \(wrappedValue)")
+    }
+    
+    var wrappedValue: Value {
+        get {
+            print("📖 Reading CustomState value: \(storage)")
+            return storage
+        }
+        set {
+            print("✏️ Writing CustomState value: \(newValue)")
+            storage = newValue
+        }
+    }
+    
+    // This allows us to access the wrapper itself using $property
+    var projectedValue: CustomState<Value> {
+        return self
+    }
+    
+    // Method to demonstrate wrapper functionality
+    func logCurrentValue() {
+        print("📊 Current stored value: \(storage)")
+    }
+}
+
+// === Demonstrating Property Wrapper Expansion ===
+struct PropertyWrapperDemo {
+    // What you write:
+    @CustomState var count = 0
+    
+    // What the compiler generates (conceptually):
+    /*
+    private var _count = CustomState(wrappedValue: 0)
+    
+    var count: Int {
+        get { _count.wrappedValue }
+        set { _count.wrappedValue = newValue }
+    }
+    
+    var $count: CustomState<Int> {
+        _count.projectedValue
+    }
+    */
+    
+    func demonstrateUsage() {
+        print("=== Property Wrapper Demo ===")
+        
+        // Normal property access
+        print("Count: \(count)")
+        count = 5
+        print("Count after update: \(count)")
+        
+        // Accessing the wrapper itself
+        $count.logCurrentValue()
+    }
+}
+
+// === Recreating @State Behavior ===
+@propertyWrapper
+struct MyState<Value>: DynamicProperty {
+    private var storage: State<Value>
+    
+    init(wrappedValue: Value) {
+        self.storage = State(wrappedValue: wrappedValue)
+        print("🔄 MyState initialized")
+    }
+    
+    var wrappedValue: Value {
+        get { storage.wrappedValue }
+        nonmutating set { storage.wrappedValue = newValue }
+    }
+    
+    var projectedValue: Binding<Value> {
+        storage.projectedValue
+    }
+    
+    // DynamicProperty requirement - called when view updates
+    mutating func update() {
+        print("🔄 MyState update() called")
+        storage.update()
+    }
+}
+
+struct MyStateDemo: View {
+    @MyState private var counter = 0
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Custom @State Demo")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Counter: \(counter)")
+                .font(.headline)
+            
+            Button("Increment") {
+                counter += 1
+            }
+            .buttonStyle(.borderedProminent)
+            
+            // Using projected value (binding)
+            Slider(value: $counter, in: 0...100, step: 1)
+                .padding()
+        }
+        .padding()
+        .onAppear {
+            print("🎬 MyStateDemo appeared")
+        }
+    }
+}
+
+// === Understanding @Binding Implementation ===
+@propertyWrapper
+struct MyBinding<Value> {
+    private let getter: () -> Value
+    private let setter: (Value) -> Void
+    
+    init(get: @escaping () -> Value, set: @escaping (Value) -> Void) {
+        self.getter = get
+        self.setter = set
+        print("🔗 MyBinding initialized")
+    }
+    
+    var wrappedValue: Value {
+        get {
+            let value = getter()
+            print("📖 MyBinding reading: \(value)")
+            return value
+        }
+        nonmutating set {
+            print("✏️ MyBinding writing: \(newValue)")
+            setter(newValue)
+        }
+    }
+    
+    var projectedValue: MyBinding<Value> {
+        self
+    }
+}
+
+struct MyBindingDemo: View {
+    @State private var parentValue = "Hello"
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Custom @Binding Demo")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Parent Value: \(parentValue)")
+                .font(.headline)
+            
+            ChildViewWithBinding(text: createBinding())
+        }
+        .padding()
+    }
+    
+    private func createBinding() -> MyBinding<String> {
+        return MyBinding(
+            get: { self.parentValue },
+            set: { self.parentValue = $0 }
+        )
+    }
+}
+
+struct ChildViewWithBinding: View {
+    @MyBinding var text: String
+    
+    var body: some View {
+        VStack {
+            TextField("Enter text", text: $text)
+                .textFieldStyle(.roundedBorder)
+            
+            Button("Clear") {
+                text = ""
+            }
+        }
+        .padding()
+        .background(Color.blue.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+// === Deep Dive: @ObservedObject Recreation ===
+@propertyWrapper
+struct MyObservedObject<ObjectType: ObservableObject>: DynamicProperty {
+    private var objectWillChangeSubscription: AnyCancellable?
+    private var storage: ObjectType
+    
+    init(wrappedValue: ObjectType) {
+        self.storage = wrappedValue
+        print("👀 MyObservedObject initialized")
+        subscribeToChanges()
+    }
+    
+    var wrappedValue: ObjectType {
+        storage
+    }
+    
+    var projectedValue: ObservedObject<ObjectType>.Wrapper {
+        // We can't easily recreate this without access to SwiftUI internals
+        // This is a simplified version
+        ObservedObject(wrappedValue: storage).projectedValue
+    }
+    
+    // DynamicProperty requirement
+    mutating func update() {
+        print("🔄 MyObservedObject update() called")
+        // Re-subscribe if needed
+        if objectWillChangeSubscription == nil {
+            subscribeToChanges()
+        }
+    }
+    
+    private mutating func subscribeToChanges() {
+        objectWillChangeSubscription = storage.objectWillChange.sink { [storage] _ in
+            print("📢 Object will change notification received")
+            // In real SwiftUI, this would trigger view re-render
+            DispatchQueue.main.async {
+                print("🔄 Would trigger view update here")
+            }
+        }
+    }
+}
+
+class TestObservableObject: ObservableObject {
+    @Published var value: Int = 0 {
+        didSet {
+            print("📊 TestObservableObject value changed to: \(value)")
+        }
+    }
+    
+    func increment() {
+        value += 1
+    }
+}
+
+struct MyObservedObjectDemo: View {
+    @MyObservedObject var testObject = TestObservableObject()
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Custom @ObservedObject Demo")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Object Value: \(testObject.value)")
+                .font(.headline)
+            
+            Button("Increment Object") {
+                testObject.increment()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🔍 SwiftUI's Built-in Property Wrappers Deep Dive</h2>
+
+      <div class="implementation-deep-dive">
+        <h5>🎯 Internal Implementation Analysis</h5>
+        <p>تحليل عميق لكيفية عمل الـ property wrappers الأساسية في SwiftUI</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+import Combine
+
+// === @State Deep Dive ===
+struct StateInternalsDemo: View {
+    @State private var counter = 0
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("@State Internals Analysis")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            // Understanding State storage
+            StateStorageAnalysis()
+            
+            Text("Counter: \(counter)")
+                .font(.headline)
+            
+            Button("Increment") {
+                // What happens under the hood:
+                // 1. _counter.wrappedValue += 1
+                // 2. State's setter triggers view invalidation
+                // 3. SwiftUI schedules a view update
+                // 4. Body is re-evaluated with new value
+                counter += 1
+            }
+            .buttonStyle(.borderedProminent)
+            
+            // Demonstrating State persistence across view updates
+            StateLifecycleDemo()
+        }
+        .padding()
+    }
+}
+
+struct StateStorageAnalysis: View {
+    @State private var value = "Initial"
+    
+    var body: some View {
+        VStack {
+            Text("State Storage Analysis")
+                .font(.headline)
+            
+            Text("Current value: \(value)")
+            
+            Button("Change Value") {
+                value = "Changed at \(Date().timeIntervalSince1970)"
+            }
+            
+            // This demonstrates that @State survives view recreation
+            Text("View ID: \(UUID().uuidString.prefix(8))")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+struct StateLifecycleDemo: View {
+    @State private var recreationCount = 0
+    @State private var persistentValue = "I persist!"
+    
+    var body: some View {
+        VStack {
+            Text("State Lifecycle Demo")
+                .font(.headline)
+            
+            Text("Recreation Count: \(recreationCount)")
+            Text("Persistent Value: \(persistentValue)")
+                .foregroundColor(.blue)
+            
+            Button("Force Recreation") {
+                // Even though we increment this, persistentValue survives
+                recreationCount += 1
+            }
+        }
+        .padding()
+        .background(Color.green.opacity(0.1))
+        .cornerRadius(8)
+        .onAppear {
+            print("🎬 StateLifecycleDemo appeared")
+        }
+    }
+}
+
+// === @Binding Deep Dive ===
+struct BindingInternalsDemo: View {
+    @State private var sharedValue = 0
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("@Binding Internals Analysis")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            Text("Shared Value: \(sharedValue)")
+                .font(.headline)
+            
+            // Multiple views sharing the same binding
+            HStack(spacing: 20) {
+                BindingConsumer(
+                    value: $sharedValue,
+                    label: "Consumer 1"
+                )
+                
+                BindingConsumer(
+                    value: $sharedValue,
+                    label: "Consumer 2"
+                )
+            }
+            
+            // Custom binding creation
+            CustomBindingDemo(parentValue: $sharedValue)
+        }
+        .padding()
+    }
+}
+
+struct BindingConsumer: View {
+    @Binding var value: Int
+    let label: String
+    
+    var body: some View {
+        VStack {
+            Text(label)
+                .font(.caption)
+                .fontWeight(.bold)
+            
+            Text("\(value)")
+                .font(.title2)
+            
+            Button("+1") {
+                // This modifies the source @State
+                value += 1
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding()
+        .background(Color.blue.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+struct CustomBindingDemo: View {
+    @Binding var parentValue: Int
+    
+    var body: some View {
+        VStack {
+            Text("Custom Binding Creation")
+                .font(.headline)
+            
+            // Creating a binding that transforms the value
+            let doubledBinding = Binding<Int>(
+                get: { parentValue * 2 },
+                set: { parentValue = $0 / 2 }
+            )
+            
+            Text("Doubled Value: \(doubledBinding.wrappedValue)")
+            
+            Button("Set Doubled to 20") {
+                doubledBinding.wrappedValue = 20
+            }
+            .buttonStyle(.bordered)
+            
+            // Creating a binding with custom logic
+            let formattedBinding = Binding<String>(
+                get: { "Value: \(parentValue)" },
+                set: { newValue in
+                    if let number = Int(newValue.replacingOccurrences(of: "Value: ", with: "")) {
+                        parentValue = number
+                    }
+                }
+            )
+            
+            TextField("Formatted Value", text: formattedBinding)
+                .textFieldStyle(.roundedBorder)
+        }
+        .padding()
+        .background(Color.orange.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+// === @ObservedObject vs @StateObject Deep Dive ===
+class SharedViewModel: ObservableObject {
+    @Published var counter = 0
+    let id = UUID()
+    
+    init() {
+        print("🏗️ SharedViewModel created with ID: \(id)")
+    }
+    
+    deinit {
+        print("💀 SharedViewModel destroyed with ID: \(id)")
+    }
+    
+    func increment() {
+        counter += 1
+        print("📊 Counter incremented to: \(counter)")
+    }
+}
+
+struct ObservableObjectInternalsDemo: View {
+    @State private var showChild = true
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("@ObservedObject vs @StateObject")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            Toggle("Show Child Views", isOn: $showChild)
+                .padding()
+            
+            if showChild {
+                VStack(spacing: 20) {
+                    StateObjectDemo()
+                    ObservedObjectDemo()
+                }
+            }
+        }
+        .padding()
+    }
+}
+
+struct StateObjectDemo: View {
+    @StateObject private var viewModel = SharedViewModel()
+    @State private var refreshCount = 0
+    
+    var body: some View {
+        VStack {
+            Text("@StateObject Demo")
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            Text("ViewModel ID: \(viewModel.id.uuidString.prefix(8))")
+                .font(.caption)
+                .foregroundColor(.blue)
+            
+            Text("Counter: \(viewModel.counter)")
+            Text("Refresh Count: \(refreshCount)")
+                .font(.caption)
+            
+            HStack {
+                Button("Increment") {
+                    viewModel.increment()
+                }
+                
+                Button("Force Refresh") {
+                    refreshCount += 1
+                }
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding()
+        .background(Color.green.opacity(0.1))
+        .cornerRadius(8)
+        .onAppear {
+            print("🎬 StateObjectDemo appeared")
+        }
+    }
+}
+
+struct ObservedObjectDemo: View {
+    // ⚠️ This creates a new instance on every view recreation
+    @ObservedObject private var viewModel = SharedViewModel()
+    @State private var refreshCount = 0
+    
+    var body: some View {
+        VStack {
+            Text("@ObservedObject Demo")
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            Text("ViewModel ID: \(viewModel.id.uuidString.prefix(8))")
+                .font(.caption)
+                .foregroundColor(.red)
+            
+            Text("Counter: \(viewModel.counter)")
+            Text("Refresh Count: \(refreshCount)")
+                .font(.caption)
+            
+            HStack {
+                Button("Increment") {
+                    viewModel.increment()
+                }
+                
+                Button("Force Refresh") {
+                    // This will create a new ViewModel instance!
+                    refreshCount += 1
+                }
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding()
+        .background(Color.red.opacity(0.1))
+        .cornerRadius(8)
+        .onAppear {
+            print("🎬 ObservedObjectDemo appeared")
+        }
+    }
+}
+
+// === @Published Deep Dive ===
+class PublishedAnalysisModel: ObservableObject {
+    @Published var normalProperty = "Normal" {
+        didSet {
+            print("📝 normalProperty didSet: \(normalProperty)")
+        }
+    }
+    
+    // What @Published actually generates:
+    /*
+    private var _normalProperty = Published<String>(wrappedValue: "Normal")
+    
+    var normalProperty: String {
+        get { _normalProperty.wrappedValue }
+        set { _normalProperty.wrappedValue = newValue }
+    }
+    
+    var $normalProperty: Published<String>.Publisher {
+        _normalProperty.projectedValue
+    }
+    */
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        // Demonstrating @Published's publisher
+        $normalProperty
+            .sink { newValue in
+                print("📡 normalProperty publisher received: \(newValue)")
+            }
+            .store(in: &cancellables)
+    }
+}
+
+struct PublishedInternalsDemo: View {
+    @StateObject private var model = PublishedAnalysisModel()
+    @State private var subscriberValue = ""
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("@Published Internals")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Model Value: \(model.normalProperty)")
+            
+            TextField("Change Value", text: $model.normalProperty)
+                .textFieldStyle(.roundedBorder)
+            
+            Text("Subscriber Value: \(subscriberValue)")
+                .foregroundColor(.blue)
+        }
+        .padding()
+        .background(Color.purple.opacity(0.1))
+        .cornerRadius(8)
+        .onReceive(model.$normalProperty) { newValue in
+            // This demonstrates the publisher aspect of @Published
+            subscriberValue = "Received: \(newValue)"
+        }
+    }
+}
+
+// === Custom Advanced Property Wrapper ===
+@propertyWrapper
+struct UserDefault<Value> {
+    let key: String
+    let defaultValue: Value
+    
+    var wrappedValue: Value {
+        get {
+            return UserDefaults.standard.object(forKey: key) as? Value ?? defaultValue
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: key)
+            print("💾 Saved \(key): \(newValue)")
+        }
+    }
+    
+    var projectedValue: UserDefault<Value> {
+        return self
+    }
+    
+    func reset() {
+        UserDefaults.standard.removeObject(forKey: key)
+        print("🗑️ Reset \(key)")
+    }
+}
+
+struct CustomPropertyWrapperDemo: View {
+    @UserDefault(key: "username", defaultValue: "Guest")
+    var username: String
+    
+    @UserDefault(key: "loginCount", defaultValue: 0)
+    var loginCount: Int
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Custom Property Wrapper")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Username: \(username)")
+            Text("Login Count: \(loginCount)")
+            
+            TextField("Enter username", text: $username)
+                .textFieldStyle(.roundedBorder)
+            
+            Button("Increment Login Count") {
+                loginCount += 1
+            }
+            
+            Button("Reset Username") {
+                $username.reset()
+            }
+            
+            Button("Reset Login Count") {
+                $loginCount.reset()
+            }
+        }
+        .padding()
+        .background(Color.teal.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+// === Property Wrapper Performance Analysis ===
+struct PropertyWrapperPerformanceDemo: View {
+    @State private var measurements: [PerformanceMeasurement] = []
+    
+    struct PerformanceMeasurement {
+        let operation: String
+        let duration: TimeInterval
+        let timestamp: Date
+    }
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Property Wrapper Performance")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            HStack {
+                Button("Test @State") {
+                    measurePerformance(operation: "@State") {
+                        testStatePerformance()
+                    }
+                }
+                
+                Button("Test @Binding") {
+                    measurePerformance(operation: "@Binding") {
+                        testBindingPerformance()
+                    }
+                }
+                
+                Button("Clear") {
+                    measurements.removeAll()
+                }
+            }
+            .buttonStyle(.bordered)
+            
+            List(measurements, id: \.timestamp) { measurement in
+                VStack(alignment: .leading) {
+                    Text(measurement.operation)
+                        .font(.headline)
+                    Text("\(measurement.duration * 1000, specifier: "%.3f")ms")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .frame(height: 200)
+        }
+        .padding()
+    }
+    
+    private func measurePerformance(operation: String, block: () -> Void) {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        block()
+        let endTime = CFAbsoluteTimeGetCurrent()
+        
+        measurements.append(PerformanceMeasurement(
+            operation: operation,
+            duration: endTime - startTime,
+            timestamp: Date()
+        ))
+    }
+    
+    private func testStatePerformance() {
+        // Simulate multiple @State operations
+        for _ in 0..<1000 {
+            var testState = State(wrappedValue: 0)
+            testState.wrappedValue = Int.random(in: 0...100)
+            _ = testState.wrappedValue
+        }
+    }
+    
+    private func testBindingPerformance() {
+        // Simulate multiple Binding operations
+        for _ in 0..<1000 {
+            var value = 0
+            let binding = Binding(
+                get: { value },
+                set: { value = $0 }
+            )
+            binding.wrappedValue = Int.random(in: 0...100)
+            _ = binding.wrappedValue
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🔬 Advanced Property Wrapper Patterns</h2>
+
+      <div class="success-box">
+        <h5>🚀 Advanced Techniques</h5>
+        <p>تقنيات متقدمة لإنشاء property wrappers مخصصة ومعقدة</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+import Combine
+
+// === Thread-Safe Property Wrapper ===
+@propertyWrapper
+struct ThreadSafe<Value> {
+    private var value: Value
+    private let queue = DispatchQueue(label: "ThreadSafe.\(UUID().uuidString)", attributes: .concurrent)
+    
+    init(wrappedValue: Value) {
+        self.value = wrappedValue
+    }
+    
+    var wrappedValue: Value {
+        get {
+            return queue.sync { value }
+        }
+        set {
+            queue.async(flags: .barrier) { [self] in
+                self.value = newValue
+            }
+        }
+    }
+    
+    var projectedValue: ThreadSafe<Value> {
+        return self
+    }
+    
+    func atomicUpdate<T>(_ transform: (inout Value) -> T) -> T {
+        return queue.sync(flags: .barrier) {
+            return transform(&value)
+        }
+    }
+}
+
+// === Validation Property Wrapper ===
+@propertyWrapper
+struct Validated<Value> {
+    private var storage: Value
+    private let validator: (Value) -> Bool
+    private let fallback: Value
+    
+    init(wrappedValue: Value, validator: @escaping (Value) -> Bool, fallback: Value) {
+        self.validator = validator
+        self.fallback = fallback
+        self.storage = validator(wrappedValue) ? wrappedValue : fallback
+    }
+    
+    var wrappedValue: Value {
+        get { storage }
+        set {
+            if validator(newValue) {
+                storage = newValue
+            } else {
+                print("⚠️ Validation failed for: \(newValue), using fallback: \(fallback)")
+                storage = fallback
+            }
+        }
+    }
+    
+    var projectedValue: Validated<Value> {
+        return self
+    }
+    
+    var isValid: Bool {
+        return validator(storage)
+    }
+}
+
+// === Cached Property Wrapper ===
+@propertyWrapper
+struct Cached<Value> {
+    private var cachedValue: Value?
+    private let computation: () -> Value
+    private let invalidationTime: TimeInterval
+    private var lastComputedTime: Date?
+    
+    init(wrappedValue: @autoclosure @escaping () -> Value, cacheFor duration: TimeInterval = 60) {
+        self.computation = wrappedValue
+        self.invalidationTime = duration
+    }
+    
+    var wrappedValue: Value {
+        mutating get {
+            let now = Date()
+            
+            if let cached = cachedValue,
+               let lastComputed = lastComputedTime,
+               now.timeIntervalSince(lastComputed) < invalidationTime {
+                print("📋 Cache hit")
+                return cached
+            }
+            
+            print("🔄 Cache miss, computing new value")
+            let newValue = computation()
+            cachedValue = newValue
+            lastComputedTime = now
+            return newValue
+        }
+    }
+    
+    var projectedValue: Cached<Value> {
+        return self
+    }
+    
+    mutating func invalidate() {
+        cachedValue = nil
+        lastComputedTime = nil
+        print("🗑️ Cache invalidated")
+    }
+}
+
+// === Observable Property Wrapper ===
+@propertyWrapper
+class Observable<Value>: ObservableObject {
+    @Published private var storage: Value
+    
+    init(wrappedValue: Value) {
+        self.storage = wrappedValue
+    }
+    
+    var wrappedValue: Value {
+        get { storage }
+        set { storage = newValue }
+    }
+    
+    var projectedValue: Observable<Value> {
+        return self
+    }
+    
+    func publisher() -> Published<Value>.Publisher {
+        return $storage
+    }
+}
+
+// === Demo View for Advanced Patterns ===
+struct AdvancedPropertyWrapperDemo: View {
+    @ThreadSafe private var threadSafeCounter = 0
+    
+    @Validated(
+        validator: { $0 >= 0 && $0 <= 100 },
+        fallback: 50
+    ) private var percentage = 75
+    
+    @Cached(cacheFor: 5.0) private var expensiveComputation = {
+        // Simulate expensive computation
+        Thread.sleep(forTimeInterval: 0.1)
+        return Int.random(in: 1...1000)
+    }()
+    
+    @StateObject private var observableValue = Observable(wrappedValue: "Initial")
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 30) {
+                Text("Advanced Property Wrapper Patterns")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                // Thread-Safe Demo
+                VStack {
+                    Text("Thread-Safe Counter")
+                        .font(.headline)
+                    
+                    Text("Value: \(threadSafeCounter)")
+                    
+                    HStack {
+                        Button("Increment") {
+                            DispatchQueue.global().async {
+                                self.$threadSafeCounter.atomicUpdate { value in
+                                    value += 1
+                                }
+                            }
+                        }
+                        
+                        Button("Mass Update") {
+                            // Simulate concurrent access
+                            for _ in 0..<10 {
+                                DispatchQueue.global().async {
+                                    self.threadSafeCounter += 1
+                                }
+                            }
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .padding()
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(8)
+                
+                // Validation Demo
+                VStack {
+                    Text("Validated Percentage")
+                        .font(.headline)
+                    
+                    Text("Value: \(percentage)% (Valid: \($percentage.isValid ? "✅" : "❌"))")
+                    
+                    HStack {
+                        Button("Set 150 (Invalid)") {
+                            percentage = 150
+                        }
+                        
+                        Button("Set 25 (Valid)") {
+                            percentage = 25
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .padding()
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(8)
+                
+                // Cached Demo
+                VStack {
+                    Text("Cached Computation")
+                        .font(.headline)
+                    
+                    Text("Value: \(expensiveComputation)")
+                    
+                    HStack {
+                        Button("Get Cached Value") {
+                            print("Cached value: \(expensiveComputation)")
+                        }
+                        
+                        Button("Invalidate Cache") {
+                            $expensiveComputation.invalidate()
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .padding()
+                .background(Color.green.opacity(0.1))
+                .cornerRadius(8)
+                
+                // Observable Demo
+                VStack {
+                    Text("Observable Value")
+                        .font(.headline)
+                    
+                    Text("Value: \(observableValue.wrappedValue)")
+                    
+                    TextField("Enter value", text: $observableValue.wrappedValue)
+                        .textFieldStyle(.roundedBorder)
+                    
+                    Text("This value is observable and publishes changes")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color.purple.opacity(0.1))
+                .cornerRadius(8)
+                .onReceive(observableValue.publisher()) { newValue in
+                    print("📡 Observable value changed to: \(newValue)")
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+// === Property Wrapper Composition ===
+@propertyWrapper
+struct ValidatedObservable<Value>: DynamicProperty {
+    @StateObject private var observable: Observable<Value>
+    private let validator: (Value) -> Bool
+    private let fallback: Value
+    
+    init(wrappedValue: Value, validator: @escaping (Value) -> Bool, fallback: Value) {
+        self.validator = validator
+        self.fallback = fallback
+        self._observable = StateObject(wrappedValue: Observable(wrappedValue: wrappedValue))
+    }
+    
+    var wrappedValue: Value {
+        get { observable.wrappedValue }
+        nonmutating set {
+            if validator(newValue) {
+                observable.wrappedValue = newValue
+            } else {
+                print("⚠️ Validation failed, using fallback")
+                observable.wrappedValue = fallback
+            }
+        }
+    }
+    
+    var projectedValue: ValidatedObservableProjection<Value> {
+        ValidatedObservableProjection(
+            binding: Binding(
+                get: { self.wrappedValue },
+                set: { self.wrappedValue = $0 }
+            ),
+            publisher: observable.publisher(),
+            isValid: validator(observable.wrappedValue)
+        )
+    }
+}
+
+struct ValidatedObservableProjection<Value> {
+    let binding: Binding<Value>
+    let publisher: Published<Value>.Publisher
+    let isValid: Bool
+}
+
+struct ComposedPropertyWrapperDemo: View {
+    @ValidatedObservable(
+        validator: { !$0.isEmpty && $0.count <= 20 },
+        fallback: "Default"
+    ) private var username = "User"
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Composed Property Wrapper")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Username: \(username)")
+            Text("Valid: \($username.isValid ? "✅" : "❌")")
+            
+            TextField("Enter username", text: $username.binding)
+                .textFieldStyle(.roundedBorder)
+            
+            Button("Set Empty (Invalid)") {
+                username = ""
+            }
+            
+            Button("Set Long Name (Invalid)") {
+                username = "ThisUsernameIsTooLongAndWillBeRejected"
+            }
+        }
+        .padding()
+        .background(Color.cyan.opacity(0.1))
+        .cornerRadius(8)
+        .onReceive($username.publisher) { newValue in
+            print("👤 Username changed to: \(newValue)")
+        }
+    }
+}
+
+// === Main Demo Container ===
+struct PropertyWrapperUnderTheHoodDemo: View {
+    var body: some View {
+        NavigationView {
+            List {
+                NavigationLink("Basic Property Wrapper Demo") {
+                    MyStateDemo()
+                }
+                
+                NavigationLink("Binding Internals") {
+                    BindingInternalsDemo()
+                }
+                
+                NavigationLink("ObservableObject Analysis") {
+                    ObservableObjectInternalsDemo()
+                }
+                
+                NavigationLink("@Published Deep Dive") {
+                    PublishedInternalsDemo()
+                }
+                
+                NavigationLink("Custom Property Wrapper") {
+                    CustomPropertyWrapperDemo()
+                }
+                
+                NavigationLink("Advanced Patterns") {
+                    AdvancedPropertyWrapperDemo()
+                }
+                
+                NavigationLink("Composed Wrappers") {
+                    ComposedPropertyWrapperDemo()
+                }
+                
+                NavigationLink("Performance Analysis") {
+                    PropertyWrapperPerformanceDemo()
+                }
+            }
+            .navigationTitle("Property Wrapper Internals")
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Best Practices & Performance</h2>
+
+      <div class="highlight-box">
+        <h4>📋 Property Wrapper Best Practices</h4>
+        <div>
+          <h5>✅ Best Practices:</h5>
+          <ul>
+            <li><strong>Use @StateObject:</strong> للـ ObservableObject instances اللي هتعيش مع الـ view</li>
+            <li><strong>Use @ObservedObject:</strong> للـ objects اللي بتيجي من parent views</li>
+            <li><strong>Avoid Heavy Logic:</strong> متحطش computations معقدة في getters/setters</li>
+            <li><strong>Consider Memory:</strong> خد بالك من الـ memory implications للـ custom wrappers</li>
+            <li><strong>Thread Safety:</strong> استخدم proper synchronization للـ concurrent access</li>
+          </ul>
+          
+          <h5>⚠️ Common Pitfalls:</h5>
+          <ul>
+            <li><strong>@ObservedObject Recreation:</strong> بيخلق instance جديدة مع كل view update</li>
+            <li><strong>Expensive Getters:</strong> بتبطئ الـ view rendering</li>
+            <li><strong>Memory Leaks:</strong> في الـ custom wrappers اللي بتعمل subscriptions</li>
+            <li><strong>Race Conditions:</strong> في الـ multi-threaded environments</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>Property Wrappers Under the Hood Summary:</strong>
+        </p>
+        <ul>
+          <li><strong>Compiler Sugar:</strong> بيحول @Property لـ computed properties مع backing storage</li>
+          <li><strong>DynamicProperty:</strong> protocol بيخلي SwiftUI يعرف إمتى يعمل re-render</li>
+          <li><strong>@State:</strong> بيخزن القيمة internally ويبقى persistent عبر view updates</li>
+          <li><strong>@Binding:</strong> reference للـ source value، مش copy</li>
+          <li><strong>@ObservedObject vs @StateObject:</strong> الفرق في الـ ownership والـ lifecycle</li>
+          <li><strong>@Published:</strong> بيوفر Publisher للـ reactive programming</li>
+          <li><strong>Custom Wrappers:</strong> يخلوك تعمل powerful abstractions وreusable patterns</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

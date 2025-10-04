@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>onAppear vs task modifier in SwiftUI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
+      .comparison-table th,
+      .comparison-table td {
+        padding: 0.75rem;
+        text-align: center;
+        border: 1px solid #dee2e6;
+      }
+      .comparison-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+      }
+      .comparison-table .feature {
+        text-align: right;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        What is the difference between onAppear vs task modifier?
+      </h1>
+
+      <div class="highlight-box">
+        <h4>⚡ الفكرة الأساسية</h4>
+        <p>
+          <strong>onAppear</strong> بيتم تنفيذه synchronously لما الـ view يظهر، بينما <strong>task</strong> 
+          بيخلق async context جديد ومصمم خصيصاً للـ Swift Concurrency. الـ task modifier بيوفر automatic cancellation 
+          والـ structured concurrency، وده أفضل للـ modern async operations.
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        قبل Swift Concurrency، كنا نستخدم onAppear مع DispatchQueue أو Combine للـ async operations. 
+        لكن مع iOS 15، جه task modifier اللي مصمم خصيصاً للـ async/await pattern وبيوفر 
+        automatic task cancellation لما الـ view يختفي، وده بيمنع memory leaks والـ unnecessary work.
+      </p>
+
+      <h2 class="section-title">📊 Quick Comparison</h2>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th class="feature">الخاصية</th>
+            <th>onAppear</th>
+            <th>task</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feature">Execution Context</td>
+            <td>Synchronous</td>
+            <td>Asynchronous</td>
+          </tr>
+          <tr>
+            <td class="feature">Swift Concurrency</td>
+            <td>Manual async/await handling</td>
+            <td>Native async/await support</td>
+          </tr>
+          <tr>
+            <td class="feature">Cancellation</td>
+            <td>Manual cancellation needed</td>
+            <td>Automatic cancellation</td>
+          </tr>
+          <tr>
+            <td class="feature">iOS Availability</td>
+            <td>iOS 13+</td>
+            <td>iOS 15+</td>
+          </tr>
+          <tr>
+            <td class="feature">Best Use Case</td>
+            <td>Quick synchronous setup</td>
+            <td>Async data loading</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-title">🎯 onAppear Implementation</h2>
+
+      <div class="success-box">
+        <h5>1. Traditional onAppear Usage</h5>
+        <p>الاستخدام التقليدي لـ onAppear مع الـ async operations</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+import Combine
+
+// === Traditional onAppear Approach ===
+struct OnAppearExampleView: View {
+    @State private var users: [User] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var cancellables = Set<AnyCancellable>()
+    
+    struct User: Identifiable, Codable {
+        let id: Int
+        let name: String
+        let email: String
+    }
+    
+    var body: some View {
+        NavigationView {
+            Group {
+                if isLoading {
+                    ProgressView("Loading users...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if let errorMessage = errorMessage {
+                    VStack {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.largeTitle)
+                            .foregroundColor(.orange)
+                        
+                        Text("Error")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        
+                        Text(errorMessage)
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.secondary)
+                        
+                        Button("Retry") {
+                            loadUsersWithDispatchQueue()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .padding(.top)
+                    }
+                    .padding()
+                } else {
+                    List(users) { user in
+                        VStack(alignment: .leading) {
+                            Text(user.name)
+                                .font(.headline)
+                            Text(user.email)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 2)
+                    }
+                }
+            }
+            .navigationTitle("Users (onAppear)")
+            .onAppear {
+                // Problem: onAppear runs synchronously
+                // Need to manually create async context
+                loadUsersWithDispatchQueue()
+            }
+            .onDisappear {
+                // Problem: Manual cancellation required
+                cancellables.removeAll()
+            }
+        }
+    }
+    
+    // === Old School: Using DispatchQueue ===
+    private func loadUsersWithDispatchQueue() {
+        isLoading = true
+        errorMessage = nil
+        
+        // Creating async context manually
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Simulate network delay
+            Thread.sleep(forTimeInterval: 2)
+            
+            // Simulate API call
+            let result = simulateAPICall()
+            
+            DispatchQueue.main.async {
+                isLoading = false
+                
+                switch result {
+                case .success(let users):
+                    self.users = users
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
+                }
+            }
+        }
+    }
+    
+    // === Better: Using Combine ===
+    private func loadUsersWithCombine() {
+        isLoading = true
+        errorMessage = nil
+        
+        // Create a publisher for the async operation
+        Future<[User], Error> { promise in
+            DispatchQueue.global(qos: .userInitiated).async {
+                Thread.sleep(forTimeInterval: 2)
+                let result = simulateAPICall()
+                promise(result)
+            }
+        }
+        .receive(on: DispatchQueue.main)
+        .sink(
+            receiveCompletion: { completion in
+                self.isLoading = false
+                if case .failure(let error) = completion {
+                    self.errorMessage = error.localizedDescription
+                }
+            },
+            receiveValue: { users in
+                self.users = users
+            }
+        )
+        .store(in: &cancellables)
+    }
+    
+    // === Modern: Using async/await in onAppear ===
+    private func loadUsersWithAsyncAwait() {
+        isLoading = true
+        errorMessage = nil
+        
+        // Problem: Need to create Task manually
+        Task {
+            do {
+                try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+                let users = try await fetchUsersAsync()
+                
+                await MainActor.run {
+                    self.users = users
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    self.errorMessage = error.localizedDescription
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+    
+    private func simulateAPICall() -> Result<[User], Error> {
+        // Simulate random success/failure
+        if Bool.random() {
+            let users = [
+                User(id: 1, name: "Ahmed Ali", email: "ahmed@example.com"),
+                User(id: 2, name: "Sara Mohamed", email: "sara@example.com"),
+                User(id: 3, name: "Omar Hassan", email: "omar@example.com")
+            ]
+            return .success(users)
+        } else {
+            return .failure(NetworkError.serverError)
+        }
+    }
+    
+    private func fetchUsersAsync() async throws -> [User] {
+        // Simulate async API call
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        
+        if Bool.random() {
+            return [
+                User(id: 1, name: "Ahmed Ali", email: "ahmed@example.com"),
+                User(id: 2, name: "Sara Mohamed", email: "sara@example.com"),
+                User(id: 3, name: "Omar Hassan", email: "omar@example.com")
+            ]
+        } else {
+            throw NetworkError.serverError
+        }
+    }
+}
+
+enum NetworkError: LocalizedError {
+    case serverError
+    case networkUnavailable
+    
+    var errorDescription: String? {
+        switch self {
+        case .serverError:
+            return "Server error occurred"
+        case .networkUnavailable:
+            return "Network unavailable"
+        }
+    }
+}
+
+// === onAppear with Manual Task Management ===
+struct ManualTaskManagementView: View {
+    @State private var data: [String] = []
+    @State private var isLoading = false
+    @State private var currentTask: Task<Void, Never>?
+    
+    var body: some View {
+        NavigationView {
+            List(data, id: \.self) { item in
+                Text(item)
+            }
+            .navigationTitle("Manual Task Management")
+            .overlay {
+                if isLoading {
+                    ProgressView("Loading...")
+                }
+            }
+            .onAppear {
+                startDataLoading()
+            }
+            .onDisappear {
+                // Manual cancellation required
+                currentTask?.cancel()
+                currentTask = nil
+            }
+        }
+    }
+    
+    private func startDataLoading() {
+        guard currentTask == nil else { return }
+        
+        isLoading = true
+        
+        currentTask = Task {
+            await loadDataSlowly()
+            
+            if !Task.isCancelled {
+                await MainActor.run {
+                    isLoading = false
+                }
+            }
+        }
+    }
+    
+    private func loadDataSlowly() async {
+        for i in 1...10 {
+            // Check for cancellation at each step
+            if Task.isCancelled { return }
+            
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+            
+            await MainActor.run {
+                if !Task.isCancelled {
+                    data.append("Item \(i)")
+                }
+            }
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🚀 task Modifier Implementation</h2>
+
+      <div class="concept-box">
+        <h5>Modern Approach with task Modifier</h5>
+        <p>استخدام task modifier للـ clean وautomatic async operations</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === Modern task Modifier Approach ===
+struct TaskModifierExampleView: View {
+    @State private var users: [User] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    
+    struct User: Identifiable, Codable {
+        let id: Int
+        let name: String
+        let email: String
+    }
+    
+    var body: some View {
+        NavigationView {
+            Group {
+                if isLoading {
+                    ProgressView("Loading users...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if let errorMessage = errorMessage {
+                    ErrorView(message: errorMessage) {
+                        // Trigger reload by changing a state value
+                        Task {
+                            await loadUsers()
+                        }
+                    }
+                } else {
+                    List(users) { user in
+                        UserRowView(user: user)
+                    }
+                }
+            }
+            .navigationTitle("Users (task)")
+            .task {
+                // ✅ Clean async context - no manual Task creation needed
+                await loadUsers()
+            }
+            // ✅ Automatic cancellation when view disappears - no onDisappear needed!
+        }
+    }
+    
+    private func loadUsers() async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            // ✅ Direct async/await usage
+            try await Task.sleep(nanoseconds: 2_000_000_000)
+            users = try await fetchUsersAsync()
+        } catch {
+            if !Task.isCancelled {
+                errorMessage = error.localizedDescription
+            }
+        }
+        
+        isLoading = false
+    }
+    
+    private func fetchUsersAsync() async throws -> [User] {
+        // Simulate network delay with cancellation check
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        
+        // Simulate random success/failure
+        if Bool.random() {
+            return [
+                User(id: 1, name: "Ahmed Ali", email: "ahmed@example.com"),
+                User(id: 2, name: "Sara Mohamed", email: "sara@example.com"),
+                User(id: 3, name: "Omar Hassan", email: "omar@example.com"),
+                User(id: 4, name: "Fatma Ibrahim", email: "fatma@example.com"),
+                User(id: 5, name: "Mahmoud Saeed", email: "mahmoud@example.com")
+            ]
+        } else {
+            throw NetworkError.serverError
+        }
+    }
+}
+
+struct UserRowView: View {
+    let user: TaskModifierExampleView.User
+    
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(Color.blue)
+                .frame(width: 40, height: 40)
+                .overlay(
+                    Text(String(user.name.first ?? "U"))
+                        .foregroundColor(.white)
+                        .fontWeight(.bold)
+                )
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(user.name)
+                    .font(.headline)
+                
+                Text(user.email)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct ErrorView: View {
+    let message: String
+    let onRetry: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.largeTitle)
+                .foregroundColor(.orange)
+            
+            Text("Error")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text(message)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+            
+            Button("Retry") {
+                onRetry()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+
+// === Task with Value Dependencies ===
+struct TaskWithDependenciesView: View {
+    @State private var selectedCategory = "technology"
+    @State private var searchQuery = ""
+    @State private var articles: [Article] = []
+    @State private var isLoading = false
+    
+    struct Article: Identifiable {
+        let id = UUID()
+        let title: String
+        let category: String
+        let content: String
+    }
+    
+    let categories = ["technology", "science", "sports", "health"]
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                // Search and filter controls
+                VStack {
+                    TextField("Search articles...", text: $searchQuery)
+                        .textFieldStyle(.roundedBorder)
+                    
+                    Picker("Category", selection: $selectedCategory) {
+                        ForEach(categories, id: \.self) { category in
+                            Text(category.capitalized).tag(category)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .padding()
+                
+                // Articles list
+                if isLoading {
+                    ProgressView("Loading articles...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    List(articles) { article in
+                        ArticleRowView(article: article)
+                    }
+                }
+            }
+            .navigationTitle("Articles")
+            .task(id: selectedCategory) {
+                // ✅ Task automatically cancels and restarts when selectedCategory changes
+                await loadArticles(category: selectedCategory, query: searchQuery)
+            }
+            .task(id: searchQuery) {
+                // ✅ Task automatically cancels and restarts when searchQuery changes
+                // Add debouncing for search
+                try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 second debounce
+                
+                if !Task.isCancelled {
+                    await loadArticles(category: selectedCategory, query: searchQuery)
+                }
+            }
+        }
+    }
+    
+    private func loadArticles(category: String, query: String) async {
+        isLoading = true
+        
+        do {
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            
+            if !Task.isCancelled {
+                articles = try await fetchArticles(category: category, query: query)
+            }
+        } catch {
+            if !Task.isCancelled {
+                print("Failed to load articles: \(error)")
+                articles = []
+            }
+        }
+        
+        if !Task.isCancelled {
+            isLoading = false
+        }
+    }
+    
+    private func fetchArticles(category: String, query: String) async throws -> [Article] {
+        // Simulate API call with category and search
+        let mockArticles = [
+            Article(title: "SwiftUI Best Practices", category: "technology", content: "..."),
+            Article(title: "iOS 17 Features", category: "technology", content: "..."),
+            Article(title: "Climate Change Research", category: "science", content: "..."),
+            Article(title: "Football World Cup", category: "sports", content: "..."),
+            Article(title: "Healthy Eating Tips", category: "health", content: "...")
+        ]
+        
+        return mockArticles.filter { article in
+            let matchesCategory = article.category == category
+            let matchesQuery = query.isEmpty || article.title.localizedCaseInsensitiveContains(query)
+            return matchesCategory && matchesQuery
+        }
+    }
+}
+
+struct ArticleRowView: View {
+    let article: TaskWithDependenciesView.Article
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(article.title)
+                .font(.headline)
+            
+            Text(article.category.capitalized)
+                .font(.caption)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(Color.blue.opacity(0.2))
+                .cornerRadius(4)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// === Complex Task Management ===
+struct ComplexTaskManagementView: View {
+    @State private var primaryData: [String] = []
+    @State private var secondaryData: [String] = []
+    @State private var isLoadingPrimary = false
+    @State private var isLoadingSecondary = false
+    @State private var refreshTrigger = UUID()
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                // Primary data section
+                Section {
+                    HStack {
+                        Text("Primary Data")
+                            .font(.headline)
+                        
+                        Spacer()
+                        
+                        if isLoadingPrimary {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        }
+                    }
+                    
+                    List(primaryData, id: \.self) { item in
+                        Text(item)
+                    }
+                    .frame(height: 200)
+                }
+                .padding()
+                
+                // Secondary data section
+                Section {
+                    HStack {
+                        Text("Secondary Data")
+                            .font(.headline)
+                        
+                        Spacer()
+                        
+                        if isLoadingSecondary {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        }
+                    }
+                    
+                    List(secondaryData, id: \.self) { item in
+                        Text(item)
+                    }
+                    .frame(height: 200)
+                }
+                .padding()
+                
+                Button("Refresh All") {
+                    refreshTrigger = UUID()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .navigationTitle("Complex Tasks")
+            .task(id: refreshTrigger) {
+                // ✅ Multiple concurrent tasks with automatic cancellation
+                await withTaskGroup(of: Void.self) { group in
+                    group.addTask {
+                        await loadPrimaryData()
+                    }
+                    
+                    group.addTask {
+                        await loadSecondaryData()
+                    }
+                    
+                    // Wait for both tasks to complete or be cancelled
+                    await group.waitForAll()
+                }
+            }
+        }
+    }
+    
+    private func loadPrimaryData() async {
+        isLoadingPrimary = true
+        defer { isLoadingPrimary = false }
+        
+        do {
+            try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+            
+            if !Task.isCancelled {
+                primaryData = (1...5).map { "Primary Item \($0)" }
+            }
+        } catch {
+            if !Task.isCancelled {
+                print("Primary data loading failed: \(error)")
+            }
+        }
+    }
+    
+    private func loadSecondaryData() async {
+        isLoadingSecondary = true
+        defer { isLoadingSecondary = false }
+        
+        do {
+            try await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
+            
+            if !Task.isCancelled {
+                secondaryData = (1...5).map { "Secondary Item \($0)" }
+            }
+        } catch {
+            if !Task.isCancelled {
+                print("Secondary data loading failed: \(error)")
+            }
+        }
+    }
+}
+
+// === Progressive Data Loading ===
+struct ProgressiveLoadingView: View {
+    @State private var items: [DataItem] = []
+    @State private var isLoadingMore = false
+    @State private var hasMoreData = true
+    @State private var loadTrigger = 0
+    
+    struct DataItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let subtitle: String
+    }
+    
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(items) { item in
+                    VStack(alignment: .leading) {
+                        Text(item.title)
+                            .font(.headline)
+                        Text(item.subtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 2)
+                }
+                
+                if hasMoreData {
+                    HStack {
+                        Spacer()
+                        if isLoadingMore {
+                            ProgressView()
+                        } else {
+                            Button("Load More") {
+                                loadTrigger += 1
+                            }
+                        }
+                        Spacer()
+                    }
+                    .task(id: loadTrigger) {
+                        if loadTrigger > 0 {
+                            await loadMoreItems()
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Progressive Loading")
+            .task {
+                // Initial load
+                await loadInitialItems()
+            }
+        }
+    }
+    
+    private func loadInitialItems() async {
+        items = []
+        await loadMoreItems()
+    }
+    
+    private func loadMoreItems() async {
+        guard !isLoadingMore && hasMoreData else { return }
+        
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        
+        do {
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            
+            if !Task.isCancelled {
+                let startIndex = items.count + 1
+                let newItems = (startIndex..<startIndex + 10).map { index in
+                    DataItem(
+                        title: "Item \(index)",
+                        subtitle: "Subtitle for item \(index)"
+                    )
+                }
+                
+                items.append(contentsOf: newItems)
+                
+                // Simulate reaching end of data
+                if items.count >= 50 {
+                    hasMoreData = false
+                }
+            }
+        } catch {
+            if !Task.isCancelled {
+                print("Failed to load more items: \(error)")
+            }
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">⚡ Performance & Cancellation</h2>
+
+      <div class="warning-box">
+        <h5>Task Cancellation والـ Memory Management</h5>
+        <p>أهمية الـ automatic cancellation في منع الـ memory leaks والـ unnecessary work</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === Cancellation Demonstration ===
+struct CancellationDemoView: View {
+    @State private var showOnAppearView = false
+    @State private var showTaskView = false
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 30) {
+                VStack {
+                    Text("Cancellation Comparison")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    
+                    Text("Switch between views to see cancellation behavior")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                
+                VStack(spacing: 15) {
+                    Button("Show onAppear View") {
+                        showOnAppearView = true
+                    }
+                    .buttonStyle(.borderedProminent)
+                    
+                    Button("Show task View") {
+                        showTaskView = true
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("Cancellation Demo")
+            .sheet(isPresented: $showOnAppearView) {
+                OnAppearCancellationView()
+            }
+            .sheet(isPresented: $showTaskView) {
+                TaskCancellationView()
+            }
+        }
+    }
+}
+
+struct OnAppearCancellationView: View {
+    @State private var progress = 0.0
+    @State private var isRunning = false
+    @State private var cancellationToken: DispatchWorkItem?
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Text("onAppear Cancellation")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("Manual cancellation required")
+                    .font(.caption)
+                    .foregroundColor(.orange)
+                
+                ProgressView(value: progress)
+                    .padding()
+                
+                Text("\(Int(progress * 100))%")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                if isRunning {
+                    Text("❌ Will continue running after view dismissal without manual cancellation")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("onAppear Demo")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                startLongRunningOperation()
+            }
+            .onDisappear {
+                // Manual cancellation required
+                print("🔴 onAppear: Manually cancelling operation")
+                cancellationToken?.cancel()
+                cancellationToken = nil
+            }
+        }
+    }
+    
+    private func startLongRunningOperation() {
+        isRunning = true
+        progress = 0.0
+        
+        let workItem = DispatchWorkItem {
+            for i in 0...100 {
+                // Check if cancelled
+                if Thread.current.isCancelled {
+                    print("🔴 onAppear: Operation was cancelled")
+                    return
+                }
+                
+                Thread.sleep(forTimeInterval: 0.05)
+                
+                DispatchQueue.main.async {
+                    self.progress = Double(i) / 100.0
+                    
+                    if i == 100 {
+                        self.isRunning = false
+                        print("🔴 onAppear: Operation completed")
+                    }
+                }
+            }
+        }
+        
+        cancellationToken = workItem
+        DispatchQueue.global(qos: .userInitiated).async(execute: workItem)
+    }
+}
+
+struct TaskCancellationView: View {
+    @State private var progress = 0.0
+    @State private var isRunning = false
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Text("task Cancellation")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("Automatic cancellation")
+                    .font(.caption)
+                    .foregroundColor(.green)
+                
+                ProgressView(value: progress)
+                    .padding()
+                
+                Text("\(Int(progress * 100))%")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                if isRunning {
+                    Text("✅ Will automatically cancel when view disappears")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                        .multilineTextAlignment(.center)
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("task Demo")
+            .navigationBarTitleDisplayMode(.inline)
+            .task {
+                await startLongRunningOperation()
+            }
+        }
+    }
+    
+    private func startLongRunningOperation() async {
+        isRunning = true
+        progress = 0.0
+        
+        print("🟢 task: Starting operation")
+        
+        for i in 0...100 {
+            // Check if task is cancelled
+            if Task.isCancelled {
+                print("🟢 task: Operation was automatically cancelled")
+                return
+            }
+            
+            try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
+            
+            progress = Double(i) / 100.0
+            
+            if i == 100 {
+                isRunning = false
+                print("🟢 task: Operation completed")
+            }
+        }
+    }
+}
+
+// === Memory Leak Prevention ===
+struct MemoryLeakPreventionView: View {
+    @State private var selectedDemo: DemoType = .onAppear
+    
+    enum DemoType: String, CaseIterable {
+        case onAppear = "onAppear (Potential Leaks)"
+        case task = "task (Leak-Free)"
+    }
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                Picker("Demo Type", selection: $selectedDemo) {
+                    ForEach(DemoType.allCases, id: \.self) { type in
+                        Text(type.rawValue).tag(type)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding()
+                
+                switch selectedDemo {
+                case .onAppear:
+                    LeakyOnAppearView()
+                case .task:
+                    LeakFreeTaskView()
+                }
+            }
+            .navigationTitle("Memory Leak Demo")
+        }
+    }
+}
+
+struct LeakyOnAppearView: View {
+    @State private var data: [String] = []
+    @State private var timer: Timer?
+    
+    var body: some View {
+        VStack {
+            Text("⚠️ Potential Memory Leak")
+                .font(.headline)
+                .foregroundColor(.orange)
+            
+            Text("Timer continues running after view disappears")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            List(data, id: \.self) { item in
+                Text(item)
+            }
+        }
+        .onAppear {
+            startTimer()
+        }
+        // Missing onDisappear - memory leak!
+    }
+    
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            data.append("Item \(data.count + 1) - \(Date())")
+            print("🔴 Timer still running: \(data.count) items")
+        }
+    }
+}
+
+struct LeakFreeTaskView: View {
+    @State private var data: [String] = []
+    
+    var body: some View {
+        VStack {
+            Text("✅ Memory Leak Free")
+                .font(.headline)
+                .foregroundColor(.green)
+            
+            Text("Task automatically cancels when view disappears")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            List(data, id: \.self) { item in
+                Text(item)
+            }
+        }
+        .task {
+            await startPeriodicUpdates()
+        }
+    }
+    
+    private func startPeriodicUpdates() async {
+        var counter = 0
+        
+        while !Task.isCancelled {
+            counter += 1
+            data.append("Item \(counter) - \(Date())")
+            print("🟢 Task running: \(counter) items")
+            
+            try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+        }
+        
+        print("🟢 Task was cancelled automatically")
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Best Practices & Guidelines</h2>
+
+      <div class="highlight-box">
+        <h4>متى تستخدم إيه؟</h4>
+        <div>
+          <p><strong>استخدم onAppear لـ:</strong></p>
+          <ul>
+            <li>Quick synchronous setup operations</li>
+            <li>Analytics tracking</li>
+            <li>Simple state initialization</li>
+            <li>Compatibility مع iOS 13-14</li>
+          </ul>
+          
+          <p><strong>استخدم task لـ:</strong></p>
+          <ul>
+            <li>Async data loading من network أو database</li>
+            <li>Long-running operations اللي محتاجة automatic cancellation</li>
+            <li>Swift Concurrency patterns (async/await)</li>
+            <li>Preventing memory leaks في الـ async operations</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>onAppear vs task modifier:</strong>
+        </p>
+        <ul>
+          <li><strong>onAppear:</strong> synchronous، manual async handling، manual cancellation</li>
+          <li><strong>task:</strong> native async support، automatic cancellation، cleaner code</li>
+          <li><strong>Cancellation:</strong> task بيوفر automatic cancellation لما الـ view يختفي</li>
+          <li><strong>Memory Safety:</strong> task بيمنع memory leaks من الـ long-running operations</li>
+          <li><strong>Dependencies:</strong> task(id:) بيسمح بـ reactive reloading</li>
+          <li><strong>Modern Practice:</strong> task هو الـ recommended approach لـ iOS 15+</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

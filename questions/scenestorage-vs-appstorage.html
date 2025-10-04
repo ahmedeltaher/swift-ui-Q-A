@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@SceneStorage vs @AppStorage in SwiftUI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
+      .comparison-table th,
+      .comparison-table td {
+        padding: 0.75rem;
+        text-align: center;
+        border: 1px solid #dee2e6;
+      }
+      .comparison-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+      }
+      .comparison-table .feature {
+        text-align: right;
+        font-weight: 500;
+      }
+      .text-right {
+        text-align: right;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        Explain the role of @SceneStorage vs @AppStorage
+      </h1>
+
+      <div class="highlight-box">
+        <h4>💾 الفكرة الأساسية</h4>
+        <p>
+          <strong>@SceneStorage</strong> بيحفظ data خاص بكل scene منفصل (لو عندك multiple windows)، 
+          بينما <strong>@AppStorage</strong> بيحفظ data على مستوى الـ app كله. ده مهم جداً للـ iPadOS وmacOS apps 
+          اللي بتدعم multiple windows.
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        الفرق بين @SceneStorage و @AppStorage مش واضح للكثير من الناس، لكن ده مهم جداً 
+        لما تشتغل على apps بتدعم multiple windows. @SceneStorage بيخلي كل window 
+        يحتفظ بـ state منفصل، بينما @AppStorage بيكون shared بين كل الـ app.
+      </p>
+
+      <h2 class="section-title">📊 Quick Comparison</h2>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th class="feature">الخاصية</th>
+            <th>@AppStorage</th>
+            <th>@SceneStorage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feature">النطاق (Scope)</td>
+            <td>App-wide</td>
+            <td>Per Scene</td>
+          </tr>
+          <tr>
+            <td class="feature">التخزين</td>
+            <td>UserDefaults</td>
+            <td>Scene State</td>
+          </tr>
+          <tr>
+            <td class="feature">المشاركة</td>
+            <td>Shared across all scenes</td>
+            <td>Isolated per scene</td>
+          </tr>
+          <tr>
+            <td class="feature">الدوام (Persistence)</td>
+            <td>App launch to launch</td>
+            <td>Scene session lifecycle</td>
+          </tr>
+          <tr>
+            <td class="feature">الاستخدام الأمثل</td>
+            <td>User preferences, settings</td>
+            <td>Navigation state, temp data</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-title">🎯 @AppStorage Implementation</h2>
+
+      <div class="success-box">
+        <h5>1. App-wide Settings and Preferences</h5>
+        <p>استخدام @AppStorage للإعدادات المشتركة عبر كل الـ app</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === AppStorage Examples ===
+struct AppStorageExamplesView: View {
+    // Basic AppStorage usage
+    @AppStorage("username") private var username = ""
+    @AppStorage("isDarkMode") private var isDarkMode = false
+    @AppStorage("fontSize") private var fontSize = 16.0
+    @AppStorage("isFirstLaunch") private var isFirstLaunch = true
+    
+    // Using custom UserDefaults suite
+    @AppStorage("premiumFeatureEnabled", store: UserDefaults(suiteName: "group.myapp.settings"))
+    private var premiumFeatureEnabled = false
+    
+    // Complex data with Codable
+    @AppStorage("userPreferences") private var userPreferencesData = Data()
+    
+    var userPreferences: UserPreferences {
+        get {
+            if let decoded = try? JSONDecoder().decode(UserPreferences.self, from: userPreferencesData) {
+                return decoded
+            }
+            return UserPreferences()
+        }
+        set {
+            if let encoded = try? JSONEncoder().encode(newValue) {
+                userPreferencesData = encoded
+            }
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section("Basic Settings") {
+                    TextField("Username", text: $username)
+                    
+                    Toggle("Dark Mode", isOn: $isDarkMode)
+                    
+                    HStack {
+                        Text("Font Size")
+                        Spacer()
+                        Slider(value: $fontSize, in: 12...24, step: 1)
+                        Text("\(Int(fontSize))")
+                            .frame(width: 30)
+                    }
+                }
+                
+                Section("App State") {
+                    HStack {
+                        Text("First Launch")
+                        Spacer()
+                        Text(isFirstLaunch ? "Yes" : "No")
+                            .foregroundColor(isFirstLaunch ? .green : .secondary)
+                    }
+                    
+                    if isFirstLaunch {
+                        Button("Complete Onboarding") {
+                            isFirstLaunch = false
+                        }
+                        .foregroundColor(.blue)
+                    }
+                }
+                
+                Section("Premium Features") {
+                    Toggle("Premium Features", isOn: $premiumFeatureEnabled)
+                }
+                
+                Section("Complex Preferences") {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Notification Settings")
+                            .font(.headline)
+                        
+                        Toggle("Email Notifications", isOn: Binding(
+                            get: { userPreferences.emailNotifications },
+                            set: { 
+                                var prefs = userPreferences
+                                prefs.emailNotifications = $0
+                                userPreferences = prefs
+                            }
+                        ))
+                        
+                        Toggle("Push Notifications", isOn: Binding(
+                            get: { userPreferences.pushNotifications },
+                            set: { 
+                                var prefs = userPreferences
+                                prefs.pushNotifications = $0
+                                userPreferences = prefs
+                            }
+                        ))
+                        
+                        Picker("Theme", selection: Binding(
+                            get: { userPreferences.theme },
+                            set: { 
+                                var prefs = userPreferences
+                                prefs.theme = $0
+                                userPreferences = prefs
+                            }
+                        )) {
+                            ForEach(AppTheme.allCases, id: \.self) { theme in
+                                Text(theme.displayName).tag(theme)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                }
+            }
+            .navigationTitle("App Settings")
+            .preferredColorScheme(isDarkMode ? .dark : .light)
+        }
+    }
+}
+
+struct UserPreferences: Codable {
+    var emailNotifications = true
+    var pushNotifications = true
+    var theme: AppTheme = .system
+}
+
+enum AppTheme: String, CaseIterable, Codable {
+    case light = "light"
+    case dark = "dark"
+    case system = "system"
+    
+    var displayName: String {
+        switch self {
+        case .light: return "Light"
+        case .dark: return "Dark"
+        case .system: return "System"
+        }
+    }
+}
+
+// === App-wide Settings Manager ===
+class AppSettingsManager: ObservableObject {
+    // Using AppStorage with ObservableObject for complex scenarios
+    @AppStorage("apiBaseURL") var apiBaseURL = "https://api.myapp.com"
+    @AppStorage("enableDebugMode") var enableDebugMode = false
+    @AppStorage("cacheTimeout") var cacheTimeout = 3600.0 // seconds
+    @AppStorage("maxRetryAttempts") var maxRetryAttempts = 3
+    
+    // Computed properties based on settings
+    var isDebugBuild: Bool {
+        #if DEBUG
+        return true
+        #else
+        return false
+        #endif
+    }
+    
+    var shouldShowDebugInfo: Bool {
+        return isDebugBuild || enableDebugMode
+    }
+    
+    func resetToDefaults() {
+        apiBaseURL = "https://api.myapp.com"
+        enableDebugMode = false
+        cacheTimeout = 3600.0
+        maxRetryAttempts = 3
+    }
+}
+
+struct AppSettingsView: View {
+    @StateObject private var settingsManager = AppSettingsManager()
+    
+    var body: some View {
+        Form {
+            Section("Network Settings") {
+                TextField("API Base URL", text: $settingsManager.apiBaseURL)
+                    .keyboardType(.URL)
+                
+                HStack {
+                    Text("Cache Timeout")
+                    Spacer()
+                    Text("\(Int(settingsManager.cacheTimeout))s")
+                }
+                
+                Slider(
+                    value: $settingsManager.cacheTimeout,
+                    in: 300...7200,
+                    step: 300
+                )
+                
+                Stepper(
+                    "Max Retry Attempts: \(settingsManager.maxRetryAttempts)",
+                    value: $settingsManager.maxRetryAttempts,
+                    in: 1...10
+                )
+            }
+            
+            Section("Debug Settings") {
+                Toggle("Enable Debug Mode", isOn: $settingsManager.enableDebugMode)
+                
+                if settingsManager.shouldShowDebugInfo {
+                    Text("Debug mode is active")
+                        .foregroundColor(.orange)
+                }
+            }
+            
+            Section {
+                Button("Reset to Defaults") {
+                    settingsManager.resetToDefaults()
+                }
+                .foregroundColor(.red)
+            }
+        }
+        .navigationTitle("App Configuration")
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🪟 @SceneStorage Implementation</h2>
+
+      <div class="concept-box">
+        <h5>Scene-specific State Management</h5>
+        <p>استخدام @SceneStorage للـ state الخاص بكل window منفصل</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === SceneStorage Examples ===
+struct SceneStorageExamplesView: View {
+    // Scene-specific navigation state
+    @SceneStorage("selectedTab") private var selectedTab = 0
+    @SceneStorage("searchText") private var searchText = ""
+    @SceneStorage("isDetailViewPresented") private var isDetailViewPresented = false
+    @SceneStorage("scrollPosition") private var scrollPosition = 0.0
+    
+    // Scene-specific user selections
+    @SceneStorage("selectedCategory") private var selectedCategory = "All"
+    @SceneStorage("sortOption") private var sortOption = "name"
+    @SceneStorage("showOnlyFavorites") private var showOnlyFavorites = false
+    
+    // Temporary data that should be per-scene
+    @SceneStorage("draftContent") private var draftContent = ""
+    @SceneStorage("tempCounter") private var tempCounter = 0
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            // Tab 1: Main Content
+            NavigationView {
+                VStack {
+                    SearchBar(text: $searchText)
+                    
+                    FilterControls(
+                        selectedCategory: $selectedCategory,
+                        sortOption: $sortOption,
+                        showOnlyFavorites: $showOnlyFavorites
+                    )
+                    
+                    ContentListView(
+                        searchText: searchText,
+                        selectedCategory: selectedCategory,
+                        sortOption: sortOption,
+                        showOnlyFavorites: showOnlyFavorites,
+                        scrollPosition: $scrollPosition
+                    )
+                }
+                .navigationTitle("Content")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Show Detail") {
+                            isDetailViewPresented = true
+                        }
+                    }
+                }
+                .sheet(isPresented: $isDetailViewPresented) {
+                    DetailView()
+                }
+            }
+            .tabItem {
+                Image(systemName: "list.bullet")
+                Text("Content")
+            }
+            .tag(0)
+            
+            // Tab 2: Draft Editor
+            DraftEditorView(draftContent: $draftContent)
+                .tabItem {
+                    Image(systemName: "doc.text")
+                    Text("Draft")
+                }
+                .tag(1)
+            
+            // Tab 3: Counter (temporary state)
+            CounterView(counter: $tempCounter)
+                .tabItem {
+                    Image(systemName: "number")
+                    Text("Counter")
+                }
+                .tag(2)
+        }
+    }
+}
+
+struct SearchBar: View {
+    @Binding var text: String
+    
+    var body: some View {
+        TextField("Search...", text: $text)
+            .textFieldStyle(.roundedBorder)
+            .padding(.horizontal)
+    }
+}
+
+struct FilterControls: View {
+    @Binding var selectedCategory: String
+    @Binding var sortOption: String
+    @Binding var showOnlyFavorites: Bool
+    
+    let categories = ["All", "Work", "Personal", "Shopping"]
+    let sortOptions = ["name", "date", "priority"]
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Picker("Category", selection: $selectedCategory) {
+                    ForEach(categories, id: \.self) { category in
+                        Text(category).tag(category)
+                    }
+                }
+                .pickerStyle(.menu)
+                
+                Spacer()
+                
+                Picker("Sort", selection: $sortOption) {
+                    ForEach(sortOptions, id: \.self) { option in
+                        Text(option.capitalized).tag(option)
+                    }
+                }
+                .pickerStyle(.menu)
+            }
+            
+            Toggle("Favorites Only", isOn: $showOnlyFavorites)
+        }
+        .padding(.horizontal)
+    }
+}
+
+struct ContentListView: View {
+    let searchText: String
+    let selectedCategory: String
+    let sortOption: String
+    let showOnlyFavorites: Bool
+    @Binding var scrollPosition: Double
+    
+    private let items = (1...50).map { "Item \($0)" }
+    
+    var filteredItems: [String] {
+        items.filter { item in
+            let matchesSearch = searchText.isEmpty || item.contains(searchText)
+            let matchesCategory = selectedCategory == "All" || item.contains(selectedCategory)
+            let matchesFavorites = !showOnlyFavorites || Int.random(in: 1...10) > 5
+            
+            return matchesSearch && matchesCategory && matchesFavorites
+        }
+    }
+    
+    var body: some View {
+        ScrollViewReader { proxy in
+            List(filteredItems, id: \.self) { item in
+                Text(item)
+                    .padding(.vertical, 4)
+            }
+            .onAppear {
+                // Restore scroll position (simplified)
+                if scrollPosition > 0 {
+                    proxy.scrollTo(filteredItems.first, anchor: .top)
+                }
+            }
+        }
+    }
+}
+
+struct DraftEditorView: View {
+    @Binding var draftContent: String
+    @State private var wordCount = 0
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                TextEditor(text: $draftContent)
+                    .padding()
+                    .onChange(of: draftContent) { content in
+                        wordCount = content.split(separator: " ").count
+                    }
+                
+                HStack {
+                    Text("Words: \(wordCount)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Button("Clear") {
+                        draftContent = ""
+                    }
+                    .disabled(draftContent.isEmpty)
+                }
+                .padding()
+            }
+            .navigationTitle("Draft Editor")
+            .onAppear {
+                wordCount = draftContent.split(separator: " ").count
+            }
+        }
+    }
+}
+
+struct CounterView: View {
+    @Binding var counter: Int
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 30) {
+                Text("\(counter)")
+                    .font(.system(size: 72, weight: .bold, design: .rounded))
+                    .foregroundColor(.blue)
+                
+                HStack(spacing: 20) {
+                    Button("Decrease") {
+                        counter -= 1
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Button("Reset") {
+                        counter = 0
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Button("Increase") {
+                        counter += 1
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+            .navigationTitle("Scene Counter")
+        }
+    }
+}
+
+struct DetailView: View {
+    @Environment(\.dismiss) private var dismiss
+    // This would typically have its own SceneStorage for detail-specific state
+    @SceneStorage("detailViewMode") private var viewMode = "overview"
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                Picker("View Mode", selection: $viewMode) {
+                    Text("Overview").tag("overview")
+                    Text("Details").tag("details")
+                    Text("Settings").tag("settings")
+                }
+                .pickerStyle(.segmented)
+                .padding()
+                
+                Group {
+                    switch viewMode {
+                    case "overview":
+                        Text("This is the overview content")
+                    case "details":
+                        Text("This is the detailed content")
+                    case "settings":
+                        Text("This is the settings content")
+                    default:
+                        Text("Unknown view mode")
+                    }
+                }
+                .font(.title2)
+                .padding()
+                
+                Spacer()
+            }
+            .navigationTitle("Detail View")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🔄 Multi-Scene Architecture</h2>
+
+      <div class="warning-box">
+        <h5>إدارة Multiple Windows والـ Scene Lifecycle</h5>
+        <p>كيفية التعامل مع multiple scenes وmaintaining separate state</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === Multi-Scene App Example ===
+@main
+struct MultiSceneApp: App {
+    // App-wide settings shared across all scenes
+    @AppStorage("globalTheme") private var globalTheme = "system"
+    @AppStorage("isFirstLaunch") private var isFirstLaunch = true
+    
+    var body: some Scene {
+        // Primary scene
+        WindowGroup {
+            MainContentView()
+                .onAppear {
+                    if isFirstLaunch {
+                        print("🚀 First app launch")
+                        isFirstLaunch = false
+                    }
+                }
+        }
+        
+        // Secondary scene for document editing (iPadOS/macOS)
+        #if os(iOS) || os(macOS)
+        WindowGroup("Document Editor") {
+            DocumentEditorView()
+        }
+        .handlesExternalEvents(matching: ["document-editor"])
+        #endif
+        
+        // Settings scene
+        #if os(macOS)
+        Settings {
+            MacOSSettingsView()
+        }
+        #endif
+    }
+}
+
+struct MainContentView: View {
+    // App-wide data
+    @AppStorage("userName") private var userName = ""
+    @AppStorage("userPreferences") private var userPreferencesData = Data()
+    
+    // Scene-specific state
+    @SceneStorage("mainTabSelection") private var selectedTab = 0
+    @SceneStorage("navigationPath") private var navigationPathData = Data()
+    @SceneStorage("mainViewState") private var mainViewState = "normal"
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            // Home Tab
+            NavigationStack {
+                HomeView()
+            }
+            .tabItem {
+                Image(systemName: "house")
+                Text("Home")
+            }
+            .tag(0)
+            
+            // Documents Tab
+            DocumentsListView()
+                .tabItem {
+                    Image(systemName: "doc.text")
+                    Text("Documents")
+                }
+                .tag(1)
+            
+            // Settings Tab
+            UserSettingsView()
+                .tabItem {
+                    Image(systemName: "gear")
+                    Text("Settings")
+                }
+                .tag(2)
+        }
+        .onOpenURL { url in
+            handleDeepLink(url)
+        }
+    }
+    
+    private func handleDeepLink(_ url: URL) {
+        // Handle deep links while preserving scene-specific state
+        if url.pathComponents.contains("documents") {
+            selectedTab = 1
+        } else if url.pathComponents.contains("settings") {
+            selectedTab = 2
+        }
+    }
+}
+
+struct HomeView: View {
+    @SceneStorage("homeScrollPosition") private var scrollPosition = 0
+    @SceneStorage("homeFilterOption") private var filterOption = "all"
+    @SceneStorage("homeSearchQuery") private var searchQuery = ""
+    
+    var body: some View {
+        VStack {
+            // Search and filter controls
+            SearchAndFilterView(
+                searchQuery: $searchQuery,
+                filterOption: $filterOption
+            )
+            
+            // Content list with preserved scroll position
+            ContentScrollView(
+                searchQuery: searchQuery,
+                filterOption: filterOption,
+                scrollPosition: $scrollPosition
+            )
+        }
+        .navigationTitle("Home")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("New Document") {
+                    openDocumentEditor()
+                }
+            }
+        }
+    }
+    
+    private func openDocumentEditor() {
+        // Open new scene for document editing
+        #if os(iOS)
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            let userActivity = NSUserActivity(activityType: "com.myapp.document-editor")
+            UIApplication.shared.requestSceneSessionActivation(
+                nil,
+                userActivity: userActivity,
+                options: nil
+            )
+        }
+        #endif
+    }
+}
+
+struct SearchAndFilterView: View {
+    @Binding var searchQuery: String
+    @Binding var filterOption: String
+    
+    let filterOptions = ["all", "recent", "favorites", "archived"]
+    
+    var body: some View {
+        VStack {
+            TextField("Search...", text: $searchQuery)
+                .textFieldStyle(.roundedBorder)
+            
+            Picker("Filter", selection: $filterOption) {
+                ForEach(filterOptions, id: \.self) { option in
+                    Text(option.capitalized).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+        .padding(.horizontal)
+    }
+}
+
+struct ContentScrollView: View {
+    let searchQuery: String
+    let filterOption: String
+    @Binding var scrollPosition: Int
+    
+    private let items = (1...100).map { "Content Item \($0)" }
+    
+    var filteredItems: [String] {
+        items.filter { item in
+            let matchesSearch = searchQuery.isEmpty || item.localizedCaseInsensitiveContains(searchQuery)
+            let matchesFilter = filterOption == "all" || item.contains(filterOption)
+            return matchesSearch && matchesFilter
+        }
+    }
+    
+    var body: some View {
+        ScrollViewReader { proxy in
+            List(Array(filteredItems.enumerated()), id: \.offset) { index, item in
+                HStack {
+                    Text(item)
+                    Spacer()
+                    Text("#\(index)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.vertical, 2)
+            }
+            .onAppear {
+                // Restore scroll position if valid
+                if scrollPosition > 0 && scrollPosition < filteredItems.count {
+                    proxy.scrollTo(scrollPosition, anchor: .top)
+                }
+            }
+            .onDisappear {
+                // This is simplified - in real app you'd track actual scroll position
+                // scrollPosition = currentVisibleIndex
+            }
+        }
+    }
+}
+
+struct DocumentsListView: View {
+    @SceneStorage("documentsViewMode") private var viewMode = "list"
+    @SceneStorage("documentsSelection") private var selectedDocumentID = ""
+    @SceneStorage("documentsSortOption") private var sortOption = "date"
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                // View controls
+                HStack {
+                    Picker("View Mode", selection: $viewMode) {
+                        Text("List").tag("list")
+                        Text("Grid").tag("grid")
+                    }
+                    .pickerStyle(.segmented)
+                    
+                    Spacer()
+                    
+                    Picker("Sort", selection: $sortOption) {
+                        Text("Date").tag("date")
+                        Text("Name").tag("name")
+                        Text("Size").tag("size")
+                    }
+                    .pickerStyle(.menu)
+                }
+                .padding()
+                
+                // Documents view
+                if viewMode == "list" {
+                    DocumentsListViewContent(
+                        sortOption: sortOption,
+                        selectedID: $selectedDocumentID
+                    )
+                } else {
+                    DocumentsGridViewContent(
+                        sortOption: sortOption,
+                        selectedID: $selectedDocumentID
+                    )
+                }
+            }
+            .navigationTitle("Documents")
+        }
+    }
+}
+
+struct DocumentsListViewContent: View {
+    let sortOption: String
+    @Binding var selectedID: String
+    
+    private let documents = [
+        ("doc1", "Report.pdf", "2024-01-15"),
+        ("doc2", "Presentation.pptx", "2024-01-14"),
+        ("doc3", "Spreadsheet.xlsx", "2024-01-13")
+    ]
+    
+    var body: some View {
+        List(documents, id: \.0) { document in
+            HStack {
+                Image(systemName: "doc.text")
+                    .foregroundColor(.blue)
+                
+                VStack(alignment: .leading) {
+                    Text(document.1)
+                        .font(.headline)
+                    Text(document.2)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                if document.0 == selectedID {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.blue)
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                selectedID = document.0
+            }
+        }
+    }
+}
+
+struct DocumentsGridViewContent: View {
+    let sortOption: String
+    @Binding var selectedID: String
+    
+    private let documents = [
+        ("doc1", "Report.pdf"),
+        ("doc2", "Presentation.pptx"),
+        ("doc3", "Spreadsheet.xlsx")
+    ]
+    
+    var body: some View {
+        LazyVGrid(columns: [
+            GridItem(.flexible()),
+            GridItem(.flexible()),
+            GridItem(.flexible())
+        ]) {
+            ForEach(documents, id: \.0) { document in
+                VStack {
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 40))
+                        .foregroundColor(.blue)
+                    
+                    Text(document.1)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                }
+                .padding()
+                .background(selectedID == document.0 ? Color.blue.opacity(0.2) : Color.clear)
+                .cornerRadius(8)
+                .onTapGesture {
+                    selectedID = document.0
+                }
+            }
+        }
+        .padding()
+    }
+}
+
+struct DocumentEditorView: View {
+    // Scene-specific editor state
+    @SceneStorage("editorContent") private var editorContent = ""
+    @SceneStorage("editorMode") private var editorMode = "edit"
+    @SceneStorage("documentTitle") private var documentTitle = "Untitled Document"
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                // Editor toolbar
+                HStack {
+                    TextField("Document Title", text: $documentTitle)
+                        .font(.headline)
+                        .textFieldStyle(.roundedBorder)
+                    
+                    Spacer()
+                    
+                    Picker("Mode", selection: $editorMode) {
+                        Text("Edit").tag("edit")
+                        Text("Preview").tag("preview")
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .padding()
+                
+                // Editor content
+                if editorMode == "edit" {
+                    TextEditor(text: $editorContent)
+                        .font(.system(.body, design: .monospaced))
+                        .padding()
+                } else {
+                    ScrollView {
+                        Text(editorContent)
+                            .padding()
+                    }
+                }
+            }
+            .navigationTitle("Document Editor")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+struct UserSettingsView: View {
+    // App-wide settings
+    @AppStorage("notifications") private var notificationsEnabled = true
+    @AppStorage("syncEnabled") private var syncEnabled = true
+    
+    // Scene-specific settings view state
+    @SceneStorage("settingsSection") private var selectedSection = "general"
+    
+    var body: some View {
+        NavigationView {
+            List {
+                Section("App Settings") {
+                    Toggle("Notifications", isOn: $notificationsEnabled)
+                    Toggle("Sync", isOn: $syncEnabled)
+                }
+                
+                Section("Scene Settings") {
+                    Text("Selected Section: \(selectedSection)")
+                }
+            }
+            .navigationTitle("Settings")
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Best Practices & Guidelines</h2>
+
+      <div class="highlight-box">
+        <h4>متى تستخدم إيه؟</h4>
+        <div class="text-right">
+          <p><strong>استخدم @AppStorage لـ:</strong></p>
+          <ul>
+            <li>User preferences والـ app settings</li>
+            <li>Authentication tokens</li>
+            <li>Global app configuration</li>
+            <li>الـ data اللي محتاج يكون shared across all windows</li>
+          </ul>
+          
+          <p><strong>استخدم @SceneStorage لـ:</strong></p>
+          <ul>
+            <li>Navigation state (selected tabs, navigation paths)</li>
+            <li>Search queries وfilter selections</li>
+            <li>Temporary edit states (drafts, form data)</li>
+            <li>Window-specific UI state</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>@SceneStorage vs @AppStorage:</strong>
+        </p>
+        <ul>
+          <li><strong>@AppStorage:</strong> app-wide settings مخزنة في UserDefaults</li>
+          <li><strong>@SceneStorage:</strong> scene-specific state مربوط بـ window lifecycle</li>
+          <li><strong>Multi-Window Apps:</strong> @SceneStorage ضروري للـ independent window states</li>
+          <li><strong>Data Persistence:</strong> @AppStorage دائم، @SceneStorage مؤقت</li>
+          <li><strong>Performance:</strong> كلاهما optimized للـ automatic UI updates</li>
+          <li><strong>Platform Support:</strong> @SceneStorage مهم جداً للـ iPadOS وmacOS</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

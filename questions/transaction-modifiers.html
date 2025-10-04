@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction and TransactionModifiers in SwiftUI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .transaction-flow {
+        background: #e8f5e8;
+        border: 2px solid #28a745;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+      .modifier-chain {
+        background: #f0f4ff;
+        border: 2px solid #6366f1;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        How do Transaction and TransactionModifiers work in SwiftUI?
+      </h1>
+
+      <div class="highlight-box">
+        <h4>⚡ الفكرة الأساسية</h4>
+        <p>
+          <strong>Transaction</strong> هو الـ container اللي بيحمل معلومات الـ animation state changes في SwiftUI. 
+          <strong>TransactionModifiers</strong> بيسمحولك تعدل في الـ transaction قبل ما يوصل للـ child views، 
+          وده مفيد لتخصيص الـ animations أو منع animations في بعض الحالات.
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        كل مرة تحصل state change في SwiftUI، بيتم إنشاء Transaction object اللي بيحتوي على 
+        animation details زي الـ duration والـ timing curve. TransactionModifiers بتخليك تتحكم 
+        في الـ transaction ده قبل ما يوصل للـ views التانية، فتقدر تغير الـ animation أو حتى تمنعها خالص.
+      </p>
+
+      <h2 class="section-title">🔄 Transaction Basics</h2>
+
+      <div class="transaction-flow">
+        <h5>📊 Transaction Flow</h5>
+        <p>State Change → Transaction Creation → Modifier Chain → View Update → Animation</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === Understanding Transaction Structure ===
+struct TransactionBasicsView: View {
+    @State private var isExpanded = false
+    @State private var currentTransaction: Transaction?
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            // Basic transaction info display
+            VStack {
+                Text("Transaction Monitor")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                if let transaction = currentTransaction {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Animation: \(transaction.animation?.description ?? "None")")
+                        Text("Disabled: \(transaction.disablesAnimations ? "Yes" : "No")")
+                        Text("Continuous: \(transaction.isContinuous ? "Yes" : "No")")
+                    }
+                    .padding()
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(8)
+                } else {
+                    Text("No active transaction")
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            // Animated view that responds to transactions
+            RoundedRectangle(cornerRadius: 20)
+                .fill(isExpanded ? Color.green : Color.blue)
+                .frame(
+                    width: isExpanded ? 200 : 100,
+                    height: isExpanded ? 200 : 100
+                )
+                .overlay(
+                    Text(isExpanded ? "Expanded" : "Compact")
+                        .foregroundColor(.white)
+                        .fontWeight(.bold)
+                )
+            
+            // Controls
+            VStack(spacing: 15) {
+                Button("Toggle with Default Animation") {
+                    withAnimation {
+                        isExpanded.toggle()
+                    }
+                }
+                
+                Button("Toggle with Custom Animation") {
+                    withAnimation(.spring(duration: 2, bounce: 0.3)) {
+                        isExpanded.toggle()
+                    }
+                }
+                
+                Button("Toggle without Animation") {
+                    // No withAnimation wrapper
+                    isExpanded.toggle()
+                }
+            }
+        }
+        .padding()
+        // ✅ Monitor transaction changes
+        .transaction { transaction in
+            currentTransaction = transaction
+            print("📊 Transaction: \(transaction)")
+        }
+    }
+}
+
+// === Custom Transaction Modifier ===
+struct CustomTransactionModifier: ViewModifier {
+    let condition: Bool
+    let customAnimation: Animation?
+    
+    func body(content: Content) -> some View {
+        content
+            .transaction { transaction in
+                if condition {
+                    // Override the animation
+                    transaction.animation = customAnimation
+                    print("🔄 Modified transaction animation")
+                } else {
+                    print("🔄 Transaction passed through unchanged")
+                }
+            }
+    }
+}
+
+extension View {
+    func customTransaction(when condition: Bool, animation: Animation?) -> some View {
+        modifier(CustomTransactionModifier(condition: condition, customAnimation: animation))
+    }
+}
+
+// === Transaction Inheritance Demo ===
+struct TransactionInheritanceView: View {
+    @State private var triggerAnimation = false
+    
+    var body: some View {
+        VStack(spacing: 40) {
+            Text("Transaction Inheritance")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            // Parent animation affects all children
+            VStack(spacing: 20) {
+                ParentView(isAnimated: triggerAnimation)
+            }
+            .transaction { transaction in
+                print("🎯 Root transaction: \(transaction.animation?.description ?? "None")")
+            }
+            
+            Button("Trigger Animation") {
+                withAnimation(.easeInOut(duration: 1.5)) {
+                    triggerAnimation.toggle()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+
+struct ParentView: View {
+    let isAnimated: Bool
+    
+    var body: some View {
+        VStack(spacing: 15) {
+            Text("Parent View")
+                .font(.headline)
+                .padding()
+                .background(isAnimated ? Color.orange : Color.gray)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+                .transaction { transaction in
+                    print("👨‍👦 Parent transaction: \(transaction.animation?.description ?? "None")")
+                }
+            
+            HStack(spacing: 15) {
+                ChildView(isAnimated: isAnimated, id: "Child 1")
+                ChildView(isAnimated: isAnimated, id: "Child 2")
+            }
+        }
+        .padding()
+        .background(Color.blue.opacity(0.2))
+        .cornerRadius(12)
+    }
+}
+
+struct ChildView: View {
+    let isAnimated: Bool
+    let id: String
+    
+    var body: some View {
+        VStack {
+            Text(id)
+                .font(.caption)
+                .fontWeight(.bold)
+            
+            Circle()
+                .fill(isAnimated ? Color.red : Color.blue)
+                .frame(width: isAnimated ? 50 : 30, height: isAnimated ? 50 : 30)
+                .transaction { transaction in
+                    print("👶 \(id) transaction: \(transaction.animation?.description ?? "None")")
+                }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(8)
+    }
+}
+
+// === Transaction Debugging Helper ===
+struct TransactionDebugger: ViewModifier {
+    let label: String
+    
+    func body(content: Content) -> some View {
+        content
+            .transaction { transaction in
+                print("🐛 [\(label)] Transaction Debug:")
+                print("   Animation: \(transaction.animation?.description ?? "None")")
+                print("   Disabled: \(transaction.disablesAnimations)")
+                print("   Continuous: \(transaction.isContinuous)")
+                print("   ----")
+            }
+    }
+}
+
+extension View {
+    func debugTransaction(_ label: String) -> some View {
+        modifier(TransactionDebugger(label: label))
+    }
+}
+
+// === Understanding Transaction Timing ===
+struct TransactionTimingView: View {
+    @State private var progress: Double = 0
+    @State private var isRunning = false
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("Transaction Timing")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            // Progress indicator
+            VStack {
+                ProgressView(value: progress)
+                    .progressViewStyle(LinearProgressViewStyle())
+                    .scaleEffect(y: 4)
+                
+                Text("\(Int(progress * 100))%")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.top)
+            }
+            .debugTransaction("ProgressView")
+            
+            // Control buttons
+            HStack(spacing: 20) {
+                Button("Fast Animation") {
+                    startAnimation(.easeInOut(duration: 0.5))
+                }
+                
+                Button("Medium Animation") {
+                    startAnimation(.easeInOut(duration: 2.0))
+                }
+                
+                Button("Slow Animation") {
+                    startAnimation(.easeInOut(duration: 5.0))
+                }
+            }
+            
+            Button("Reset") {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    progress = 0
+                    isRunning = false
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+    
+    private func startAnimation(_ animation: Animation) {
+        withAnimation(animation) {
+            progress = 1.0
+            isRunning = true
+        }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🛠️ Advanced Transaction Modifiers</h2>
+
+      <div class="modifier-chain">
+        <h5>🔗 Transaction Modifier Chain</h5>
+        <p>View → Transaction Modifier 1 → Transaction Modifier 2 → Child Views</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === Conditional Animation Modifier ===
+struct ConditionalAnimationView: View {
+    @State private var isLargeSize = false
+    @State private var isHighPerformanceMode = false
+    @State private var animationCount = 0
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("Conditional Animation Control")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            // Performance mode toggle
+            VStack {
+                Toggle("High Performance Mode", isOn: $isHighPerformanceMode)
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
+                
+                Text(isHighPerformanceMode ? "🚀 Animations Disabled for Performance" : "✨ Animations Enabled")
+                    .font(.caption)
+                    .foregroundColor(isHighPerformanceMode ? .orange : .green)
+            }
+            
+            // Animated element
+            RoundedRectangle(cornerRadius: 20)
+                .fill(LinearGradient(
+                    gradient: Gradient(colors: [.blue, .purple]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ))
+                .frame(
+                    width: isLargeSize ? 250 : 150,
+                    height: isLargeSize ? 250 : 150
+                )
+                .overlay(
+                    VStack {
+                        Text("Tap to Resize")
+                            .foregroundColor(.white)
+                            .fontWeight(.bold)
+                        
+                        Text("Animations: \(animationCount)")
+                            .foregroundColor(.white.opacity(0.8))
+                            .font(.caption)
+                    }
+                )
+                .onTapGesture {
+                    withAnimation(.spring(duration: 0.8, bounce: 0.4)) {
+                        isLargeSize.toggle()
+                    }
+                }
+                // ✅ Conditional animation control
+                .transaction { transaction in
+                    if isHighPerformanceMode {
+                        // Disable animations in performance mode
+                        transaction.disablesAnimations = true
+                        print("🚫 Animation disabled for performance")
+                    } else {
+                        animationCount += 1
+                        print("✅ Animation allowed: #\(animationCount)")
+                    }
+                }
+            
+            Text("Total Animation Count: \(animationCount)")
+                .font(.headline)
+                .padding()
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(8)
+        }
+        .padding()
+    }
+}
+
+// === Animation Chaining with Transactions ===
+struct AnimationChainingView: View {
+    @State private var step = 0
+    @State private var isChainRunning = false
+    
+    private let totalSteps = 5
+    
+    var body: some View {
+        VStack(spacing: 40) {
+            Text("Animation Chaining")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            // Step indicator
+            HStack {
+                ForEach(0..<totalSteps, id: \.self) { index in
+                    Circle()
+                        .fill(index <= step ? Color.green : Color.gray.opacity(0.3))
+                        .frame(width: 20, height: 20)
+                        .scaleEffect(index == step ? 1.3 : 1.0)
+                }
+            }
+            .padding()
+            
+            // Animated elements for each step
+            VStack(spacing: 20) {
+                StepView(stepNumber: 0, currentStep: step, label: "Initialize")
+                StepView(stepNumber: 1, currentStep: step, label: "Load Data")
+                StepView(stepNumber: 2, currentStep: step, label: "Process")
+                StepView(stepNumber: 3, currentStep: step, label: "Validate")
+                StepView(stepNumber: 4, currentStep: step, label: "Complete")
+            }
+            
+            Button(isChainRunning ? "Running..." : "Start Chain") {
+                if !isChainRunning {
+                    startAnimationChain()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(isChainRunning)
+        }
+        .padding()
+    }
+    
+    private func startAnimationChain() {
+        isChainRunning = true
+        step = 0
+        
+        // Chain animations with different timing
+        animateStep(0, delay: 0, duration: 0.5) {
+            animateStep(1, delay: 0.2, duration: 0.6) {
+                animateStep(2, delay: 0.3, duration: 0.8) {
+                    animateStep(3, delay: 0.2, duration: 0.5) {
+                        animateStep(4, delay: 0.1, duration: 0.4) {
+                            isChainRunning = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func animateStep(_ stepNumber: Int, delay: Double, duration: Double, completion: @escaping () -> Void) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            withAnimation(.easeInOut(duration: duration)) {
+                step = stepNumber
+            }
+            
+            // Schedule next step
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                completion()
+            }
+        }
+    }
+}
+
+struct StepView: View {
+    let stepNumber: Int
+    let currentStep: Int
+    let label: String
+    
+    var isActive: Bool {
+        currentStep >= stepNumber
+    }
+    
+    var isCurrentStep: Bool {
+        currentStep == stepNumber
+    }
+    
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(isActive ? Color.blue : Color.gray.opacity(0.3))
+                .frame(width: 40, height: 40)
+                .overlay(
+                    Text("\(stepNumber + 1)")
+                        .foregroundColor(.white)
+                        .fontWeight(.bold)
+                )
+                .scaleEffect(isCurrentStep ? 1.2 : 1.0)
+            
+            Text(label)
+                .font(.headline)
+                .foregroundColor(isActive ? .primary : .secondary)
+            
+            Spacer()
+            
+            if isActive {
+                Image(systemName: "checkmark")
+                    .foregroundColor(.green)
+                    .fontWeight(.bold)
+            }
+        }
+        .padding()
+        .background(isCurrentStep ? Color.blue.opacity(0.1) : Color.clear)
+        .cornerRadius(8)
+        // ✅ Step-specific transaction handling
+        .transaction { transaction in
+            if isCurrentStep {
+                // Enhance animation for current step
+                transaction.animation = .spring(duration: 0.6, bounce: 0.3)
+            }
+        }
+    }
+}
+
+// === Custom Animation Modifier with Transaction ===
+struct CustomAnimationModifier: ViewModifier {
+    let animationType: AnimationType
+    let isEnabled: Bool
+    
+    enum AnimationType {
+        case bounce
+        case smooth
+        case spring
+        case instant
+        
+        var animation: Animation? {
+            switch self {
+            case .bounce:
+                return .spring(duration: 0.8, bounce: 0.6)
+            case .smooth:
+                return .easeInOut(duration: 0.6)
+            case .spring:
+                return .spring(duration: 1.0, bounce: 0.3)
+            case .instant:
+                return nil
+            }
+        }
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .transaction { transaction in
+                if isEnabled {
+                    transaction.animation = animationType.animation
+                    print("🎨 Applied \(animationType) animation")
+                } else {
+                    transaction.disablesAnimations = true
+                    print("🚫 Animations disabled")
+                }
+            }
+    }
+}
+
+extension View {
+    func customAnimation(_ type: CustomAnimationModifier.AnimationType, enabled: Bool = true) -> some View {
+        modifier(CustomAnimationModifier(animationType: type, isEnabled: enabled))
+    }
+}
+
+// === Complex Transaction Demo ===
+struct ComplexTransactionDemo: View {
+    @State private var configuration = AnimationConfiguration()
+    @State private var isAnimating = false
+    
+    struct AnimationConfiguration {
+        var enableBounce = true
+        var enableGlow = true
+        var enableRotation = true
+        var speed: Double = 1.0
+        var intensity: Double = 1.0
+    }
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 30) {
+                Text("Complex Transaction Demo")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                // Configuration controls
+                ConfigurationPanel(configuration: $configuration)
+                
+                // Animated demo element
+                AnimatedDemoElement(
+                    configuration: configuration,
+                    isAnimating: $isAnimating
+                )
+                
+                // Control buttons
+                HStack(spacing: 20) {
+                    Button("Start Animation") {
+                        withAnimation {
+                            isAnimating = true
+                        }
+                    }
+                    .disabled(isAnimating)
+                    
+                    Button("Stop Animation") {
+                        withAnimation {
+                            isAnimating = false
+                        }
+                    }
+                    .disabled(!isAnimating)
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding()
+        }
+    }
+}
+
+struct ConfigurationPanel: View {
+    @Binding var configuration: ComplexTransactionDemo.AnimationConfiguration
+    
+    var body: some View {
+        VStack(spacing: 15) {
+            Text("Animation Configuration")
+                .font(.headline)
+            
+            VStack(spacing: 10) {
+                Toggle("Enable Bounce", isOn: $configuration.enableBounce)
+                Toggle("Enable Glow", isOn: $configuration.enableGlow)
+                Toggle("Enable Rotation", isOn: $configuration.enableRotation)
+                
+                VStack {
+                    Text("Speed: \(configuration.speed, specifier: "%.1f")x")
+                    Slider(value: $configuration.speed, in: 0.1...3.0)
+                }
+                
+                VStack {
+                    Text("Intensity: \(configuration.intensity, specifier: "%.1f")x")
+                    Slider(value: $configuration.intensity, in: 0.1...2.0)
+                }
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
+    }
+}
+
+struct AnimatedDemoElement: View {
+    let configuration: ComplexTransactionDemo.AnimationConfiguration
+    @Binding var isAnimating: Bool
+    @State private var rotationAngle: Double = 0
+    @State private var glowIntensity: Double = 0
+    
+    var body: some View {
+        ZStack {
+            // Glow effect
+            if configuration.enableGlow {
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            gradient: Gradient(colors: [
+                                .blue.opacity(glowIntensity * configuration.intensity),
+                                .clear
+                            ]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 100
+                        )
+                    )
+                    .frame(width: 200, height: 200)
+                    .blur(radius: 10)
+            }
+            
+            // Main element
+            RoundedRectangle(cornerRadius: 25)
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [.purple, .blue]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 150, height: 150)
+                .rotationEffect(.degrees(configuration.enableRotation ? rotationAngle : 0))
+                .scaleEffect(configuration.enableBounce && isAnimating ? 1.2 : 1.0)
+                .overlay(
+                    Text("Demo")
+                        .foregroundColor(.white)
+                        .fontWeight(.bold)
+                        .font(.title2)
+                )
+        }
+        // ✅ Complex transaction handling
+        .transaction { transaction in
+            var modifiedAnimation: Animation?
+            
+            if configuration.enableBounce {
+                modifiedAnimation = .spring(
+                    duration: 1.0 / configuration.speed,
+                    bounce: 0.4 * configuration.intensity
+                )
+            } else {
+                modifiedAnimation = .easeInOut(duration: 0.8 / configuration.speed)
+            }
+            
+            transaction.animation = modifiedAnimation
+            
+            print("🔄 Transaction modified with configuration:")
+            print("   Bounce: \(configuration.enableBounce)")
+            print("   Speed: \(configuration.speed)")
+            print("   Intensity: \(configuration.intensity)")
+        }
+        .onChange(of: isAnimating) { _, newValue in
+            if newValue {
+                startContinuousAnimations()
+            }
+        }
+    }
+    
+    private func startContinuousAnimations() {
+        if configuration.enableRotation && isAnimating {
+            withAnimation(.linear(duration: 3.0 / configuration.speed).repeatForever(autoreverses: false)) {
+                rotationAngle = 360
+            }
+        }
+        
+        if configuration.enableGlow && isAnimating {
+            withAnimation(.easeInOut(duration: 2.0 / configuration.speed).repeatForever(autoreverses: true)) {
+                glowIntensity = 0.8
+            }
+        }
+    }
+}
+
+// === Transaction Performance Monitor ===
+struct TransactionPerformanceView: View {
+    @StateObject private var monitor = TransactionMonitor()
+    @State private var triggerUpdates = false
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Transaction Performance")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            // Performance metrics
+            PerformanceMetricsView(monitor: monitor)
+            
+            // Test elements
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 20) {
+                ForEach(0..<9, id: \.self) { index in
+                    MonitoredElement(
+                        index: index,
+                        isActive: triggerUpdates,
+                        monitor: monitor
+                    )
+                }
+            }
+            
+            Button("Trigger Mass Update") {
+                withAnimation(.spring(duration: 1.0, bounce: 0.3)) {
+                    triggerUpdates.toggle()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+
+@MainActor
+class TransactionMonitor: ObservableObject {
+    @Published var transactionCount = 0
+    @Published var averageProcessingTime: Double = 0
+    @Published var lastUpdate = Date()
+    
+    private var processingTimes: [Double] = []
+    
+    func recordTransaction(processingTime: Double) {
+        transactionCount += 1
+        processingTimes.append(processingTime)
+        lastUpdate = Date()
+        
+        // Keep only last 50 measurements
+        if processingTimes.count > 50 {
+            processingTimes.removeFirst()
+        }
+        
+        averageProcessingTime = processingTimes.reduce(0, +) / Double(processingTimes.count)
+    }
+}
+
+struct PerformanceMetricsView: View {
+    @ObservedObject let monitor: TransactionMonitor
+    
+    var body: some View {
+        HStack {
+            VStack {
+                Text("\(monitor.transactionCount)")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                Text("Transactions")
+                    .font(.caption)
+            }
+            
+            Spacer()
+            
+            VStack {
+                Text("\(monitor.averageProcessingTime * 1000, specifier: "%.2f")ms")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(monitor.averageProcessingTime > 0.016 ? .red : .green)
+                Text("Avg Time")
+                    .font(.caption)
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+struct MonitoredElement: View {
+    let index: Int
+    let isActive: Bool
+    let monitor: TransactionMonitor
+    
+    var body: some View {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        
+        return RoundedRectangle(cornerRadius: 12)
+            .fill(isActive ? Color.green : Color.blue)
+            .frame(height: 80)
+            .overlay(
+                Text("\(index + 1)")
+                    .foregroundColor(.white)
+                    .fontWeight(.bold)
+            )
+            .scaleEffect(isActive ? 1.1 : 1.0)
+            .transaction { transaction in
+                let endTime = CFAbsoluteTimeGetCurrent()
+                let processingTime = endTime - startTime
+                
+                monitor.recordTransaction(processingTime: processingTime)
+                
+                // Add slight variation to animation timing
+                if let animation = transaction.animation {
+                    let delay = Double(index) * 0.05 // Stagger animations
+                    transaction.animation = animation.delay(delay)
+                }
+            }
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Real-World Use Cases</h2>
+
+      <div class="success-box">
+        <h5>💡 Practical Applications</h5>
+        <p>حالات حقيقية لاستخدام Transaction والـ TransactionModifiers في التطبيقات</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+import SwiftUI
+
+// === USE CASE 1: Accessibility-Aware Animations ===
+struct AccessibilityAwareView: View {
+    @State private var isExpanded = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("Accessibility-Aware Animations")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text(reduceMotion ? "🚫 Motion Reduced (Accessibility)" : "✨ Motion Enabled")
+                .foregroundColor(reduceMotion ? .orange : .green)
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+            
+            // Content that respects accessibility settings
+            ExpandableCard(
+                title: "Sample Card",
+                content: "This card respects accessibility settings and will disable animations when reduce motion is enabled.",
+                isExpanded: $isExpanded
+            )
+            
+            Button(isExpanded ? "Collapse" : "Expand") {
+                withAnimation {
+                    isExpanded.toggle()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+
+struct ExpandableCard: View {
+    let title: String
+    let content: String
+    @Binding var isExpanded: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            if isExpanded {
+                Text(content)
+                    .font(.body)
+                    .transition(.opacity.combined(with: .scale))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.blue.opacity(0.1))
+                .frame(height: isExpanded ? nil : 80)
+        )
+        // ✅ Respect accessibility preferences
+        .transaction { transaction in
+            if reduceMotion {
+                transaction.disablesAnimations = true
+                print("♿ Animations disabled for accessibility")
+            } else {
+                transaction.animation = .spring(duration: 0.6, bounce: 0.2)
+                print("✨ Animations enabled")
+            }
+        }
+    }
+}
+
+// === USE CASE 2: Performance-Based Animation Control ===
+struct PerformanceBasedAnimationView: View {
+    @StateObject private var performanceManager = PerformanceManager()
+    @State private var items: [PerformanceItem] = []
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                // Performance indicator
+                PerformanceIndicator(manager: performanceManager)
+                
+                // List with performance-aware animations
+                List(items) { item in
+                    PerformanceAwareRow(
+                        item: item,
+                        performanceMode: performanceManager.currentMode
+                    )
+                }
+                .transaction { transaction in
+                    // Adjust animations based on performance
+                    switch performanceManager.currentMode {
+                    case .highPerformance:
+                        transaction.disablesAnimations = true
+                    case .balanced:
+                        transaction.animation = .easeInOut(duration: 0.3)
+                    case .smooth:
+                        transaction.animation = .spring(duration: 0.8, bounce: 0.4)
+                    }
+                }
+            }
+            .navigationTitle("Performance Aware")
+            .onAppear {
+                loadItems()
+                performanceManager.startMonitoring()
+            }
+        }
+    }
+    
+    private func loadItems() {
+        items = (1...100).map { index in
+            PerformanceItem(
+                id: UUID(),
+                title: "Item \(index)",
+                subtitle: "Performance-aware item"
+            )
+        }
+    }
+}
+
+@MainActor
+class PerformanceManager: ObservableObject {
+    @Published var currentMode: PerformanceMode = .balanced
+    @Published var frameRate: Double = 60.0
+    @Published var memoryUsage: Double = 50.0
+    
+    enum PerformanceMode {
+        case highPerformance  // Minimal animations
+        case balanced        // Some animations
+        case smooth         // Full animations
+    }
+    
+    private var displayLink: CADisplayLink?
+    private var lastFrameTimestamp: CFTimeInterval = 0
+    
+    func startMonitoring() {
+        displayLink = CADisplayLink(target: self, selector: #selector(updatePerformanceMetrics))
+        displayLink?.add(to: .main, forMode: .common)
+    }
+    
+    @objc private func updatePerformanceMetrics() {
+        let currentTime = CACurrentMediaTime()
+        
+        if lastFrameTimestamp > 0 {
+            let frameDuration = currentTime - lastFrameTimestamp
+            frameRate = 1.0 / frameDuration
+            
+            // Simulate memory usage
+            memoryUsage = Double.random(in: 30...90)
+            
+            // Adjust performance mode based on metrics
+            updatePerformanceMode()
+        }
+        
+        lastFrameTimestamp = currentTime
+    }
+    
+    private func updatePerformanceMode() {
+        let newMode: PerformanceMode
+        
+        if frameRate < 30 || memoryUsage > 80 {
+            newMode = .highPerformance
+        } else if frameRate < 50 || memoryUsage > 60 {
+            newMode = .balanced
+        } else {
+            newMode = .smooth
+        }
+        
+        if newMode != currentMode {
+            currentMode = newMode
+            print("🎯 Performance mode changed to: \(newMode)")
+        }
+    }
+    
+    deinit {
+        displayLink?.invalidate()
+    }
+}
+
+struct PerformanceItem: Identifiable {
+    let id: UUID
+    let title: String
+    let subtitle: String
+}
+
+struct PerformanceIndicator: View {
+    @ObservedObject let manager: PerformanceManager
+    
+    var body: some View {
+        HStack {
+            VStack {
+                Text("\(Int(manager.frameRate))")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(frameRateColor)
+                Text("FPS")
+                    .font(.caption)
+            }
+            
+            Spacer()
+            
+            VStack {
+                Text("\(Int(manager.memoryUsage))%")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(memoryColor)
+                Text("Memory")
+                    .font(.caption)
+            }
+            
+            Spacer()
+            
+            VStack {
+                Text(modeText)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(modeColor)
+                Text("Mode")
+                    .font(.caption)
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+    
+    private var frameRateColor: Color {
+        manager.frameRate >= 50 ? .green : manager.frameRate >= 30 ? .orange : .red
+    }
+    
+    private var memoryColor: Color {
+        manager.memoryUsage <= 60 ? .green : manager.memoryUsage <= 80 ? .orange : .red
+    }
+    
+    private var modeText: String {
+        switch manager.currentMode {
+        case .highPerformance: return "🚀"
+        case .balanced: return "⚖️"
+        case .smooth: return "✨"
+        }
+    }
+    
+    private var modeColor: Color {
+        switch manager.currentMode {
+        case .highPerformance: return .red
+        case .balanced: return .orange
+        case .smooth: return .green
+        }
+    }
+}
+
+struct PerformanceAwareRow: View {
+    let item: PerformanceItem
+    let performanceMode: PerformanceManager.PerformanceMode
+    @State private var isHighlighted = false
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(item.title)
+                    .font(.headline)
+                
+                Text(item.subtitle)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            // Visual indicator based on performance mode
+            performanceModeIndicator
+        }
+        .padding(.vertical, 4)
+        .background(isHighlighted ? Color.blue.opacity(0.1) : Color.clear)
+        .onTapGesture {
+            withAnimation {
+                isHighlighted.toggle()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var performanceModeIndicator: some View {
+        switch performanceMode {
+        case .highPerformance:
+            Circle()
+                .fill(Color.red)
+                .frame(width: 12, height: 12)
+        case .balanced:
+            Circle()
+                .fill(Color.orange)
+                .frame(width: 16, height: 16)
+        case .smooth:
+            Circle()
+                .fill(Color.green)
+                .frame(width: 20, height: 20)
+                .overlay(
+                    Circle()
+                        .stroke(Color.green.opacity(0.3), lineWidth: 4)
+                        .scaleEffect(isHighlighted ? 1.5 : 1.0)
+                )
+        }
+    }
+}
+
+// === USE CASE 3: Context-Aware Animations ===
+struct ContextAwareAnimationView: View {
+    @State private var context: AnimationContext = .normal
+    @State private var isPlaying = false
+    
+    enum AnimationContext {
+        case normal
+        case gaming
+        case presentation
+        case accessibility
+        
+        var animationStyle: Animation? {
+            switch self {
+            case .normal:
+                return .easeInOut(duration: 0.5)
+            case .gaming:
+                return .linear(duration: 0.2)
+            case .presentation:
+                return .spring(duration: 1.2, bounce: 0.3)
+            case .accessibility:
+                return nil // No animations
+            }
+        }
+        
+        var description: String {
+            switch self {
+            case .normal: return "🏠 Normal Mode"
+            case .gaming: return "🎮 Gaming Mode"
+            case .presentation: return "📊 Presentation Mode"
+            case .accessibility: return "♿ Accessibility Mode"
+            }
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("Context-Aware Animations")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            // Context selector
+            VStack {
+                Text("Current Context:")
+                Text(context.description)
+                    .font(.headline)
+                    .foregroundColor(.blue)
+                
+                Picker("Context", selection: $context) {
+                    ForEach([AnimationContext.normal, .gaming, .presentation, .accessibility], id: \.self) { ctx in
+                        Text(ctx.description).tag(ctx)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+            
+            // Demo animation element
+            RoundedRectangle(cornerRadius: 20)
+                .fill(LinearGradient(
+                    gradient: Gradient(colors: [.purple, .blue]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ))
+                .frame(width: isPlaying ? 200 : 100, height: isPlaying ? 200 : 100)
+                .rotationEffect(.degrees(isPlaying ? 360 : 0))
+                .overlay(
+                    Text(isPlaying ? "Playing" : "Stopped")
+                        .foregroundColor(.white)
+                        .fontWeight(.bold)
+                )
+                // ✅ Context-aware transaction handling
+                .transaction { transaction in
+                    transaction.animation = context.animationStyle
+                    
+                    print("🎯 Context: \(context)")
+                    print("🎨 Animation: \(transaction.animation?.description ?? "None")")
+                }
+            
+            Button(isPlaying ? "Stop" : "Play") {
+                withAnimation {
+                    isPlaying.toggle()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+</code></pre>
+      </div>
+
+      <h2 class="section-title">🎯 Best Practices & Guidelines</h2>
+
+      <div class="highlight-box">
+        <h4>📋 Transaction Best Practices</h4>
+        <div>
+          <h5>✅ Do:</h5>
+          <ul>
+            <li><strong>Monitor Performance:</strong> استخدم transaction modifiers لمراقبة الأداء</li>
+            <li><strong>Respect Accessibility:</strong> اعمل disable للـ animations لما reduce motion مفعل</li>
+            <li><strong>Context Awareness:</strong> غير الـ animations حسب الـ context</li>
+            <li><strong>Chain Carefully:</strong> خد بالك من الـ transaction modifier order</li>
+          </ul>
+          
+          <h5>🚫 Don't:</h5>
+          <ul>
+            <li><strong>Override Blindly:</strong> متغيرش كل transaction بلا داعي</li>
+            <li><strong>Ignore Performance:</strong> مترأكش الـ frame rate والـ memory usage</li>
+            <li><strong>Complex Logic:</strong> متحطش logic معقد في الـ transaction modifier</li>
+            <li><strong>Nested Transactions:</strong> تجنب الـ deeply nested transaction modifications</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>Transaction و TransactionModifiers Summary:</strong>
+        </p>
+        <ul>
+          <li><strong>Transaction:</strong> بيحمل animation state وmeta-data للـ view updates</li>
+          <li><strong>TransactionModifiers:</strong> بيسمحولك تعدل في الـ transaction قبل ما يوصل للـ children</li>
+          <li><strong>Performance Control:</strong> مفيد لتحسين الأداء وإيقاف الـ animations لما لازم</li>
+          <li><strong>Accessibility:</strong> essential لدعم accessibility features زي reduce motion</li>
+          <li><strong>Context Awareness:</strong> يخليك تخصص الـ animations حسب الـ app context</li>
+          <li><strong>Debugging Tool:</strong> ممتاز لـ debugging animation issues والـ performance problems</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
