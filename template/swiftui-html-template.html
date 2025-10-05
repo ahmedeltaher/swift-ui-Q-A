@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[TITLE_PLACEHOLDER] in SwiftUI</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        direction: rtl;
+      }
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 2rem auto;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+      .question-title {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+      .section-title {
+        color: #e74c3c;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+      .code-container {
+        background: #2d3748;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+      .code-container code {
+        color: #e2e8f0;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      }
+      .highlight-box {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+      }
+      .back-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+      }
+      .concept-box {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .warning-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .success-box {
+        background: #d1edff;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .danger-box {
+        background: #f8d7da;
+        border-left: 4px solid #dc3545;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .info-box {
+        background: #e2e3e5;
+        border-left: 4px solid #6c757d;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      /* Custom boxes for specific topics */
+      .performance-box {
+        background: #e8f5e8;
+        border-left: 4px solid #28a745;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .architecture-box {
+        background: #f0f4ff;
+        border-left: 4px solid #6366f1;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .advanced-box {
+        background: #fff5ee;
+        border-left: 4px solid #ff6347;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+        ← العودة للصفحة الرئيسية
+      </a>
+
+      <h1 class="question-title">
+        [QUESTION_TITLE_PLACEHOLDER]
+      </h1>
+
+      <div class="highlight-box">
+        <h4>⚡ الفكرة الأساسية</h4>
+        <p>
+          [MAIN_CONCEPT_PLACEHOLDER]
+        </p>
+      </div>
+
+      <h2 class="section-title">📝 الشرح بالعربي</h2>
+      <p>
+        [ARABIC_EXPLANATION_PLACEHOLDER]
+      </p>
+
+      <h2 class="section-title">[SECTION_ICON] [SECTION_TITLE]</h2>
+
+      <div class="concept-box">
+        <h5>[CONCEPT_TITLE]</h5>
+        <p>[CONCEPT_DESCRIPTION]</p>
+      </div>
+
+      <div class="code-container">
+        <pre><code class="language-swift">
+// [CODE_EXAMPLE_PLACEHOLDER]
+import SwiftUI
+
+struct ExampleView: View {
+    var body: some View {
+        Text("Hello SwiftUI!")
+    }
+}
+</code></pre>
+      </div>
+
+      <div class="success-box">
+        <h5>✅ [SUCCESS_TITLE]</h5>
+        <p>[SUCCESS_DESCRIPTION]</p>
+      </div>
+
+      <div class="warning-box">
+        <h5>⚠️ [WARNING_TITLE]</h5>
+        <p>[WARNING_DESCRIPTION]</p>
+      </div>
+
+      <div class="danger-box">
+        <h5>❌ [DANGER_TITLE]</h5>
+        <p>[DANGER_DESCRIPTION]</p>
+      </div>
+
+      <h2 class="section-title">🎯 Best Practices</h2>
+
+      <div class="highlight-box">
+        <h4>📋 [BEST_PRACTICES_TITLE]</h4>
+        <div>
+          <h5>✅ Do:</h5>
+          <ul>
+            <li>[BEST_PRACTICE_1]</li>
+            <li>[BEST_PRACTICE_2]</li>
+            <li>[BEST_PRACTICE_3]</li>
+          </ul>
+          
+          <h5>🚫 Don't:</h5>
+          <ul>
+            <li>[ANTI_PATTERN_1]</li>
+            <li>[ANTI_PATTERN_2]</li>
+            <li>[ANTI_PATTERN_3]</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="section-title">📊 الخلاصة</h2>
+
+      <div class="concept-box">
+        <p>
+          <strong>[SUMMARY_TITLE]:</strong>
+        </p>
+        <ul>
+          <li><strong>[KEY_POINT_1]:</strong> [EXPLANATION_1]</li>
+          <li><strong>[KEY_POINT_2]:</strong> [EXPLANATION_2]</li>
+          <li><strong>[KEY_POINT_3]:</strong> [EXPLANATION_3]</li>
+          <li><strong>[KEY_POINT_4]:</strong> [EXPLANATION_4]</li>
+        </ul>
+      </div>
+
+      <div class="mt-4">
+        <a href="../SwiftUI_Interview_Questions.html" class="back-btn">
+          ← العودة للأسئلة الرئيسية
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
